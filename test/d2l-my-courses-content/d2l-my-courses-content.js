@@ -921,7 +921,7 @@ describe('d2l-my-courses-content', () => {
 
 				sandbox.stub(component, '$$')
 					.withArgs('.course-tile-grid').returns(courseTileGridStub)
-					.withArgs('.course-tile-grid d2l-enrollment-card:not([past-course])').returns(currentOrFutureCourses)
+					.withArgs('.course-tile-grid d2l-enrollment-card:not([closed])').returns(currentOrFutureCourses)
 					.withArgs('.course-tile-grid d2l-enrollment-card[pinned]').returns(pinnedEnrollment)
 					.withArgs('.course-tile-grid d2l-course-image-tile:not([past-course])').returns(currentOrFutureCourses)
 					.withArgs('.course-tile-grid d2l-course-image-tile[pinned]').returns(pinnedEnrollment);

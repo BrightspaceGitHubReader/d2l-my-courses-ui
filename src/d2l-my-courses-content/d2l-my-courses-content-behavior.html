@@ -220,7 +220,7 @@
 			var currentOrFutureEnrollment;
 			var pinnedEnrollment;
 			if (this.useEnrollmentCards) {
-				currentOrFutureEnrollment = this.$$('.course-tile-grid d2l-enrollment-card:not([past-course])');
+				currentOrFutureEnrollment = this.$$('.course-tile-grid d2l-enrollment-card:not([closed])');
 				pinnedEnrollment = this.$$('.course-tile-grid d2l-enrollment-card[pinned]');
 			} else {
 				currentOrFutureEnrollment = this.$$('.course-tile-grid d2l-course-image-tile:not([past-course])');
