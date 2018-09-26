@@ -72,7 +72,7 @@
 			_hasOnlyPastCourses: {
 				type: Boolean,
 				value: false,
-				computed: '_computeHasOnlyPastCourses(_courseTileOrganizationEventCount)'
+				computed: '_computeHasOnlyPastCourses(_courseTileOrganizationEventCount, _enrollments.length)'
 			},
 			// Lookup table of org unit ID -> enrollment, to avoid having to re-fetch enrollments
 			_orgUnitIdMap: {
