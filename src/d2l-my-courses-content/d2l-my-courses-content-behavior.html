@@ -191,6 +191,7 @@
 		_enrollmentsSearchUrl: null,
 		_widgetMaxCardVisible: 12,
 		_nextEnrollmentEntityUrl: false,
+		_hidePastCourses: false,
 
 		_enrollmentsChanged: function(viewAbleLength, totalLength) {
 			totalLength = this.useEnrollmentCards ? totalLength : viewAbleLength;
@@ -253,13 +254,17 @@
 			this._orgUnitIdMap[orgUnitId] = e.detail.enrollmentUrl;
 		},
 		_onD2lEnrollmentCardStatus: function(e) {
+			// When we need to hide closed, the backend puts it at the back of the list. So nothing to do.
 			if (!e.detail
 				|| !e.detail.status
 				|| !e.detail.enrollmentUrl
+				|| !this._hidePastCourses
+				|| e.detail.status.closed
 			) {
 				return;
 			}
-			var hide = (e.detail.status.completed || e.detail.status.closed);
+
+			var hide = e.detail.status.completed;
 
 			if (hide) {
 				var index = this._enrollments.indexOf(e.detail.enrollmentUrl);
@@ -271,6 +276,7 @@
 					this.push('_enrollments', e.detail.enrollmentUrl);
 				}
 			}
+
 			if (this._enrollments.length < this._widgetMaxCardVisible && this._nextEnrollmentEntityUrl) {
 				this.fetchSirenEntity(this._nextEnrollmentEntityUrl)
 					.then(this._populateEnrollments.bind(this));
@@ -638,6 +644,7 @@
 				// When using Current sort, hide past courses in the widget view
 				var tileGrid = this.cssGridView ? this.$$('.course-tile-grid') : this.$$('d2l-course-tile-grid');
 				tileGrid.setAttribute('hide-past-courses', '');
+				this._hidePastCourses = true;
 			}
 
 			enrollmentEntities.forEach(function(enrollment) {
