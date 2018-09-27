@@ -189,6 +189,8 @@
 		_courseImagesLoadedEventCount: 0,
 		_initiallyVisibleCourseTileCount: 0,
 		_enrollmentsSearchUrl: null,
+		_widgetMaxCardVisible: 12,
+		_nextEnrollmentEntityUrl: false,
 
 		_enrollmentsChanged: function(viewAbleLength, totalLength) {
 			totalLength = this.useEnrollmentCards ? totalLength : viewAbleLength;
@@ -269,6 +271,11 @@
 					this.push('_enrollments', e.detail.enrollmentUrl);
 				}
 			}
+			if (this._enrollments.length < this._widgetMaxCardVisible && this._nextEnrollmentEntityUrl) {
+				this.fetchSirenEntity(this._nextEnrollmentEntityUrl)
+					.then(this._populateEnrollments.bind(this));
+			}
+
 			this._onResize();
 		},
 		_onD2lEnrollmentNew: function() {
@@ -615,6 +622,7 @@
 		_populateEnrollments: function(enrollmentsEntity) {
 			var enrollmentEntities = enrollmentsEntity.getSubEntitiesByClass('enrollment');
 			this._hasMoreEnrollments = enrollmentsEntity.hasLinkByRel('next');
+			this._nextEnrollmentEntityUrl = this._hasMoreEnrollments && enrollmentsEntity.getLinkByRel('next').href;
 			var newEnrollments = [];
 
 			var searchAction = enrollmentsEntity.getActionByName(this.HypermediaActions.enrollments.searchMyEnrollments);
@@ -663,8 +671,7 @@
 
 			var lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
 			if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._hasMoreEnrollments) {
-				var url = enrollmentsEntity.getLinkByRel('next').href;
-				return this.fetchSirenEntity(url)
+				return this.fetchSirenEntity(this._nextEnrollmentEntityUrl)
 					.then(this._populateEnrollments.bind(this));
 			}
 		},
