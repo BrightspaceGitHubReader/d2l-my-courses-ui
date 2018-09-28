@@ -865,7 +865,7 @@ describe('d2l-my-courses-content', () => {
 			setTimeout(() => {
 				expect(component._hasEnrollments).to.be.true;
 				done();
-			}, 2000);
+			}, 3000);
 		});
 
 		it('should add a setCourseImageFailure warning alert when a request to set the image fails', () => {
