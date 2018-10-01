@@ -65,9 +65,9 @@
 				value: false
 			},
 			// True when user has >1 page of enrollments
-			_hasMoreEnrollments: {
-				type: Boolean,
-				value: false
+			_nextEnrollmentEntityUrl: {
+				type: String,
+				value: null
 			},
 			_hasOnlyPastCourses: {
 				type: Boolean,
@@ -105,7 +105,7 @@
 			// Text to render for "View All Courses" link (includes enrollment count approximation)
 			_viewAllCoursesText: {
 				type: String,
-				computed: '_getViewAllCoursesText(_hasMoreEnrollments, _numberOfEnrollments)'
+				computed: '_getViewAllCoursesText(_nextEnrollmentEntityUrl, _numberOfEnrollments)'
 			}
 		},
 		listeners: {
@@ -190,7 +190,6 @@
 		_initiallyVisibleCourseTileCount: 0,
 		_enrollmentsSearchUrl: null,
 		_widgetMaxCardVisible: 12,
-		_nextEnrollmentEntityUrl: false,
 		_hidePastCourses: false,
 
 		_enrollmentsChanged: function(viewAbleLength, totalLength) {
@@ -627,8 +626,8 @@
 		},
 		_populateEnrollments: function(enrollmentsEntity) {
 			var enrollmentEntities = enrollmentsEntity.getSubEntitiesByClass('enrollment');
-			this._hasMoreEnrollments = enrollmentsEntity.hasLinkByRel('next');
-			this._nextEnrollmentEntityUrl = this._hasMoreEnrollments && enrollmentsEntity.getLinkByRel('next').href;
+			var hasMoreEnrollments = enrollmentsEntity.hasLinkByRel('next');
+			this._nextEnrollmentEntityUrl = hasMoreEnrollments ? enrollmentsEntity.getLinkByRel('next').href : null;
 			var newEnrollments = [];
 
 			var searchAction = enrollmentsEntity.getActionByName(this.HypermediaActions.enrollments.searchMyEnrollments);
@@ -677,7 +676,7 @@
 			this.fire('recalculate-columns');
 
 			var lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
-			if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._hasMoreEnrollments) {
+			if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._nextEnrollmentEntityUrl) {
 				return this.fetchSirenEntity(this._nextEnrollmentEntityUrl)
 					.then(this._populateEnrollments.bind(this));
 			}
