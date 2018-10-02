@@ -156,7 +156,7 @@ describe('d2l-my-courses-content', () => {
 		expect(component._alertsView).to.be.an.instanceof(Array);
 		expect(component._existingEnrollmentsMap).to.be.an('object');
 		expect(component._hasEnrollments).to.exist;
-		expect(component._hasMoreEnrollments).to.exist;
+		expect(component._nextEnrollmentEntityUrl).to.be.null;
 		expect(component._orgUnitIdMap).to.be.an('object');
 		expect(component._setImageOrg).to.be.an('object');
 		expect(component._showContent).to.exist;
@@ -865,7 +865,7 @@ describe('d2l-my-courses-content', () => {
 			setTimeout(() => {
 				expect(component._hasEnrollments).to.be.true;
 				done();
-			}, 2000);
+			}, 3000);
 		});
 
 		it('should add a setCourseImageFailure warning alert when a request to set the image fails', () => {
@@ -894,19 +894,19 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should show the number of enrollments when there are no new pages of enrollments with the View All Courses link', () => {
-			component._hasMoreEnrollments = false;
+			component._nextEnrollmentEntityUrl = null;
 			component._numberOfEnrollments = 6;
 			expect(component._viewAllCoursesText).to.equal('View All Courses (6)');
 		});
 
 		it('should show include "+" in the View All Courses link when there are more courses', () => {
-			component._hasMoreEnrollments = true;
+			component._nextEnrollmentEntityUrl = 'enrollments/2';
 			component._numberOfEnrollments = 6;
 			expect(component._viewAllCoursesText).to.equal('View All Courses (6+)');
 		});
 
 		it('should round the number of courses in the View All Courses link when there are many courses', () => {
-			component._hasMoreEnrollments = true;
+			component._nextEnrollmentEntityUrl = 'enrollments/2';
 			component._numberOfEnrollments = 23;
 			expect(component._viewAllCoursesText).to.equal('View All Courses (20+)');
 		});

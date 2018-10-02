@@ -65,9 +65,9 @@
 				value: false
 			},
 			// True when user has >1 page of enrollments
-			_hasMoreEnrollments: {
-				type: Boolean,
-				value: false
+			_nextEnrollmentEntityUrl: {
+				type: String,
+				value: null
 			},
 			_hasOnlyPastCourses: {
 				type: Boolean,
@@ -105,7 +105,7 @@
 			// Text to render for "View All Courses" link (includes enrollment count approximation)
 			_viewAllCoursesText: {
 				type: String,
-				computed: '_getViewAllCoursesText(_hasMoreEnrollments, _numberOfEnrollments)'
+				computed: '_getViewAllCoursesText(_nextEnrollmentEntityUrl, _numberOfEnrollments)'
 			}
 		},
 		listeners: {
@@ -189,6 +189,8 @@
 		_courseImagesLoadedEventCount: 0,
 		_initiallyVisibleCourseTileCount: 0,
 		_enrollmentsSearchUrl: null,
+		_widgetMaxCardVisible: 12,
+		_hidePastCourses: false,
 
 		_enrollmentsChanged: function(viewAbleLength, totalLength) {
 			totalLength = this.useEnrollmentCards ? totalLength : viewAbleLength;
@@ -251,13 +253,17 @@
 			this._orgUnitIdMap[orgUnitId] = e.detail.enrollmentUrl;
 		},
 		_onD2lEnrollmentCardStatus: function(e) {
+			// When we need to hide closed, the backend puts it at the back of the list. So nothing to do.
 			if (!e.detail
 				|| !e.detail.status
 				|| !e.detail.enrollmentUrl
+				|| !this._hidePastCourses
+				|| e.detail.status.closed
 			) {
 				return;
 			}
-			var hide = (e.detail.status.completed || e.detail.status.closed);
+
+			var hide = e.detail.status.completed;
 
 			if (hide) {
 				var index = this._enrollments.indexOf(e.detail.enrollmentUrl);
@@ -269,6 +275,12 @@
 					this.push('_enrollments', e.detail.enrollmentUrl);
 				}
 			}
+
+			if (this._enrollments.length < this._widgetMaxCardVisible && this._nextEnrollmentEntityUrl) {
+				this.fetchSirenEntity(this._nextEnrollmentEntityUrl)
+					.then(this._populateEnrollments.bind(this));
+			}
+
 			this._onResize();
 		},
 		_onD2lEnrollmentNew: function() {
@@ -614,7 +626,8 @@
 		},
 		_populateEnrollments: function(enrollmentsEntity) {
 			var enrollmentEntities = enrollmentsEntity.getSubEntitiesByClass('enrollment');
-			this._hasMoreEnrollments = enrollmentsEntity.hasLinkByRel('next');
+			var hasMoreEnrollments = enrollmentsEntity.hasLinkByRel('next');
+			this._nextEnrollmentEntityUrl = hasMoreEnrollments ? enrollmentsEntity.getLinkByRel('next').href : null;
 			var newEnrollments = [];
 
 			var searchAction = enrollmentsEntity.getActionByName(this.HypermediaActions.enrollments.searchMyEnrollments);
@@ -630,6 +643,7 @@
 				// When using Current sort, hide past courses in the widget view
 				var tileGrid = this.cssGridView ? this.$$('.course-tile-grid') : this.$$('d2l-course-tile-grid');
 				tileGrid.setAttribute('hide-past-courses', '');
+				this._hidePastCourses = true;
 			}
 
 			enrollmentEntities.forEach(function(enrollment) {
@@ -662,9 +676,8 @@
 			this.fire('recalculate-columns');
 
 			var lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
-			if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._hasMoreEnrollments) {
-				var url = enrollmentsEntity.getLinkByRel('next').href;
-				return this.fetchSirenEntity(url)
+			if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._nextEnrollmentEntityUrl) {
+				return this.fetchSirenEntity(this._nextEnrollmentEntityUrl)
 					.then(this._populateEnrollments.bind(this));
 			}
 		},

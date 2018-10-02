@@ -46,14 +46,14 @@ This is only used if the `US90527-my-courses-updates` LD flag is ON
 				margin-bottom: 20px;
 				clear: both;
 			}
-			.course-tile-grid:not([hide-past-courses]) > d2l-enrollment-card:nth-of-type(n+13):not([pinned]),
+
+			.course-tile-grid[hide-past-courses] > div:nth-of-type(n+13) > d2l-course-image-tile:not([pinned]):not([past-course]),
 			.course-tile-grid:not([hide-past-courses]) > div:nth-of-type(n+13) > d2l-course-image-tile:not([pinned]),
-			.course-tile-grid[hide-past-courses] d2l-enrollment-card[past-course]:not([pinned]),
-			.course-tile-grid > d2l-enrollment-card[completed]:not([pinned]),
-			.course-tile-grid > d2l-enrollment-card[closed]:not([pinned]),
 			.course-tile-grid[hide-past-courses] > div > d2l-course-image-tile[past-course]:not([pinned]),
-			.course-tile-grid[hide-past-courses] > d2l-enrollment-card:nth-of-type(n+13):not([pinned]):not([past-course]):not([completed]),
-			.course-tile-grid[hide-past-courses] > div:nth-of-type(n+13) > d2l-course-image-tile:not([pinned]):not([past-course]):not([completed]) {
+			.course-tile-grid[hide-past-courses] > d2l-enrollment-card:nth-of-type(n+13):not([pinned]),
+			.course-tile-grid:not([hide-past-courses]) > d2l-enrollment-card:nth-of-type(n+13):not([pinned]),
+			.course-tile-grid[hide-past-courses] > d2l-enrollment-card[completed]:not([pinned]),
+			.course-tile-grid[hide-past-courses] > d2l-enrollment-card[closed]:not([pinned]), {
 				display: none;
 			}
 			.d2l-body-standard {
