@@ -6,6 +6,7 @@ before_script:
 # `cp` because of https://github.com/Polymer/tools/issues/416#issue-327241592
 - cp wct.conf.local.json wct.conf.json
 - polymer test
+- npm run gulp
 script:
 - cp test/index.high-priority.html test/index.html
 - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
