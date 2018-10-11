@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "postinstall": "polymer install --variants",
-    "build": "gulp",
-    "gulp": "gulp",
+    "build": "gulp build",
+    "gulp": "gulp build",
     "lint": "npm run lint:js && npm run lint:wc",
     "lint:js": "eslint --ext .js,.html .",
     "lint:wc": "polymer lint -i *.html ./src/* ./demo/* ./lang/* ./test/*",
