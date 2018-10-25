@@ -284,7 +284,7 @@
 			this._onResize();
 		},
 		_onD2lEnrollmentNew: function() {
-			if (!this._hidePastCourses || this._hasAlert('newEnrollmentMultiple')) {
+			if (this._hasAlert('newEnrollmentMultiple')) {
 				return;
 			}
 			var message = 'newEnrollment';
