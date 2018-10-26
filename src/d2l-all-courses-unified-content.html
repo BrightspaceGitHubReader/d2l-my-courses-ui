@@ -1,5 +1,4 @@
 <link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../1.x-hybrid-components/d2l-course-image-tile.html">
 <link rel="import" href="../../d2l-enrollments/d2l-enrollment-card.html">
 <link rel="import" href="d2l-css-grid-view/d2l-css-grid-view-behavior.html">
 <link rel="import" href="d2l-css-grid-view/d2l-css-grid-view-styles.html">
@@ -37,26 +36,11 @@ This is only used if the `US90527-my-courses-updates` LD flag is ON
 		</span>
 
 		<div class="course-tile-grid">
-			<template is="dom-if" if="[[useEnrollmentCards]]">
-				<template is="dom-repeat" items="[[filteredEnrollments]]">
-					<d2l-enrollment-card
-						href="[[item]]"
-						presentation-href=[[presentationUrl]]>
-					</d2l-enrollment-card>
-				</template>
-			</template>
-			<template is="dom-if" if="[[!useEnrollmentCards]]">
-				<template is="dom-repeat" items="[[filteredEnrollments]]">
-					<div>
-						<d2l-course-image-tile
-							enrollment="[[item]]"
-							tile-sizes="[[_tileSizes]]"
-							show-course-code="[[showCourseCode]]"
-							show-semester="[[showSemester]]"
-							course-updates-config="[[courseUpdatesConfig]]">
-						</d2l-course-image-tile>
-					</div>
-				</template>
+			<template is="dom-repeat" items="[[filteredEnrollments]]">
+				<d2l-enrollment-card
+					href="[[item]]"
+					presentation-href=[[presentationUrl]]>
+				</d2l-enrollment-card>
 			</template>
 		</div>
 	</template>
@@ -78,10 +62,6 @@ This is only used if the `US90527-my-courses-updates` LD flag is ON
 					value: false
 				},
 				courseUpdatesConfig: Object,
-				useEnrollmentCards: {
-					type: Boolean,
-					value: false
-				},
 
 				_noCoursesInSearch: Boolean,
 				_noCoursesInSelection: Boolean,

@@ -188,9 +188,9 @@ describe('d2l-my-courses-content', () => {
 		it('should call refreshImage on each course image tile in courseImageUploadCompleted', () => {
 			var courseTiles;
 			if (component.shadowRoot) {
-				courseTiles = component.shadowRoot.querySelectorAll(component.useEnrollmentCards ? 'd2l-enrollment-card' : 'd2l-course-image-tile');
+				courseTiles = component.shadowRoot.querySelectorAll('d2l-enrollment-card');
 			} else {
-				courseTiles = component.querySelectorAll(component.useEnrollmentCards ? 'd2l-enrollment-card' : 'd2l-course-image-tile');
+				courseTiles = component.querySelectorAll('d2l-enrollment-card');
 			}
 			var stub1 = sandbox.stub(courseTiles[0], 'refreshImage');
 			var stub2 = sandbox.stub(courseTiles[1], 'refreshImage');
@@ -213,7 +213,7 @@ describe('d2l-my-courses-content', () => {
 		it('should correctly determine whether there are started-inactive courses in _onStartedInactiveAlert', () => {
 			var spy = sandbox.spy(component, '_addAlert');
 
-			var firstCourseTile = component.$$('.course-tile-grid ' + component.useEnrollmentCards ? 'd2l-enrollment-card' : 'd2l-course-image-tile');
+			var firstCourseTile = component.$$('.course-tile-grid d2l-enrollment-card');
 			firstCourseTile.setAttribute('started-inactive', '');
 
 			component._onStartedInactiveAlert();
@@ -922,9 +922,7 @@ describe('d2l-my-courses-content', () => {
 				sandbox.stub(component, '$$')
 					.withArgs('.course-tile-grid').returns(courseTileGridStub)
 					.withArgs('.course-tile-grid d2l-enrollment-card:not([closed])').returns(currentOrFutureCourses)
-					.withArgs('.course-tile-grid d2l-enrollment-card[pinned]').returns(pinnedEnrollment)
-					.withArgs('.course-tile-grid d2l-course-image-tile:not([past-course])').returns(currentOrFutureCourses)
-					.withArgs('.course-tile-grid d2l-course-image-tile[pinned]').returns(pinnedEnrollment);
+					.withArgs('.course-tile-grid d2l-enrollment-card[pinned]').returns(pinnedEnrollment);
 			}
 
 			beforeEach(() => {
