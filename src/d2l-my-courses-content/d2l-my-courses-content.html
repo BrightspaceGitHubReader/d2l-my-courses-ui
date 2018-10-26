@@ -47,9 +47,6 @@ This is only used if the `US90527-my-courses-updates` LD flag is ON
 				clear: both;
 			}
 
-			.course-tile-grid[hide-past-courses] > div:nth-of-type(n+13) > d2l-course-image-tile:not([pinned]):not([past-course]),
-			.course-tile-grid:not([hide-past-courses]) > div:nth-of-type(n+13) > d2l-course-image-tile:not([pinned]),
-			.course-tile-grid[hide-past-courses] > div > d2l-course-image-tile[past-course]:not([pinned]),
 			.course-tile-grid[hide-past-courses] > d2l-enrollment-card:nth-of-type(n+13):not([pinned]),
 			.course-tile-grid:not([hide-past-courses]) > d2l-enrollment-card:nth-of-type(n+13):not([pinned]),
 			.course-tile-grid[hide-past-courses] > d2l-enrollment-card[completed]:not([pinned]),
@@ -80,26 +77,11 @@ This is only used if the `US90527-my-courses-updates` LD flag is ON
 				</d2l-alert>
 			</template>
 			<div class="course-tile-grid">
-				<template is="dom-if" if="[[useEnrollmentCards]]">
-					<template is="dom-repeat" items="[[_enrollments]]">
-						<d2l-enrollment-card
-							href="[[item]]"
-							presentation-href="[[presentationUrl]]">
-						</d2l-enrollment-card>
-					</template>
-				</template>
-				<template is="dom-if" if="[[!useEnrollmentCards]]">
-					<template is="dom-repeat" items="[[_enrollments]]">
-						<div>
-							<d2l-course-image-tile
-								enrollment="[[item]]"
-								tile-sizes="[[_tileSizes]]"
-								show-course-code="[[showCourseCode]]"
-								show-semester="[[showSemester]]"
-								course-updates-config="[[courseUpdatesConfig]]">
-							</d2l-course-image-tile>
-						</div>
-					</template>
+				<template is="dom-repeat" items="[[_enrollments]]">
+					<d2l-enrollment-card
+						href="[[item]]"
+						presentation-href="[[presentationUrl]]">
+					</d2l-enrollment-card>
 				</template>
 			</div>
 			<d2l-link

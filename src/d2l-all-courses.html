@@ -125,8 +125,7 @@ If it is off and the attribute is not added, the `d2l-all-courses-segregated-con
 											is-searched="[[_isSearched]]"
 											show-course-code="[[showCourseCode]]"
 											show-semester="[[showSemester]]"
-											course-updates-config="[[courseUpdatesConfig]]"
-											use-enrollment-cards="[[useEnrollmentCards]]">
+											course-updates-config="[[courseUpdatesConfig]]">
 										</d2l-all-courses-unified-content>
 									</div>
 									<d2l-loading-spinner
@@ -146,8 +145,7 @@ If it is off and the attribute is not added, the `d2l-all-courses-segregated-con
 							show-course-code="[[showCourseCode]]"
 							show-semester="[[showSemester]]"
 							course-updates-config="[[courseUpdatesConfig]]"
-							render-contents="true"
-							use-enrollment-cards="[[useEnrollmentCards]]">
+							render-contents="true">
 						</d2l-all-courses-unified-content>
 					</template>
 				</template>
@@ -219,11 +217,6 @@ If it is off and the attribute is not added, the `d2l-all-courses-segregated-con
 					type: Boolean,
 					value: false,
 					observer: '_updatedSortLogicChanged'
-				},
-				// Feature flag for using d2l-enrollment-card in place of d2l-course-image-tile
-				useEnrollmentCards: {
-					type: Boolean,
-					value: false
 				},
 
 				/*
@@ -344,16 +337,12 @@ If it is off and the attribute is not added, the `d2l-all-courses-segregated-con
 				this.$['all-courses-scroll-threshold'].clearTriggers();
 				if (!this.updatedSortLogic) {
 					this._filteredPinnedEnrollments.forEach(function(item) {
-						var identifier = this.useEnrollmentCards
-							? item
-							: item.getLinkByRel('self').href;
+						var identifier = item;
 						this._pinnedCoursesMap[identifier] = true;
 					}, this);
 
 					this._filteredUnpinnedEnrollments.forEach(function(item) {
-						var identifier = this.useEnrollmentCards
-							? item
-							: item.getLinkByRel('self').href;
+						var identifier = item;
 						this._unpinnedCoursesMap[identifier] = true;
 					}, this);
 				}
@@ -370,7 +359,7 @@ If it is off and the attribute is not added, the `d2l-all-courses-segregated-con
 
 				this._searchUrl = this.createActionUrl(this.enrollmentsSearchAction, {
 					autoPinCourses: false,
-					embedDepth: (this.updatedSortLogic && this.useEnrollmentCards) ? 0 : 1,
+					embedDepth: this.updatedSortLogic ? 0 : 1,
 					sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
 				});
 			},
@@ -532,7 +521,7 @@ If it is off and the attribute is not added, the `d2l-all-courses-segregated-con
 					search: search,
 					autoPinCourses: false,
 					sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId'),
-					embedDepth: this.useEnrollmentCards ? 0 : 1
+					embedDepth: 0
 				};
 				if ((this._filterCounts.departments > 0 || this._filterCounts.semesters > 0) && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('parentOrganizations')) {
 					params.parentOrganizations =  this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value;
@@ -664,7 +653,7 @@ If it is off and the attribute is not added, the `d2l-all-courses-segregated-con
 
 				if (this.updatedSortLogic) {
 					var gridEntities = enrollmentEntities.map(function(value) {
-						return this.useEnrollmentCards ? value.href : window.D2L.Hypermedia.Siren.Parse(value);
+						return value.href;
 					}.bind(this));
 					var unifiedContent = this._showGroupByTabs
 						? this.$$('#' + this._selectedTabId + ' d2l-all-courses-unified-content')
