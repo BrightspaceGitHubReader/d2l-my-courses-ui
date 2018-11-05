@@ -1,60 +1,61 @@
-var sandbox,
-	component,
-	myEnrollmentsEntity,
-	roleFiltersEntity;
-
-function parse(entity) {
-	return window.D2L.Hypermedia.Siren.Parse(entity);
-}
-
-function getFilter(name, onOrOff) {
-	return {
-		rel: ['filter'],
-		class: [onOrOff || 'off'],
-		title: name,
-		actions: [{
-			name: 'add-filter',
-			href: 'http://example.com/add'
-		}, {
-			name: 'remove-filter',
-			href: 'http://example.com/remove'
-		}]
-	};
-}
-
-beforeEach(function() {
-	sandbox = sinon.sandbox.create();
-	myEnrollmentsEntity = {
-		actions: [{
-			name: 'set-role-filters',
-			href: 'http://example.com',
-			fields: [{
-				name: 'include',
-				value: ''
-			}]
-		}]
-	};
-	roleFiltersEntity = parse({
-		entities: [getFilter('foo')],
-		actions: [{
-			name: 'apply-role-filters',
-			href: 'http://example.com',
-			fields: [{
-				name: 'roles',
-				value: '1,2,3,4'
-			}]
-		}]
-	});
-	component = fixture('d2l-filter-menu-tab-roles-fixture');
-	component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({}));
-	component.myEnrollmentsEntity = myEnrollmentsEntity;
-});
-
-afterEach(function() {
-	sandbox.restore();
-});
-
 describe('d2l-filter-menu-tab-roles', function() {
+
+	var sandbox,
+		component,
+		myEnrollmentsEntity,
+		roleFiltersEntity;
+
+	function parse(entity) {
+		return window.D2L.Hypermedia.Siren.Parse(entity);
+	}
+
+	function getFilter(name, onOrOff) {
+		return {
+			rel: ['filter'],
+			class: [onOrOff || 'off'],
+			title: name,
+			actions: [{
+				name: 'add-filter',
+				href: 'http://example.com/add'
+			}, {
+				name: 'remove-filter',
+				href: 'http://example.com/remove'
+			}]
+		};
+	}
+
+	beforeEach(function() {
+		sandbox = sinon.sandbox.create();
+		myEnrollmentsEntity = {
+			actions: [{
+				name: 'set-role-filters',
+				href: 'http://example.com',
+				fields: [{
+					name: 'include',
+					value: ''
+				}]
+			}]
+		};
+		roleFiltersEntity = parse({
+			entities: [getFilter('foo')],
+			actions: [{
+				name: 'apply-role-filters',
+				href: 'http://example.com',
+				fields: [{
+					name: 'roles',
+					value: '1,2,3,4'
+				}]
+			}]
+		});
+		component = fixture('d2l-filter-menu-tab-roles-fixture');
+		component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({}));
+		component.myEnrollmentsEntity = myEnrollmentsEntity;
+	});
+
+	afterEach(function() {
+		sandbox.restore();
+	});
+
 	describe('DOM manipulation', function() {
 		it('should show the empty state message initially', function() {
 			expect(component.$$('.no-items-text').getAttribute('hidden')).to.be.null;

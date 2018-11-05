@@ -1,26 +1,26 @@
-var sandbox,
-	component,
-	organization;
-
-beforeEach(function() {
-	sandbox = sinon.sandbox.create();
-	component = fixture('d2l-filter-menu-tab-fixture');
-	component.searchAction = {
-		name: 'search',
-		href: '/'
-	};
-	organization = {
-		class: ['active', 'semester'],
-		rel: ['https://api.brightspace.com/rels/organization'],
-		href: '/organizations/1'
-	};
-});
-
-afterEach(function() {
-	sandbox.restore();
-});
-
 describe('d2l-filter-menu-tab', function() {
+	var sandbox,
+		component,
+		organization;
+
+	beforeEach(function() {
+		sandbox = sinon.sandbox.create();
+		component = fixture('d2l-filter-menu-tab-fixture');
+		component.searchAction = {
+			name: 'search',
+			href: '/'
+		};
+		organization = {
+			class: ['active', 'semester'],
+			rel: ['https://api.brightspace.com/rels/organization'],
+			href: '/organizations/1'
+		};
+	});
+
+	afterEach(function() {
+		sandbox.restore();
+	});
+
 	describe('DOM manipulation', function() {
 		it('should show empty state message initially', function() {
 			expect(component.$$('.no-items-text').getAttribute('hidden')).to.be.null;
