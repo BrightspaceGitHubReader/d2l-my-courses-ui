@@ -1,10 +1,10 @@
-var listItem;
-
-beforeEach(function() {
-	listItem = fixture('d2l-filter-list-item-role-fixture');
-});
-
 describe('d2l-filter-list-item-role', function() {
+	var listItem;
+
+	beforeEach(function() {
+		listItem = fixture('d2l-filter-list-item-role-fixture');
+	});
+
 	it('should show the unchecked icon when the item is not selected', function() {
 		listItem.selected = false;
 		expect(listItem.$$('d2l-icon.icon-checked').getComputedStyleValue('display')).to.equal('none');

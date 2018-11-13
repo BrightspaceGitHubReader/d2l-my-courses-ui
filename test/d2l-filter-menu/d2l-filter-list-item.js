@@ -1,41 +1,41 @@
-var sandbox,
-	listItem,
-	enrollment,
-	organization;
-
-beforeEach(function() {
-	sandbox = sinon.sandbox.create();
-	enrollment = {
-		rel: ['enrollment'],
-		links: [{
-			rel: ['self'],
-			href: '/enrollments'
-		}, {
-			rel: ['https://api.brightspace.com/rels/organization'],
-			href: '/organizations/1'
-		}]
-	};
-	organization = {
-		properties: {
-			name: 'foo'
-		},
-		links: [{
-			rel: ['self'],
-			href: 'bar'
-		}]
-	};
-
-	listItem = fixture('d2l-filter-list-item-fixture');
-	listItem.fetchSirenEntity = sandbox.stub().returns(Promise.resolve(
-		window.D2L.Hypermedia.Siren.Parse(organization)
-	));
-});
-
-afterEach(function() {
-	sandbox.restore();
-});
-
 describe('d2l-filter-list-item', function() {
+	var sandbox,
+		listItem,
+		enrollment,
+		organization;
+
+	beforeEach(function() {
+		sandbox = sinon.sandbox.create();
+		enrollment = {
+			rel: ['enrollment'],
+			links: [{
+				rel: ['self'],
+				href: '/enrollments'
+			}, {
+				rel: ['https://api.brightspace.com/rels/organization'],
+				href: '/organizations/1'
+			}]
+		};
+		organization = {
+			properties: {
+				name: 'foo'
+			},
+			links: [{
+				rel: ['self'],
+				href: 'bar'
+			}]
+		};
+
+		listItem = fixture('d2l-filter-list-item-fixture');
+		listItem.fetchSirenEntity = sandbox.stub().returns(Promise.resolve(
+			window.D2L.Hypermedia.Siren.Parse(organization)
+		));
+	});
+
+	afterEach(function() {
+		sandbox.restore();
+	});
+
 	it('should show the unchecked icon when the item is not selected', function() {
 		listItem.selected = false;
 		expect(listItem.$$('d2l-icon.icon-checked').getComputedStyleValue('display')).to.equal('none');
