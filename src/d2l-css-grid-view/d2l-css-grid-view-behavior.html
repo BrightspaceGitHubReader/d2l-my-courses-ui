@@ -62,9 +62,7 @@
 				return;
 			}
 
-			var courseTileDivs = this.useEnrollmentCards
-				? Polymer.dom(this.root).querySelectorAll('.course-tile-grid > d2l-enrollment-card')
-				: Polymer.dom(this.root).querySelectorAll('.course-tile-grid > div');
+			var courseTileDivs = Polymer.dom(this.root).querySelectorAll('.course-tile-grid > d2l-enrollment-card');
 			ie11retryCount = ie11retryCount || 0;
 			if (
 				ie11retryCount < 20
