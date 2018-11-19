@@ -414,8 +414,13 @@
 		_onTabSelected: function(e) {
 			// Only handle if tab selected corresponds to this panel
 			if (!this.parentElement || e.target.id !== this.parentElement.id) {
+				document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
 				return;
 			}
+
+			// Only listen to pin updates for the current tab
+			document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
+
 			if (!this._hasEnrollments) {
 				this._fetchRoot()
 					.then(function() {
