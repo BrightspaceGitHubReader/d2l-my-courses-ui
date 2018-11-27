@@ -49,13 +49,22 @@
 		parseEntity: function(entity) {
 			return window.D2L.Hypermedia.Siren.Parse(entity);
 		},
-		fetchSirenEntity: function(url) {
+		fetchSirenEntity: function(url, clearCache) {
 			if (!url) {
 				return;
 			}
+
+			var headers = {
+				Accept: 'application/vnd.siren+json'
+			};
+
+			if (clearCache) {
+				headers['cache-control'] = 'no-cache';
+			}
+
 			return window.d2lfetch
 				.fetch(new Request(url, {
-					headers: { Accept: 'application/vnd.siren+json' }
+					headers: headers
 				}))
 				.then(this.responseToSirenEntity.bind(this));
 		},
@@ -78,6 +87,20 @@
 					}));
 				}
 			}
+		},
+		submitForm: function(url, formParameters) {
+			var formData = new FormData();
+			for (var formKey in formParameters) {
+				if (formParameters.hasOwnProperty(formKey)) {
+					formData.append(formKey, formParameters[formKey]);
+				}
+			}
+
+			return window.d2lfetch
+				.fetch(new Request(url, {
+					method: 'PUT',
+					body: formData
+				}));
 		},
 		responseToSirenEntity: function(response) {
 			if (response.ok) {

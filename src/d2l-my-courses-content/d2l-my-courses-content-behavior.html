@@ -1,5 +1,4 @@
 <link rel="import" href="../../../polymer/polymer.html">
-<link rel="import" href="../../../d2l-fetch/d2l-fetch.html">
 <link rel="import" href="../../../d2l-hm-constants-behavior/d2l-hm-constants-behavior.html">
 <link rel="import" href="../d2l-all-courses.html">
 <link rel="import" href="../d2l-css-grid-view/d2l-css-grid-view-behavior.html">
@@ -483,15 +482,7 @@
 			!this.cssGridView && this.$$('d2l-course-tile-grid').setCourseImage(e);
 		},
 		_onPresentationUrlChange: function(newValue) {
-			if (newValue) {
-				window.d2lfetch
-					.fetch(new Request(newValue, {
-						headers: {
-							Accept: 'application/vnd.siren+json',
-							'Cache-Control': 'no-cache'
-						}
-					}));
-			}
+			this.fetchSirenEntity(newValue, true);
 		},
 
 		/*
@@ -671,14 +662,10 @@
 				.then(this._populateEnrollments.bind(this));
 		},
 		_setLastSearchName: function(id) {
-			var formData = new FormData();
-			formData.append('mostRecentEnrollmentsSearchType', '0');
-			formData.append('mostRecentEnrollmentsSearchName', id);
-			return window.d2lfetch
-				.fetch(new Request(this.userSettingsUrl, {
-					method: 'PUT',
-					body: formData
-				}));
+			this.submitForm(this.userSettingsUrl, {
+				'mostRecentEnrollmentsSearchType': '0',
+				'mostRecentEnrollmentsSearchName': id
+			});
 		}
 	};
 
