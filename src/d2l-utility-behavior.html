@@ -58,7 +58,7 @@
 				Accept: 'application/vnd.siren+json'
 			};
 
-			if( clearCache ) {
+			if (clearCache) {
 				headers['cache-control'] = 'no-cache';
 			}
 
@@ -90,8 +90,8 @@
 		},
 		submitForm: function(formParameters) {
 			var formData = new FormData();
-			for ( var formKey in formParameters ) {
-				if( formParameters.hasOwnProperty(formKey) ) {
+			for (var formKey in formParameters) {
+				if (formParameters.hasOwnProperty(formKey)) {
 					formData.append(formKey, formParameters[formKey]);
 				}
 			}
