@@ -88,7 +88,7 @@
 				}
 			}
 		},
-		submitForm: function(formParameters) {
+		submitForm: function(url, formParameters) {
 			var formData = new FormData();
 			for (var formKey in formParameters) {
 				if (formParameters.hasOwnProperty(formKey)) {
@@ -97,7 +97,7 @@
 			}
 
 			return window.d2lfetch
-				.fetch(new Request(this.userSettingsUrl, {
+				.fetch(new Request(url, {
 					method: 'PUT',
 					body: formData
 				}));

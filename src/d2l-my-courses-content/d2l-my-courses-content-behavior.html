@@ -482,15 +482,7 @@
 			!this.cssGridView && this.$$('d2l-course-tile-grid').setCourseImage(e);
 		},
 		_onPresentationUrlChange: function(newValue) {
-			if (newValue) {
-				window.d2lfetch
-					.fetch(new Request(newValue, {
-						headers: {
-							Accept: 'application/vnd.siren+json',
-							'Cache-Control': 'no-cache'
-						}
-					}));
-			}
+			this.fetchSirenEntity( newValue, true );
 		},
 
 		/*
@@ -670,7 +662,7 @@
 				.then(this._populateEnrollments.bind(this));
 		},
 		_setLastSearchName: function(id) {
-			this.submitForm({
+			this.submitForm(this.userSettingsUrl, {
 				'mostRecentEnrollmentsSearchType': '0',
 				'mostRecentEnrollmentsSearchName': id
 			});
