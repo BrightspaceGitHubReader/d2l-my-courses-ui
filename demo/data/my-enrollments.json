@@ -1,0 +1,49 @@
+{
+  "entities": [
+    {
+      "class": [
+        "enrollment"
+      ],
+      "rel": [
+        "https://api.brightspace.com/rels/user-enrollment"
+      ],
+      "href": "../data/enrollment-00.json"
+    },
+    {
+      "class": [
+        "enrollment"
+      ],
+      "rel": [
+        "https://api.brightspace.com/rels/user-enrollment"
+      ],
+      "href": "../data/enrollment-01.json"
+    },
+    {
+      "class": [
+        "enrollment"
+      ],
+      "rel": [
+        "https://api.brightspace.com/rels/user-enrollment"
+      ],
+      "href": "../data/enrollment-02.json"
+    },
+    {
+      "class": [
+        "enrollment"
+      ],
+      "rel": [
+        "https://api.brightspace.com/rels/user-enrollment"
+      ],
+      "href": "../data/enrollment-10.json"
+    },
+    {
+      "class": [
+        "enrollment"
+      ],
+      "rel": [
+        "https://api.brightspace.com/rels/user-enrollment"
+      ],
+      "href": "../data/enrollment-11.json"
+    }
+  ]
+}
