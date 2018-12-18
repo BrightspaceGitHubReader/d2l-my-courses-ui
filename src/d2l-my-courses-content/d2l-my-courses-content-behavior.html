@@ -412,7 +412,7 @@
 		},
 		_onTabSelected: function(e) {
 			// Only handle if tab selected corresponds to this panel
-			if (!this.parentElement || e.target.id !== this.parentElement.id) {
+			if (!this.parentElement || Polymer.dom(e).rootTarget.id !== this.parentElement.id) {
 				document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
 				return;
 			}
