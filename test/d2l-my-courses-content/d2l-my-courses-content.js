@@ -282,8 +282,10 @@ describe('d2l-my-courses-content', () => {
 	describe('Events', () => {
 
 		describe('d2l-tab-panel-selected', () => {
+			var parentComponent;
+
 			beforeEach(() => {
-				var parentComponent = fixture('tab-event-fixture');
+				parentComponent = fixture('tab-event-fixture');
 				component = parentComponent.querySelector('d2l-my-courses-content');
 				component.enrollmentsSearchAction = searchAction;
 				component._hasEnrollments = true;
@@ -296,9 +298,9 @@ describe('d2l-my-courses-content', () => {
 
 					var stub = sandbox.stub(component, '_fetchRoot').returns(Promise.resolve());
 
-					component._onTabSelected({
-						target: { id: 'foo' }
-					});
+					parentComponent.dispatchEvent(new CustomEvent(
+						'd2l-tab-panel-selected', { bubbles: true, composed: true }
+					));
 
 					expect(stub.called).to.equal(!hasEnrollments);
 				});
@@ -317,9 +319,9 @@ describe('d2l-my-courses-content', () => {
 					enrollmentsSearchAction: searchAction
 				}];
 
-				component._onTabSelected({
-					target: { id: 'foo' }
-				});
+				parentComponent.dispatchEvent(new CustomEvent(
+					'd2l-tab-panel-selected', { bubbles: true, composed: true }
+				));
 
 				component.tabSearchActions.forEach(function(action) {
 					expect(action.selected).to.equal(action.name !== 'foo');
