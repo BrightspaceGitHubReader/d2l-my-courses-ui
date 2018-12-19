@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+	<title>d2l-my-courses demo</title>
+	<script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+	<link rel="import" href="../../../polymer/polymer.html">
+	<link rel="import" href="../../../iron-demo-helpers/demo-pages-shared-styles.html">
+	<link rel="import" href="../../../iron-demo-helpers/demo-snippet.html">
+	<link rel="import" href="../../all-imports.html">
+	<custom-style>
+		<style is="custom-style" include="demo-pages-shared-styles"></style>
+	</custom-style>
+	<custom-style include="d2l-typography">
+		<style is="custom-style" include="d2l-typography"></style>
+	</custom-style>
+</head>
+<body unresolved class="d2l-typography">
+
+<h3>My Courses</h3>
+<d2l-my-courses
+	class="d2l-my-courses-widget"
+	enrollments-url="../data/enrollments.json"
+	promoted-searches="../data/searches.json"
+	user-settings-url="../data/user-settings.json"
+	updated-sort-logic="true">
+</d2l-my-courses>
+
+</body>
+</html>

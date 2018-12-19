@@ -1,0 +1,16 @@
+{
+  "properties":{
+    "UserEnrollmentsSearchType":"BySemester"
+  },
+  "actions":[{
+    "title":"Alpha",
+    "href":"../data/my-enrollments-00.json",
+    "name":"00",
+    "method":"GET"
+  },{
+    "title":"Omega",
+    "href":"../data/my-enrollments-10.json",
+    "name":"10",
+    "method":"GET"
+  }]
+}
