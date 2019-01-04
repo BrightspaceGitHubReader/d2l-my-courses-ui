@@ -54,7 +54,7 @@
 			_tabSearchType: String
 		},
 		_computeShowGroupByTabs: function(groups) {
-			return groups.length > 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
+			return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
 		},
 		attached: function() {
 			if (!this.enrollmentsUrl || !this.userSettingsUrl) {
@@ -93,8 +93,28 @@
 				: this.$$('d2l-my-courses-content-animated').getLastOrgUnitId();
 		},
 		_fetchTabSearchActions: function() {
-			if (!this.promotedSearches || !this.userSettingsUrl) {
+			if (!this.userSettingsUrl) {
 				return;
+			}
+
+			if (!this.promotedSearches && this._enrollmentsSearchAction && this._pinnedTabAction) {
+				return this.fetchSirenEntity(this.userSettingsUrl).then(function(value) {
+					var lastEnrollmentsSearchName = value
+							&& value.properties
+							&& value.properties.MostRecentEnrollmentsSearchName;
+
+					this._tabSearchActions = [{
+						name: this._enrollmentsSearchAction.name,
+						title: this.localize('allTab'),
+						selected: this._enrollmentsSearchAction.name === lastEnrollmentsSearchName,
+						enrollmentsSearchAction: this._enrollmentsSearchAction
+					}, {
+						name: this._pinnedTabAction.name,
+						title: this.localize('pinnedCourses'),
+						selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
+						enrollmentsSearchAction: this._pinnedTabAction
+					}];
+				}.bind(this));
 			}
 
 			return Promise.all([
