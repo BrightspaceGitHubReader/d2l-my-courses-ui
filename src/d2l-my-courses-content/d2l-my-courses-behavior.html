@@ -118,15 +118,15 @@
 					return;
 				}
 
+				var lastEnrollmentsSearchName = userSettingsEntity
+							&& userSettingsEntity.properties
+							&& userSettingsEntity.properties.MostRecentEnrollmentsSearchName;
+
 				this._tabSearchActions = promotedSearchesEntity.actions.map(function(action) {
 					return {
 						name: action.name,
 						title: action.title,
-						selected: action.name === (
-							userSettingsEntity
-							&& userSettingsEntity.properties
-							&& userSettingsEntity.properties.MostRecentEnrollmentsSearchName
-						),
+						selected: action.name === lastEnrollmentsSearchName,
 						enrollmentsSearchAction: action
 					};
 				});
@@ -138,7 +138,7 @@
 				var actions = [{
 					name: this._enrollmentsSearchAction.name,
 					title: this.localize('allTab'),
-					selected: false,
+					selected: this._enrollmentsSearchAction.name === lastEnrollmentsSearchName,
 					enrollmentsSearchAction: this._enrollmentsSearchAction
 				}];
 
@@ -146,7 +146,7 @@
 					actions = actions.concat({
 						name: this._pinnedTabAction.name,
 						title: this.localize('pinnedCourses'),
-						selected: false,
+						selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
 						enrollmentsSearchAction: this._pinnedTabAction
 					});
 				}
