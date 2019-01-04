@@ -7,18 +7,10 @@
       "https://api.brightspace.com/rels/user-enrollment"
     ],
     "href": "../data/enrollment-past"
-  },{
-    "class": [
-      "enrollment"
-    ],
-    "rel": [
-      "https://api.brightspace.com/rels/user-enrollment"
-    ],
-    "href": "../data/enrollment-00"
   }],
   "actions": [{
     "name": "search-my-enrollments",
-    "href": "../data/my-enrollments-hidden-past",
+    "href": "../data/my-enrollments-hidden-past-only",
     "method": "GET",
     "fields": [{
       "name": "sort",
