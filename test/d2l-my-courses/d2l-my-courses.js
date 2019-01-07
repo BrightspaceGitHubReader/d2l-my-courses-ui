@@ -3,9 +3,23 @@ describe('d2l-my-courses', () => {
 		sandbox,
 		enrollmentsHref = '/enrollments/users/169',
 		promotedSearchHref = '/promoted-search-url',
+		promotedSearchHrefMultiple = '/promoted-search-url-multiple',
 		lastSearchHref = 'homepages/components/1/user-settings/169',
 		searchAction = {
 			name: 'search-my-enrollments',
+			method: 'GET',
+			href: enrollmentsHref,
+			fields: [
+				{ name: 'search', type: 'search', value: '' },
+				{ name: 'pageSize', type: 'number', value: 20 },
+				{ name: 'embedDepth', type: 'number', value: 0 },
+				{ name: 'sort', type: 'text', value: 'current' },
+				{ name: 'autoPinCourses', type: 'checkbox', value: false },
+				{ name: 'promotePins', type: 'checkbox', value: false }
+			]
+		},
+		searchPinnedEnrollmentsAction = {
+			name: 'search-my-pinned-enrollments',
 			method: 'GET',
 			href: enrollmentsHref,
 			fields: [
@@ -39,6 +53,40 @@ describe('d2l-my-courses', () => {
 				}
 			]
 		},
+		promotedSearchMultipleResponse = {
+			actions: [
+				{
+					title: 'Semester 1',
+					href: '/enrollments/users/169',
+					name: '6607',
+					method: 'GET',
+					fields: [
+						{ name: 'search', type: 'search', value: '' },
+						{ name: 'pageSize', type: 'number', value: 20 },
+						{ name: 'embedDepth', type: 'number', value: 0 },
+						{ name: 'sort', type: 'text', value: 'current' },
+						{ name: 'autoPinCourses', type: 'checkbox', value: false },
+						{ name: 'promotePins', type: 'checkbox', value: false },
+						{ name: 'orgUnitTypeId', type: 'hidden', value: 3 }
+					]
+				},
+				{
+					title: 'Semester 2',
+					href: '/enrollments/users/169',
+					name: '6609',
+					method: 'GET',
+					fields: [
+						{ name: 'search', type: 'search', value: '' },
+						{ name: 'pageSize', type: 'number', value: 20 },
+						{ name: 'embedDepth', type: 'number', value: 0 },
+						{ name: 'sort', type: 'text', value: 'current' },
+						{ name: 'autoPinCourses', type: 'checkbox', value: false },
+						{ name: 'promotePins', type: 'checkbox', value: false },
+						{ name: 'orgUnitTypeId', type: 'hidden', value: 3 }
+					]
+				}
+			]
+		},
 		lastSearchResponse = {
 			properties: {
 				MostRecentEnrollmentsSearchType: 0,
@@ -53,8 +101,6 @@ describe('d2l-my-courses', () => {
 
 		component.fetchSirenEntity.withArgs(sinon.match(enrollmentsHref))
 			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse)));
-		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHref))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchResponse)));
 		component.fetchSirenEntity.withArgs(sinon.match(lastSearchHref))
 			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(lastSearchResponse)));
 		component.enrollmentsUrl = enrollmentsHref;
@@ -72,22 +118,75 @@ describe('d2l-my-courses', () => {
 		expect(component.updatedSortLogic).to.equal(false);
 	});
 
-	it('should properly fetch saved search data', () => {
+	it('should hide the only saved search action', () => {
+		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHref))
+			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchResponse)));
 		return component._fetchTabSearchActions()
 			.then(function() {
 				expect(component.fetchSirenEntity).to.be.called;
-				expect(component._tabSearchActions.length).to.equal(1);
-				expect(component._tabSearchActions[0].selected).to.be.true;
+				expect(component._tabSearchActions.length).to.equal(0);
 			});
 	});
 
-	it('should properly fetch default search data when set', () => {
+	it('should properly fetch default search data and hide the only saved search action', () => {
+		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHref))
+			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchResponse)));
 		component._enrollmentsSearchAction = searchAction;
 		return component._fetchTabSearchActions()
 			.then(function() {
 				expect(component.fetchSirenEntity).to.be.called;
+				expect(component._tabSearchActions.length).to.equal(1);
+			});
+	});
+
+	it('should properly fetch saved search data with two saved search actions', () => {
+		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHrefMultiple))
+			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchMultipleResponse)));
+		component.promotedSearches = promotedSearchHrefMultiple;
+		return component._fetchTabSearchActions()
+			.then(function() {
+				expect(component.fetchSirenEntity).to.be.called;
 				expect(component._tabSearchActions.length).to.equal(2);
+				expect(component._tabSearchActions[0].selected).to.be.true;
+			});
+	});
+
+	it('should properly fetch default search data when set with two saved search actions', () => {
+		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHrefMultiple))
+			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchMultipleResponse)));
+		component.promotedSearches = promotedSearchHrefMultiple;
+		component._enrollmentsSearchAction = searchAction;
+		return component._fetchTabSearchActions()
+			.then(function() {
+				expect(component.fetchSirenEntity).to.be.called;
+				expect(component._tabSearchActions.length).to.equal(3);
 				expect(component._tabSearchActions[1].selected).to.be.true;
+			});
+	});
+
+	it('should have search pinned enrollments action and hide the only saved search action', () => {
+		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHref))
+			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchResponse)));
+		component._enrollmentsSearchAction = searchAction;
+		component._pinnedTabAction = searchPinnedEnrollmentsAction;
+		return component._fetchTabSearchActions()
+			.then(function() {
+				expect(component.fetchSirenEntity).to.be.called;
+				expect(component._tabSearchActions.length).to.equal(2);
+			});
+	});
+
+	it('should have search pinned enrollments action with two saved search actions', () => {
+		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHrefMultiple))
+			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchMultipleResponse)));
+		component.promotedSearches = promotedSearchHrefMultiple;
+		component._enrollmentsSearchAction = searchAction;
+		component._pinnedTabAction = searchPinnedEnrollmentsAction;
+		return component._fetchTabSearchActions()
+			.then(function() {
+				expect(component.fetchSirenEntity).to.be.called;
+				expect(component._tabSearchActions.length).to.equal(4);
+				expect(component._tabSearchActions[2].selected).to.be.true;
 			});
 	});
 
