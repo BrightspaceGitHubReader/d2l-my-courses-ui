@@ -142,14 +142,16 @@
 							&& userSettingsEntity.properties
 							&& userSettingsEntity.properties.MostRecentEnrollmentsSearchName;
 
-				this._tabSearchActions = promotedSearchesEntity.actions.map(function(action) {
-					return {
-						name: action.name,
-						title: action.title,
-						selected: action.name === lastEnrollmentsSearchName,
-						enrollmentsSearchAction: action
-					};
-				});
+				if (promotedSearchesEntity.actions.length > 1) {
+					this._tabSearchActions = promotedSearchesEntity.actions.map(function(action) {
+						return {
+							name: action.name,
+							title: action.title,
+							selected: action.name === lastEnrollmentsSearchName,
+							enrollmentsSearchAction: action
+						};
+					});
+				}
 
 				if (!this._enrollmentsSearchAction) {
 					return;
