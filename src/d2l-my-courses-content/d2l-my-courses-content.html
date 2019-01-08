@@ -84,7 +84,7 @@ This is only used if the `US90527-my-courses-updates` LD flag is ON
 			</div>
 			<d2l-link
 				id="viewAllCourses"
-				hidden$="[[!_computeHasEnrollments(_numberOfEnrollments)]]"
+				hidden$="[[!_numberOfEnrollments]]"
 				href="javascript:void(0);"
 				on-tap="_openAllCoursesView"
 				on-keypress="_keypressOpenAllCoursesView"
@@ -123,9 +123,6 @@ This is only used if the `US90527-my-courses-updates` LD flag is ON
 					type: Boolean,
 					value: true
 				}
-			},
-			_computeHasEnrollments: function(numberOfEnrollments) {
-				return numberOfEnrollments > 0;
 			},
 			behaviors: [
 				D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
