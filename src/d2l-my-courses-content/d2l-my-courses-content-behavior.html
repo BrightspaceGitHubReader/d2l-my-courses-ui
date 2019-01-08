@@ -246,16 +246,10 @@
 			}
 
 			var hide = e.detail.status.completed;
+			var index = this._enrollments.indexOf(e.detail.enrollmentUrl);
 
-			if (hide) {
-				var index = this._enrollments.indexOf(e.detail.enrollmentUrl);
-				if (index !== -1 && index >= this._lastPinnedIndex) {
-					this.splice('_enrollments', index, 1);
-				}
-			} else if (!hide && (this._enrollments.indexOf(e.detail.enrollmentUrl) === -1)) {
-				if (this._orgUnitIdMap.indexOf(e.detail.enrollmentUrl) !== -1) {
-					this.push('_enrollments', e.detail.enrollmentUrl);
-				}
+			if (hide && index !== -1 && index > this._lastPinnedIndex) {
+				this.splice('_enrollments', index, 1);
 			}
 
 			if (this._enrollments.length < this._widgetMaxCardVisible && this._nextEnrollmentEntityUrl) {
