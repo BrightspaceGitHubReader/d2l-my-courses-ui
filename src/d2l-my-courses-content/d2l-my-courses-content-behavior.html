@@ -385,6 +385,14 @@
 			var removalIndex = this._enrollments.indexOf(changedEnrollmentId);
 			var insertIndex = this._lastPinnedIndex + 1;
 
+			if (!isPinned) {
+				this._lastPinnedIndex--;
+			}
+
+			if (isPinned) {
+				this._lastPinnedIndex++;
+			}
+
 			if (removalIndex === insertIndex && !shouldHide) {
 				this._onResize();
 				return;
@@ -392,10 +400,6 @@
 
 			if (removalIndex !== -1) {
 				this.splice('_enrollments', removalIndex, 1);
-
-				if (!isPinned) {
-					this._lastPinnedIndex--;
-				}
 
 				if (shouldHide) {
 					this._onResize();
@@ -408,10 +412,6 @@
 			}
 
 			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
-
-			if (isPinned) {
-				this._lastPinnedIndex++;
-			}
 
 			this._onResize();
 		},
