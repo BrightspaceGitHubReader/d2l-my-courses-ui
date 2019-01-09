@@ -4,11 +4,14 @@ describe('d2l-my-courses-content', () => {
 		component,
 		fetchStub,
 		searchAction,
+		miniSearchAction,
 		enrollmentEntity,
 		enrollmentsRootEntity,
+		miniEnrollmentsRootEntity,
 		enrollmentsSearchEntity,
 		enrollmentsSearchPageTwoEntity,
 		organizationEntity,
+		oneEnrollmentSearchEntity,
 		organizationEntityHydrated;
 
 	function SetupFetchStub(url, entity) {
@@ -958,13 +961,13 @@ describe('d2l-my-courses-content', () => {
 
 			it('should not add the alert if not hiding past courses', () => {
 				component._hidePastCourses = false;
-				component.dispatchEvent( new CustomEvent(
+				component.dispatchEvent(new CustomEvent(
 					'd2l-enrollment-card-status', {
 						bubbles: true,
 						composed: true,
 						detail: {
 							status: { closed: true },
-							enrollmentUrl: "/enrollments/users/1/organizations/1"
+							enrollmentUrl: '/enrollments/users/1/organizations/1'
 						}
 					}
 				));
@@ -975,13 +978,13 @@ describe('d2l-my-courses-content', () => {
 
 			it('should add the alert if hiding past courses', () => {
 				component._hidePastCourses = true;
-				component.dispatchEvent( new CustomEvent(
+				component.dispatchEvent(new CustomEvent(
 					'd2l-enrollment-card-status', {
 						bubbles: true,
 						composed: true,
 						detail: {
 							status: { closed: true },
-							enrollmentUrl: "/enrollments/users/1/organizations/1"
+							enrollmentUrl: '/enrollments/users/1/organizations/1'
 						}
 					}
 				));
