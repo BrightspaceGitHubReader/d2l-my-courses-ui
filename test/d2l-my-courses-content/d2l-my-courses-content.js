@@ -155,7 +155,6 @@ describe('d2l-my-courses-content', () => {
 		expect(component).to.exist;
 		expect(component._alertsView).to.be.an.instanceof(Array);
 		expect(component._existingEnrollmentsMap).to.be.an('object');
-		expect(component._hasEnrollments).to.exist;
 		expect(component._nextEnrollmentEntityUrl).to.be.null;
 		expect(component._orgUnitIdMap).to.be.an('object');
 		expect(component._setImageOrg).to.be.an('object');
@@ -288,13 +287,13 @@ describe('d2l-my-courses-content', () => {
 				parentComponent = fixture('tab-event-fixture');
 				component = parentComponent.querySelector('d2l-my-courses-content');
 				component.enrollmentsSearchAction = searchAction;
-				component._hasEnrollments = true;
+				component._numberOfEnrollments = 1;
 				component.tabSearchActions = [];
 			});
 
 			[true, false].forEach(hasEnrollments => {
 				it('should ' + (hasEnrollments ? '' : 'not ') + 'fetch enrollments', () => {
-					component._hasEnrollments = hasEnrollments;
+					component._numberOfEnrollments = hasEnrollments ? 1 : 0;
 
 					var stub = sandbox.stub(component, '_fetchRoot').returns(Promise.resolve());
 
@@ -816,7 +815,7 @@ describe('d2l-my-courses-content', () => {
 
 			return component._fetchRoot().then(() => {
 				expect(component._showContent).to.be.true;
-				expect(component._hasEnrollments).to.be.false;
+				expect(component._numberOfEnrollments).to.equal(0);
 				expect(component._alertsView).to.include({
 					alertName: 'noCourses',
 					alertType: 'call-to-action',
@@ -841,7 +840,7 @@ describe('d2l-my-courses-content', () => {
 			}));
 
 			return component._fetchRoot().then(() => {
-				expect(component._hasEnrollments).to.be.false;
+				expect(component._numberOfEnrollments).to.equal(0);
 				expect(component._alertsView).to.include({
 					alertName: 'noCourses',
 					alertType: 'call-to-action',
@@ -865,7 +864,7 @@ describe('d2l-my-courses-content', () => {
 
 		it('should correctly evaluate whether it has enrollments', done => {
 			setTimeout(() => {
-				expect(component._hasEnrollments).to.be.true;
+				expect(component._numberOfEnrollments).not.to.equal(0);
 				done();
 			}, 3000);
 		});
@@ -926,10 +925,6 @@ describe('d2l-my-courses-content', () => {
 					.withArgs('.course-tile-grid d2l-enrollment-card:not([closed])').returns(currentOrFutureCourses)
 					.withArgs('.course-tile-grid d2l-enrollment-card[pinned]').returns(pinnedEnrollment);
 			}
-
-			beforeEach(() => {
-				component._hasEnrollments = true;
-			});
 
 			it('should not add the alert if not hiding past courses (e.g. admin user)', () => {
 				var currentOrFutureCourses = false,
