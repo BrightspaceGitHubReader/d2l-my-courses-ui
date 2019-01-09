@@ -84,7 +84,7 @@
 			},
 			_lastPinnedIndex: {
 				type: Number,
-				value: 0
+				value: -1
 			},
 			// The organization which the user is selecting the image of
 			_setImageOrg: {
@@ -380,29 +380,37 @@
 			}
 
 			var enrollmentCard = Polymer.dom(e).event && Polymer.dom(e).event.srcElement;
-			var shouldHide = enrollmentCard && (enrollmentCard.hasAttribute('completed') || enrollmentCard.hasAttribute('closed'));
+			var shouldHide = enrollmentCard && !isPinned && (enrollmentCard.hasAttribute('completed') || (enrollmentCard.hasAttribute('closed')));
 
-			var lastPinnedIndex = isPinned ? this._lastPinnedIndex++ : --this._lastPinnedIndex;
 			var removalIndex = this._enrollments.indexOf(changedEnrollmentId);
+			var insertIndex = this._lastPinnedIndex + 1;
 
-			if (removalIndex === -1) {
-				// Course was not already in list, insert it as last pinned item
-				this.splice('_enrollments', lastPinnedIndex, 0, changedEnrollmentId);
-			} else if (removalIndex === lastPinnedIndex) {
-				// Course is already in the correct position, just update it
-				// (avoids removal animation + insertion animation in exact same position)
-				if (shouldHide && !isPinned) {
-					this.splice('_enrollments', removalIndex, 1);
-				}
-			} else {
-				// Remove the enrollment from its current location
-				this.splice('_enrollments', removalIndex, 1);
-
-				// Re-add the (updated) enrollment at the end of the pinned list
-				if (!shouldHide || isPinned) {
-					this.splice('_enrollments', lastPinnedIndex, 0, changedEnrollmentId);
-				}
+			if (removalIndex === insertIndex && !shouldHide) {
+				this._onResize();
+				return;
 			}
+
+			this.splice('_enrollments', removalIndex, 1);
+
+			if (!isPinned) {
+				this._lastPinnedIndex--;
+			}
+
+			if (shouldHide) {
+				this._onResize();
+				return;
+			}
+
+			if (removalIndex < insertIndex) {
+				insertIndex--;
+			}
+
+			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
+
+			if (isPinned) {
+				this._lastPinnedIndex++;
+			}
+
 			this._onResize();
 		},
 		_onStartedInactiveAlert: function(e) {
