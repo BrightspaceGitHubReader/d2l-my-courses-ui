@@ -201,22 +201,10 @@
 			}
 		},
 		_computeHasOnlyPastCourses: function() {
-			if (!this.updatedSortLogic) {
-				// d2l-my-courses-content-animated should never show this alert, as it doesn't use current/future courses
-				return false;
-			}
-
-			var shouldHidePastCourses = this.$$('.course-tile-grid').hasAttribute('hide-past-courses');
-
-			var currentOrFutureEnrollment;
-			var pinnedEnrollment;
-			currentOrFutureEnrollment = this.$$('.course-tile-grid d2l-enrollment-card:not([closed])');
-			pinnedEnrollment = this.$$('.course-tile-grid d2l-enrollment-card[pinned]');
-
-			return this._numberOfEnrollments !== 0
-				&& shouldHidePastCourses
-				&& !currentOrFutureEnrollment
-				&& !pinnedEnrollment;
+			return this.updatedSortLogic
+				&& this._hidePastCourses
+				&& this._numberOfEnrollments !== 0
+				&& this._enrollments.length === 0;
 		},
 
 		/*
@@ -235,17 +223,11 @@
 			this._orgUnitIdMap[orgUnitId] = e.detail.enrollmentUrl;
 		},
 		_onD2lEnrollmentCardStatus: function(e) {
-			// When we need to hide closed, the backend puts it at the back of the list. So nothing to do.
-			if (!e.detail
-				|| !e.detail.status
-				|| !e.detail.enrollmentUrl
-				|| !this._hidePastCourses
-				|| e.detail.status.closed
-			) {
+			if (!e.detail || !e.detail.status || !e.detail.enrollmentUrl) {
 				return;
 			}
 
-			var hide = e.detail.status.completed;
+			var hide = this._hidePastCourses && (e.detail.status.completed || e.detail.status.closed);
 			var index = this._enrollments.indexOf(e.detail.enrollmentUrl);
 
 			if (hide && index !== -1 && index > this._lastPinnedIndex) {

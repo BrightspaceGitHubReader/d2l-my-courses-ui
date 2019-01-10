@@ -4,11 +4,14 @@ describe('d2l-my-courses-content', () => {
 		component,
 		fetchStub,
 		searchAction,
+		miniSearchAction,
 		enrollmentEntity,
 		enrollmentsRootEntity,
+		miniEnrollmentsRootEntity,
 		enrollmentsSearchEntity,
 		enrollmentsSearchPageTwoEntity,
 		organizationEntity,
+		oneEnrollmentSearchEntity,
 		organizationEntityHydrated;
 
 	function SetupFetchStub(url, entity) {
@@ -32,6 +35,15 @@ describe('d2l-my-courses-content', () => {
 				{ name: 'sort', type: 'text', value: 'current' },
 				{ name: 'autoPinCourses', type: 'checkbox', value: false },
 				{ name: 'promotePins', type: 'checkbox', value: false }
+			]
+		},
+		miniSearchAction = {
+			name: 'search-my-enrollments',
+			method: 'GET',
+			href: '/enrollments/users/1',
+			fields: [
+				{ name: 'search', type: 'search', value: '' },
+				{ name: 'sort', type: 'text', value: 'current' }
 			]
 		},
 		enrollmentEntity = window.D2L.Hypermedia.Siren.Parse({
@@ -72,6 +84,9 @@ describe('d2l-my-courses-content', () => {
 		});
 		enrollmentsRootEntity = window.D2L.Hypermedia.Siren.Parse({
 			actions: [searchAction]
+		});
+		miniEnrollmentsRootEntity = window.D2L.Hypermedia.Siren.Parse({
+			actions: [miniSearchAction]
 		});
 		enrollmentsSearchEntity = window.D2L.Hypermedia.Siren.Parse({
 			actions: [searchAction],
@@ -114,10 +129,31 @@ describe('d2l-my-courses-content', () => {
 				href: '/enrollments/users/169?bookmark=2'
 			}]
 		});
+		oneEnrollmentSearchEntity = window.D2L.Hypermedia.Siren.Parse({
+			actions: [searchAction],
+			entities: [{
+				rel: ['https://api.brightspace.com/rels/user-enrollment'],
+				class: ['enrollment'],
+				href: '/enrollments/users/1/organizations/1',
+				links: [{
+					rel: ['self'],
+					href: '/enrollments/users/1/organizations/1'
+				}, {
+					rel: ['https://api.brightspace.com/rels/organization'],
+					href: '/organizations/1'
+				}]
+			}],
+			links: [{
+				rel: ['self'],
+				href: '/enrollments/users/1'
+			}]
+		});
 
 		fetchStub = sandbox.stub(window.d2lfetch, 'fetch');
 		SetupFetchStub(/\/enrollments$/, enrollmentsRootEntity);
+		SetupFetchStub(/\/enrollment$/, miniEnrollmentsRootEntity);
 		SetupFetchStub(/\/enrollments\/users\/169\/organizations\/1/, enrollmentEntity);
+		SetupFetchStub(/\/enrollments\/users\/1\/organizations\/1/, enrollmentEntity);
 		SetupFetchStub(/\/enrollments\/users\/169\/organizations\/2/, enrollmentEntity);
 		SetupFetchStub(/\/organizations\/1$/, organizationEntity);
 		SetupFetchStub(/\/organizations\/2$/, organizationEntity);
@@ -126,6 +162,7 @@ describe('d2l-my-courses-content', () => {
 		SetupFetchStub(/\/organizations\/2\?embedDepth=1$/, organizationEntityHydrated);
 		SetupFetchStub(/\/organizations\/3\?embedDepth=1$/, organizationEntityHydrated);
 		SetupFetchStub(/\/enrollments\/users\/169.*&.*$/, enrollmentsSearchEntity);
+		SetupFetchStub(/\/enrollments\/users\/1.*&.*$/, oneEnrollmentSearchEntity);
 		SetupFetchStub(/\/enrollments\/users\/169.*bookmark=2/, enrollmentsSearchPageTwoEntity);
 
 		component = fixture('d2l-my-courses-content-fixture');
@@ -913,63 +950,47 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		describe('Only Past Courses alert', () => {
-			function setUp(currentOrFutureCourses, pinnedEnrollment, hidePastCourses) {
-				var courseTileGridStub = {
-					hasAttribute: function() {
-						return hidePastCourses;
+			beforeEach((done) => {
+				component = fixture('d2l-my-courses-content-fixture');
+				component.enrollmentsUrl = '/enrollment';
+				component.enrollmentsSearchAction = miniSearchAction;
+				setTimeout(() => {
+					done();
+				});
+			});
+
+			it('should not add the alert if not hiding past courses', () => {
+				component._hidePastCourses = false;
+				component.dispatchEvent(new CustomEvent(
+					'd2l-enrollment-card-status', {
+						bubbles: true,
+						composed: true,
+						detail: {
+							status: { closed: true },
+							enrollmentUrl: '/enrollments/users/1/organizations/1'
+						}
 					}
-				};
-
-				sandbox.stub(component, '$$')
-					.withArgs('.course-tile-grid').returns(courseTileGridStub)
-					.withArgs('.course-tile-grid d2l-enrollment-card:not([closed])').returns(currentOrFutureCourses)
-					.withArgs('.course-tile-grid d2l-enrollment-card[pinned]').returns(pinnedEnrollment);
-			}
-
-			it('should not add the alert if not hiding past courses (e.g. admin user)', () => {
-				var currentOrFutureCourses = false,
-					pinnedEnrollment = false,
-					hidePastCourses = false;
-
-				setUp(currentOrFutureCourses, pinnedEnrollment, hidePastCourses);
-				component._courseTileOrganizationEventCount = 1;
+				));
 
 				expect(component._hasOnlyPastCourses).to.be.false;
+
 			});
 
-			it('should not add the alert if user has current or future courses', () => {
-				var currentOrFutureCourses = true,
-					pinnedEnrollment = false,
-					hidePastCourses = true;
-
-				setUp(currentOrFutureCourses, pinnedEnrollment, hidePastCourses);
-				component._courseTileOrganizationEventCount = 1;
-
-				expect(component._hasOnlyPastCourses).to.be.false;
-			});
-
-			it('should add the alert if there are only past courses, no pinned courses, and is hiding past courses', () => {
-				var currentOrFutureCourses = false,
-					pinnedEnrollment = false,
-					hidePastCourses = true;
-
-				setUp(currentOrFutureCourses, pinnedEnrollment, hidePastCourses);
-				component._courseTileOrganizationEventCount = 1;
+			it('should add the alert if hiding past courses', () => {
+				component._hidePastCourses = true;
+				component.dispatchEvent(new CustomEvent(
+					'd2l-enrollment-card-status', {
+						bubbles: true,
+						composed: true,
+						detail: {
+							status: { closed: true },
+							enrollmentUrl: '/enrollments/users/1/organizations/1'
+						}
+					}
+				));
 
 				expect(component._hasOnlyPastCourses).to.be.true;
 			});
-
-			it('should not add the alert if there is a pinned course', () => {
-				var currentOrFutureCourses = false,
-					pinnedEnrollment = true,
-					hidePastCourses = true;
-
-				setUp(currentOrFutureCourses, pinnedEnrollment, hidePastCourses);
-				component._courseTileOrganizationEventCount = 1;
-
-				expect(component._hasOnlyPastCourses).to.be.false;
-			});
-
 		});
 
 	});
