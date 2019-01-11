@@ -106,6 +106,14 @@
 			_isRefetchNeeded: {
 				type: Boolean,
 				value: false
+			},
+			_isAllTab: {
+				type: Boolean,
+				computed: '_checkAllTab(enrollmentsSearchAction.name)'
+			},
+			_isPinnedTab: {
+				type: Boolean,
+				computed: '_checkPinnedTab(enrollmentsSearchAction.name)'
 			}
 		},
 		listeners: {
@@ -364,7 +372,6 @@
 
 			var removalIndex = this._enrollments.indexOf(changedEnrollmentId);
 			var insertIndex = this._lastPinnedIndex + 1;
-			var isPinnedTab = this.enrollmentsSearchAction.name === this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
 
 			if (!isPinned) {
 				this._lastPinnedIndex--;
@@ -382,7 +389,7 @@
 			if (removalIndex !== -1) {
 				this.splice('_enrollments', removalIndex, 1);
 
-				if (shouldHide) {
+				if (shouldHide && !this._isPinnedTab) {
 					this._onResize();
 					return;
 				}
@@ -392,7 +399,7 @@
 				}
 			}
 
-			if (isPinnedTab) {
+			if (this._isPinnedTab) {
 				this._numberOfEnrollments--;
 			} else {
 				this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
@@ -422,10 +429,11 @@
 					});
 			} else if (this._isRefetchNeeded) {
 				this._showContent = false;
+				this._isRefetchNeeded = false;
+				this._resetEnrollments();
 
 				var completeFetch = function() {
 					this._showContent = true;
-					this._isRefetchNeeded = false;
 				}.bind(this);
 
 				this._refetchEnrollments().then(function() {
@@ -492,17 +500,22 @@
 			this.fetchSirenEntity(newValue, true);
 		},
 		_onCourseDataChange: function(newValue) {
-			if (newValue) {
-				var isAllTab = this.enrollmentsSearchAction.name === this.HypermediaActions.enrollments.searchMyEnrollments;
-				var isPinnedTab = this.enrollmentsSearchAction.name === this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
-				if (isAllTab || isPinnedTab) {
-					this._isRefetchNeeded = true;
-				} else if (newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId]) {
-					this._isRefetchNeeded = true;
-				}
+			if (!newValue) {
+				return;
+			}
+
+			if (this._isAllTab || this._isPinnedTab) {
+				this._isRefetchNeeded = true;
+			} else if (newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId]) {
+				this._isRefetchNeeded = true;
 			}
 		},
-
+		_checkAllTab: function(actionName) {
+			return actionName === this.HypermediaActions.enrollments.searchMyEnrollments;
+		},
+		_checkPinnedTab: function(actionName) {
+			return actionName === this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
+		},
 		/*
 		* Utility/helper functions
 		*/
@@ -651,9 +664,6 @@
 				this._hidePastCourses = true;
 			}
 
-			if (this._isRefetchNeeded) {
-				this._resetEnrollments();
-			}
 			enrollmentEntities.forEach(function(enrollment) {
 				var enrollmentId = enrollment.href;
 				if (!this._existingEnrollmentsMap.hasOwnProperty(enrollmentId)) {
