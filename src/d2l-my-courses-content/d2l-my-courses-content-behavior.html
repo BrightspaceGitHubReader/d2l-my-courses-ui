@@ -33,6 +33,10 @@
 				type: String,
 				observer: '_onPresentationUrlChange'
 			},
+			areCoursesDataOutdated: {
+				type: Boolean,
+				observer: '_onCoursesDataChange',
+			},
 
 			// Alerts to display in widget, above course tiles
 			_alertsView: {
@@ -100,7 +104,9 @@
 			_viewAllCoursesText: {
 				type: String,
 				computed: '_getViewAllCoursesText(_nextEnrollmentEntityUrl, _numberOfEnrollments)'
-			}
+			},
+			// Whether or not to refetch the courses data
+			_isRefetchNeeded: Boolean
 		},
 		listeners: {
 			'open-change-image-view': '_onOpenChangeImageView',
@@ -346,11 +352,17 @@
 				return this._refetchEnrollments();
 			}
 
+			this.fire('d2l-course-data-change', {
+				orgUnitId: orgUnitId
+			});
+			this._isRefetchNeeded = false;
+
 			var enrollmentCard = Polymer.dom(e).event && Polymer.dom(e).event.srcElement;
 			var shouldHide = enrollmentCard && !isPinned && (enrollmentCard.hasAttribute('completed') || (enrollmentCard.hasAttribute('closed')));
 
 			var removalIndex = this._enrollments.indexOf(changedEnrollmentId);
 			var insertIndex = this._lastPinnedIndex + 1;
+			var isPinnedTab = this.enrollmentsSearchAction.name == this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
 
 			if (!isPinned) {
 				this._lastPinnedIndex--;
@@ -378,7 +390,11 @@
 				}
 			}
 
-			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
+			if (isPinnedTab) {
+				this._numberOfEnrollments--;
+			}else {
+				this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
+			}
 
 			this._onResize();
 		},
@@ -402,6 +418,20 @@
 					.then(function() {
 						window.dispatchEvent(new Event('resize'));
 					});
+				this._isRefetchNeeded = false;
+			} else if (this._isRefetchNeeded) {
+				this._showContent = false;
+
+				var completeFetch = function() {
+					this._showContent = true;
+					this._isRefetchNeeded = false;
+				}.bind(this);
+
+				this._refetchEnrollments().then(function() {
+					window.dispatchEvent(new Event('resize'));
+					setTimeout(completeFetch, 1000);
+				}.bind(this))
+				.catch(completeFetch);
 			} else {
 				setTimeout(function() {
 					// Force redraw of course tiles.
@@ -460,6 +490,9 @@
 		},
 		_onPresentationUrlChange: function(newValue) {
 			this.fetchSirenEntity(newValue, true);
+		},
+		_onCoursesDataChange: function(newValue) {
+			this._isRefetchNeeded = newValue;
 		},
 
 		/*
@@ -610,16 +643,19 @@
 				this._hidePastCourses = true;
 			}
 
-			enrollmentEntities.forEach(function(enrollment) {
-				var enrollmentId = enrollment.href;
-				if (!this._existingEnrollmentsMap.hasOwnProperty(enrollmentId)) {
-					newEnrollments.push(enrollmentId);
-					this._existingEnrollmentsMap[enrollmentId] = true;
-					if (enrollment.hasClass('pinned')) this._lastPinnedIndex++;
-				}
-			}, this);
+			if (this._isRefetchNeeded){
+				this._resetEnrollments();
+			}
+            enrollmentEntities.forEach(function(enrollment) {
+                var enrollmentId = enrollment.href;
+                if (!this._existingEnrollmentsMap.hasOwnProperty(enrollmentId)) {
+                    newEnrollments.push(enrollmentId);
+                    this._existingEnrollmentsMap[enrollmentId] = true;
+                    if (enrollment.hasClass('pinned')) this._lastPinnedIndex++;
+                }
+            }, this);
 
-			this._enrollments = this._enrollments.concat(newEnrollments);
+            this._enrollments = this._enrollments.concat(newEnrollments);
 
 			if (this._enrollments.length === 0) {
 				// Normally we'd wait until the visible organization requests have finished,
@@ -639,6 +675,11 @@
 			this._enrollmentsSearchUrl = this._createFetchEnrollmentsUrl(true);
 			return this.fetchSirenEntity(this._enrollmentsSearchUrl)
 				.then(this._populateEnrollments.bind(this));
+		},
+		_resetEnrollments: function() {
+			this._lastPinnedIndex = -1;
+			this._existingEnrollmentsMap = {};
+			this._enrollments = [];
 		},
 		_setLastSearchName: function(id) {
 			this.submitForm(this.userSettingsUrl, {
