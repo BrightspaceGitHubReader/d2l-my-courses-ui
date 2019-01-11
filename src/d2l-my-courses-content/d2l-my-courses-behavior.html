@@ -52,13 +52,13 @@
 				value: []
 			},
 			_tabSearchType: String,
-			_changedCourseData: Object
+			_changedCourseEnrollment: Object
 		},
 		_computeShowGroupByTabs: function(groups) {
 			return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
 		},
 		listeners: {
-			'd2l-course-data-change': '_onCourseDataChange'
+			'd2l-course-enrollment-change': '_onCourseEnrollmentChange'
 		},
 		attached: function() {
 			if (!this.enrollmentsUrl || !this.userSettingsUrl) {
@@ -87,8 +87,8 @@
 				}.bind(this))
 				.then(this._fetchTabSearchActions.bind(this));
 		},
-		_onCourseDataChange: function(e) {
-			this._changedCourseData = {
+		_onCourseEnrollmentChange: function(e) {
+			this._changedCourseEnrollment = {
 				orgUnitId: e.detail.orgUnitId,
 				isPinned: e.detail.isPinned
 			};

@@ -33,7 +33,7 @@
 				type: String,
 				observer: '_onPresentationUrlChange'
 			},
-			changedCourseData: Object,
+			changedCourseEnrollment: Object,
 
 			// Alerts to display in widget, above course tiles
 			_alertsView: {
@@ -109,11 +109,11 @@
 			},
 			_isAllTab: {
 				type: Boolean,
-				computed: '_checkAllTab(enrollmentsSearchAction.name)'
+				computed: '_computeIsAllTab(enrollmentsSearchAction.name)'
 			},
 			_isPinnedTab: {
 				type: Boolean,
-				computed: '_checkPinnedTab(enrollmentsSearchAction.name)'
+				computed: '_computeIsPinnedTab(enrollmentsSearchAction.name)'
 			}
 		},
 		listeners: {
@@ -153,7 +153,7 @@
 		observers: [
 			'_enrollmentsChanged(_enrollments.length, _numberOfEnrollments)',
 			'_enrollmentSearchActionChanged(enrollmentsSearchAction)',
-			'_onCourseDataChange(changedCourseData)'
+			'_onCourseEnrollmentChange(changedCourseEnrollment)'
 		],
 
 		/*
@@ -361,10 +361,14 @@
 				return this._refetchEnrollments();
 			}
 
-			this.fire('d2l-course-data-change', {
-				orgUnitId: orgUnitId,
-				isPinned: isPinned
-			});
+			this.dispatchEvent(new CustomEvent('d2l-course-enrollment-change', {
+				bubbles: true,
+				composed: true,
+				detail: {
+					orgUnitId: orgUnitId,
+					isPinned: isPinned
+				}
+			}));
 			this._isRefetchNeeded = false;
 
 			var enrollmentCard = Polymer.dom(e).event && Polymer.dom(e).event.srcElement;
@@ -499,21 +503,19 @@
 		_onPresentationUrlChange: function(newValue) {
 			this.fetchSirenEntity(newValue, true);
 		},
-		_onCourseDataChange: function(newValue) {
+		_onCourseEnrollmentChange: function(newValue) {
 			if (!newValue) {
 				return;
 			}
 
-			if (this._isAllTab || this._isPinnedTab) {
-				this._isRefetchNeeded = true;
-			} else if (newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId]) {
+			if (this._isAllTab || this._isPinnedTab || (newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId])) {
 				this._isRefetchNeeded = true;
 			}
 		},
-		_checkAllTab: function(actionName) {
+		_computeIsAllTab: function(actionName) {
 			return actionName === this.HypermediaActions.enrollments.searchMyEnrollments;
 		},
-		_checkPinnedTab: function(actionName) {
+		_computeIsPinnedTab: function(actionName) {
 			return actionName === this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
 		},
 		/*
