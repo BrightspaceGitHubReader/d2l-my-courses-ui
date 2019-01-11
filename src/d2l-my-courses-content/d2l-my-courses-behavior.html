@@ -52,10 +52,7 @@
 				value: []
 			},
 			_tabSearchType: String,
-			_areCoursesDataOutdated: {
-				type: Boolean,
-				value: false
-			}
+			_courseDataChanges: Object
 		},
 		_computeShowGroupByTabs: function(groups) {
 			return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
@@ -91,10 +88,10 @@
 				.then(this._fetchTabSearchActions.bind(this));
 		},
 		_onCourseDataChange: function(e) {
-			// The true => false => true squence is intended in order to signal the children new fetch is needed
-			// Otherwise some children may have done refetch and ignores it because the observer doesn't see a change
-			this._areCoursesDataOutdated = false;
-			this._areCoursesDataOutdated = true;
+			this._courseDataChanges = {
+				orgUnitId: e.detail.orgUnitId,
+				isPinned: e.detail.isPinned
+			};
 		},
 		courseImageUploadCompleted: function(success) {
 			return this.updatedSortLogic

@@ -33,10 +33,7 @@
 				type: String,
 				observer: '_onPresentationUrlChange'
 			},
-			areCoursesDataOutdated: {
-				type: Boolean,
-				observer: '_onCoursesDataChange',
-			},
+			courseDataChanges: Object,
 
 			// Alerts to display in widget, above course tiles
 			_alertsView: {
@@ -106,7 +103,10 @@
 				computed: '_getViewAllCoursesText(_nextEnrollmentEntityUrl, _numberOfEnrollments)'
 			},
 			// Whether or not to refetch the courses data
-			_isRefetchNeeded: Boolean
+			_isRefetchNeeded: {
+				type: Boolean,
+				value: false
+			}
 		},
 		listeners: {
 			'open-change-image-view': '_onOpenChangeImageView',
@@ -144,7 +144,8 @@
 		},
 		observers: [
 			'_enrollmentsChanged(_enrollments.length, _numberOfEnrollments)',
-			'_enrollmentSearchActionChanged(enrollmentsSearchAction)'
+			'_enrollmentSearchActionChanged(enrollmentsSearchAction)',
+			'_onCoursesDataChange(courseDataChanges)'
 		],
 
 		/*
@@ -353,7 +354,8 @@
 			}
 
 			this.fire('d2l-course-data-change', {
-				orgUnitId: orgUnitId
+				orgUnitId: orgUnitId,
+				isPinned: isPinned
 			});
 			this._isRefetchNeeded = false;
 
@@ -362,7 +364,7 @@
 
 			var removalIndex = this._enrollments.indexOf(changedEnrollmentId);
 			var insertIndex = this._lastPinnedIndex + 1;
-			var isPinnedTab = this.enrollmentsSearchAction.name == this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
+			var isPinnedTab = this.enrollmentsSearchAction.name === this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
 
 			if (!isPinned) {
 				this._lastPinnedIndex--;
@@ -392,7 +394,7 @@
 
 			if (isPinnedTab) {
 				this._numberOfEnrollments--;
-			}else {
+			} else {
 				this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
 			}
 
@@ -418,7 +420,6 @@
 					.then(function() {
 						window.dispatchEvent(new Event('resize'));
 					});
-				this._isRefetchNeeded = false;
 			} else if (this._isRefetchNeeded) {
 				this._showContent = false;
 
@@ -430,8 +431,7 @@
 				this._refetchEnrollments().then(function() {
 					window.dispatchEvent(new Event('resize'));
 					setTimeout(completeFetch, 1000);
-				}.bind(this))
-				.catch(completeFetch);
+				}.bind(this)).catch(completeFetch);
 			} else {
 				setTimeout(function() {
 					// Force redraw of course tiles.
@@ -492,7 +492,15 @@
 			this.fetchSirenEntity(newValue, true);
 		},
 		_onCoursesDataChange: function(newValue) {
-			this._isRefetchNeeded = newValue;
+			if (newValue) {
+				var isAllTab = this.enrollmentsSearchAction.name === this.HypermediaActions.enrollments.searchMyEnrollments;
+				var isPinnedTab = this.enrollmentsSearchAction.name === this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
+				if (isAllTab || isPinnedTab) {
+					this._isRefetchNeeded = true;
+				} else if (newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId]) {
+					this._isRefetchNeeded = true;
+				}
+			}
 		},
 
 		/*
@@ -643,19 +651,19 @@
 				this._hidePastCourses = true;
 			}
 
-			if (this._isRefetchNeeded){
+			if (this._isRefetchNeeded) {
 				this._resetEnrollments();
 			}
-            enrollmentEntities.forEach(function(enrollment) {
-                var enrollmentId = enrollment.href;
-                if (!this._existingEnrollmentsMap.hasOwnProperty(enrollmentId)) {
-                    newEnrollments.push(enrollmentId);
-                    this._existingEnrollmentsMap[enrollmentId] = true;
-                    if (enrollment.hasClass('pinned')) this._lastPinnedIndex++;
-                }
-            }, this);
+			enrollmentEntities.forEach(function(enrollment) {
+				var enrollmentId = enrollment.href;
+				if (!this._existingEnrollmentsMap.hasOwnProperty(enrollmentId)) {
+					newEnrollments.push(enrollmentId);
+					this._existingEnrollmentsMap[enrollmentId] = true;
+					if (enrollment.hasClass('pinned')) this._lastPinnedIndex++;
+				}
+			}, this);
 
-            this._enrollments = this._enrollments.concat(newEnrollments);
+			this._enrollments = this._enrollments.concat(newEnrollments);
 
 			if (this._enrollments.length === 0) {
 				// Normally we'd wait until the visible organization requests have finished,
