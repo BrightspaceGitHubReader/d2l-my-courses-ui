@@ -52,7 +52,7 @@
 				value: []
 			},
 			_tabSearchType: String,
-			_courseDataChanges: Object
+			_changedCourseData: Object
 		},
 		_computeShowGroupByTabs: function(groups) {
 			return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
@@ -88,7 +88,7 @@
 				.then(this._fetchTabSearchActions.bind(this));
 		},
 		_onCourseDataChange: function(e) {
-			this._courseDataChanges = {
+			this._changedCourseData = {
 				orgUnitId: e.detail.orgUnitId,
 				isPinned: e.detail.isPinned
 			};

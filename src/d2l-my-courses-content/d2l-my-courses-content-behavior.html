@@ -33,7 +33,7 @@
 				type: String,
 				observer: '_onPresentationUrlChange'
 			},
-			courseDataChanges: Object,
+			changedCourseData: Object,
 
 			// Alerts to display in widget, above course tiles
 			_alertsView: {
@@ -145,7 +145,7 @@
 		observers: [
 			'_enrollmentsChanged(_enrollments.length, _numberOfEnrollments)',
 			'_enrollmentSearchActionChanged(enrollmentsSearchAction)',
-			'_onCoursesDataChange(courseDataChanges)'
+			'_onCourseDataChange(changedCourseData)'
 		],
 
 		/*
@@ -491,7 +491,7 @@
 		_onPresentationUrlChange: function(newValue) {
 			this.fetchSirenEntity(newValue, true);
 		},
-		_onCoursesDataChange: function(newValue) {
+		_onCourseDataChange: function(newValue) {
 			if (newValue) {
 				var isAllTab = this.enrollmentsSearchAction.name === this.HypermediaActions.enrollments.searchMyEnrollments;
 				var isPinnedTab = this.enrollmentsSearchAction.name === this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
