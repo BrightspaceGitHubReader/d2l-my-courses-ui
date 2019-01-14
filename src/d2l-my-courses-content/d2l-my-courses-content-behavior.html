@@ -648,8 +648,6 @@
 			this._nextEnrollmentEntityUrl = hasMoreEnrollments ? enrollmentsEntity.getLinkByRel('next').href : null;
 			var newEnrollments = [];
 
-			this._numberOfEnrollments = enrollmentEntities.length;
-
 			var searchAction = enrollmentsEntity.getActionByName(this.HypermediaActions.enrollments.searchMyEnrollments);
 			if (searchAction
 				&& searchAction.hasFieldByName('sort')
@@ -676,6 +674,7 @@
 			}, this);
 
 			this._enrollments = this._enrollments.concat(newEnrollments);
+			this._numberOfEnrollments += newEnrollments.length;
 
 			if (this._enrollments.length === 0) {
 				// Normally we'd wait until the visible organization requests have finished,
