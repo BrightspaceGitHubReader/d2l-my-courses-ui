@@ -30,7 +30,6 @@ describe('d2l-course-tile-sliding-grid-behavior-utility', () => {
 			[2, 7, false, 5, -1, -2, 'two columns, second column, five removals']
 		].forEach(function(test) {
 			it('should work for ' + test[6], function() {
-				console.log(component);
 				expect(component.calculatePositionChange(
 					test[0],
 					test[1],
