@@ -190,6 +190,45 @@ describe('d2l-my-courses', () => {
 			});
 	});
 
+	describe('Listener setup', () => {
+		[
+			{ eventName: 'd2l-course-enrollment-change', handler: '_onCourseEnrollmentChange' },
+		].forEach(testCase => {
+
+			it('should listen for ' + testCase.eventName + ' events', done => {
+				var stub = sandbox.stub(component, testCase.handler);
+
+				var event = new CustomEvent(testCase.eventName);
+				component.dispatchEvent(event);
+
+				setTimeout(() => {
+					expect(stub).to.have.been.called;
+					done();
+				});
+			});
+
+		});
+	});
+
+	it('should have updated _changedCourseEnrollment property based on the event', () => {
+		[
+			{ orgUnitId: 111, isPinned: true },
+			{ orgUnitId: 222, isPinned: false },
+		].forEach(testCase => {
+			var event = {
+				detail: {
+					orgUnitId: testCase.orgUnitId,
+					isPinned: testCase.isPinned
+				}
+			};
+
+			component._changedCourseEnrollment = null;
+			component._onCourseEnrollmentChange(event);
+			expect(component._changedCourseEnrollment.orgUnitId).to.equal(testCase.orgUnitId);
+			expect(component._changedCourseEnrollment.isPinned).to.equal(testCase.isPinned);
+		});
+	});
+
 	describe('Public API', () => {
 		it('should call d2l-my-courses-content-animated.courseImageUploadCompleted', done => {
 			component.updatedSortLogic = false;

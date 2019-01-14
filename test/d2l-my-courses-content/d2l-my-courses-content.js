@@ -199,6 +199,72 @@ describe('d2l-my-courses-content', () => {
 		expect(component._tileSizes).to.be.an('object');
 	});
 
+	it('should reset enrollments related properties', () => {
+		component._lastPinnedIndex = 10;
+		component._existingEnrollmentsMap = { 1234: true };
+		component._enrollments = [1234];
+		component._numberOfEnrollments = 10;
+
+		component._resetEnrollments();
+
+		expect(component._lastPinnedIndex).to.equal(-1);
+		expect(component._enrollments.length).to.equal(0);
+		expect(component._numberOfEnrollments).to.equal(0);
+		for(var key in component._existingEnrollmentsMap) {
+			expect(component._existingEnrollmentsMap.hasOwnProperty(key)).to.be.false;
+		}
+	});
+
+	describe('Set Refetch Enrollment Flag', () => {
+		var newValue = { orgUnitId: 1234 };
+		var href = '/enrollments/users/1';
+		var fields = [
+			{ name: 'search', type: 'search', value: '' },
+			{ name: 'sort', type: 'text', value: 'current' }
+		];
+
+		beforeEach(() => {
+			component._isRefetchNeeded = false;
+			component._orgUnitIdMap = {};
+			component.enrollmentsSearchAction = {
+				name: 'test',
+				href: href,
+				fields: fields
+			}
+		});
+
+		it('should set refetch when course enrollment changed and it is all tab', () => {
+			component.enrollmentsSearchAction = {
+				name: 'search-my-enrollments',
+				href: href,
+				fields: fields
+			}
+			component._onCourseEnrollmentChange(newValue);
+			expect(component._isRefetchNeeded).to.be.true;
+		});
+
+		it('should set refetch when course enrollment changed and it is pinned tab', () => {
+			component.enrollmentsSearchAction = {
+				name: 'search-my-pinned-enrollments',
+				href: href,
+				fields: fields
+			}
+			component._onCourseEnrollmentChange(newValue);
+			expect(component._isRefetchNeeded).to.be.true;
+		});
+
+		it('should set refetch when course enrollment changed and the search action contains this enrollment', () => {
+			component._orgUnitIdMap = { 1234: true };
+			component._onCourseEnrollmentChange(newValue);
+			expect(component._isRefetchNeeded).to.be.true;
+		});
+
+		it('should not set refetch for other tabs', () => {
+			component._onCourseEnrollmentChange(newValue);
+			expect(component._isRefetchNeeded).to.be.false;
+		});
+	});
+
 	describe('Tile grid', () => {
 		beforeEach((done) => {
 			component._fetchRoot();
@@ -363,6 +429,23 @@ describe('d2l-my-courses-content', () => {
 					expect(action.selected).to.equal(action.name !== 'foo');
 				});
 			});
+
+			[true, false].forEach(refetchNeeded => {
+				it('should ' + (refetchNeeded ? '' : 'not ') + 'refetch enrollments', () => {
+					component._isRefetchNeeded = refetchNeeded;
+
+					var refetchStub = sandbox.stub(component, '_refetchEnrollments').returns(Promise.resolve());
+					var resetStub = sandbox.stub(component, '_resetEnrollments');
+
+					parentComponent.dispatchEvent(new CustomEvent(
+						'd2l-tab-panel-selected', { bubbles: true, composed: true }
+					));
+
+					expect(refetchStub.called).to.equal(refetchNeeded);
+					expect(resetStub.called).to.equal(refetchNeeded);
+					expect(component._isRefetchNeeded).to.be.false;
+				});
+			});
 		});
 
 		describe('open-change-image-view', () => {
@@ -449,6 +532,25 @@ describe('d2l-my-courses-content', () => {
 					}
 				);
 			}*/
+
+			it('should fire d2l-course-enrollment-change event', () => {
+				var orgUnitId = 121;
+				var isPinned = false;
+				var event = {
+					detail: {
+						isPinned: isPinned,
+						orgUnitId: orgUnitId
+					}
+				};
+
+				component.addEventListener('d2l-course-enrollment-change', function(event) {
+					expect(event.detail.orgUnitId).to.equal(orgUnitId);
+					expect(event.detail.isPinned).to.equal(isPinned);
+					done();
+				});
+
+				return component._onEnrollmentPinnedMessage(event);
+			});
 
 			it('should refetch enrollments if the new pinned enrollment has not previously been fetched', () => {
 				var event = {
