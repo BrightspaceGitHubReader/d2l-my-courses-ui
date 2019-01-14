@@ -33,6 +33,7 @@
 				type: String,
 				observer: '_onPresentationUrlChange'
 			},
+			changedCourseEnrollment: Object,
 
 			// Alerts to display in widget, above course tiles
 			_alertsView: {
@@ -100,6 +101,19 @@
 			_viewAllCoursesText: {
 				type: String,
 				computed: '_getViewAllCoursesText(_nextEnrollmentEntityUrl, _numberOfEnrollments)'
+			},
+			// Whether or not to refetch the courses data
+			_isRefetchNeeded: {
+				type: Boolean,
+				value: false
+			},
+			_isAllTab: {
+				type: Boolean,
+				computed: '_computeIsAllTab(enrollmentsSearchAction.name)'
+			},
+			_isPinnedTab: {
+				type: Boolean,
+				computed: '_computeIsPinnedTab(enrollmentsSearchAction.name)'
 			}
 		},
 		listeners: {
@@ -138,7 +152,8 @@
 		},
 		observers: [
 			'_enrollmentsChanged(_enrollments.length, _numberOfEnrollments)',
-			'_enrollmentSearchActionChanged(enrollmentsSearchAction)'
+			'_enrollmentSearchActionChanged(enrollmentsSearchAction)',
+			'_onCourseEnrollmentChange(changedCourseEnrollment)'
 		],
 
 		/*
@@ -346,6 +361,16 @@
 				return this._refetchEnrollments();
 			}
 
+			this.dispatchEvent(new CustomEvent('d2l-course-enrollment-change', {
+				bubbles: true,
+				composed: true,
+				detail: {
+					orgUnitId: orgUnitId,
+					isPinned: isPinned
+				}
+			}));
+			this._isRefetchNeeded = false;
+
 			var enrollmentCard = Polymer.dom(e).event && Polymer.dom(e).event.srcElement;
 			var shouldHide = enrollmentCard && !isPinned && (enrollmentCard.hasAttribute('completed') || (enrollmentCard.hasAttribute('closed')));
 
@@ -368,7 +393,7 @@
 			if (removalIndex !== -1) {
 				this.splice('_enrollments', removalIndex, 1);
 
-				if (shouldHide) {
+				if (shouldHide && !this._isPinnedTab) {
 					this._onResize();
 					return;
 				}
@@ -378,7 +403,11 @@
 				}
 			}
 
-			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
+			if (this._isPinnedTab) {
+				this._numberOfEnrollments--;
+			} else {
+				this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
+			}
 
 			this._onResize();
 		},
@@ -402,6 +431,19 @@
 					.then(function() {
 						window.dispatchEvent(new Event('resize'));
 					});
+			} else if (this._isRefetchNeeded) {
+				this._showContent = false;
+				this._isRefetchNeeded = false;
+				this._resetEnrollments();
+
+				var completeFetch = function() {
+					this._showContent = true;
+				}.bind(this);
+
+				this._refetchEnrollments().then(function() {
+					window.dispatchEvent(new Event('resize'));
+					setTimeout(completeFetch, 1000);
+				}.bind(this)).catch(completeFetch);
 			} else {
 				setTimeout(function() {
 					// Force redraw of course tiles.
@@ -461,7 +503,21 @@
 		_onPresentationUrlChange: function(newValue) {
 			this.fetchSirenEntity(newValue, true);
 		},
+		_onCourseEnrollmentChange: function(newValue) {
+			if (!newValue) {
+				return;
+			}
 
+			if (this._isAllTab || this._isPinnedTab || (newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId])) {
+				this._isRefetchNeeded = true;
+			}
+		},
+		_computeIsAllTab: function(actionName) {
+			return actionName === this.HypermediaActions.enrollments.searchMyEnrollments;
+		},
+		_computeIsPinnedTab: function(actionName) {
+			return actionName === this.HypermediaActions.enrollments.searchMyPinnedEnrollments;
+		},
 		/*
 		* Utility/helper functions
 		*/
@@ -639,6 +695,11 @@
 			this._enrollmentsSearchUrl = this._createFetchEnrollmentsUrl(true);
 			return this.fetchSirenEntity(this._enrollmentsSearchUrl)
 				.then(this._populateEnrollments.bind(this));
+		},
+		_resetEnrollments: function() {
+			this._lastPinnedIndex = -1;
+			this._existingEnrollmentsMap = {};
+			this._enrollments = [];
 		},
 		_setLastSearchName: function(id) {
 			this.submitForm(this.userSettingsUrl, {

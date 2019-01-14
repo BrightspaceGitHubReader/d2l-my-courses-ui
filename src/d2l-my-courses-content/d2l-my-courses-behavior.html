@@ -51,15 +51,20 @@
 				type: Array,
 				value: []
 			},
-			_tabSearchType: String
+			_tabSearchType: String,
+			_changedCourseEnrollment: Object
 		},
 		_computeShowGroupByTabs: function(groups) {
 			return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
+		},
+		listeners: {
+			'd2l-course-enrollment-change': '_onCourseEnrollmentChange'
 		},
 		attached: function() {
 			if (!this.enrollmentsUrl || !this.userSettingsUrl) {
 				return;
 			}
+
 			Promise.all([
 				this.fetchSirenEntity(this.enrollmentsUrl),
 				this.fetchSirenEntity(this.userSettingsUrl)
@@ -81,6 +86,12 @@
 					}
 				}.bind(this))
 				.then(this._fetchTabSearchActions.bind(this));
+		},
+		_onCourseEnrollmentChange: function(e) {
+			this._changedCourseEnrollment = {
+				orgUnitId: e.detail.orgUnitId,
+				isPinned: e.detail.isPinned
+			};
 		},
 		courseImageUploadCompleted: function(success) {
 			return this.updatedSortLogic
