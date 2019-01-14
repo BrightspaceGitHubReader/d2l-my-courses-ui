@@ -210,7 +210,7 @@ describe('d2l-my-courses-content', () => {
 		expect(component._lastPinnedIndex).to.equal(-1);
 		expect(component._enrollments.length).to.equal(0);
 		expect(component._numberOfEnrollments).to.equal(0);
-		for(var key in component._existingEnrollmentsMap) {
+		for (var key in component._existingEnrollmentsMap) {
 			expect(component._existingEnrollmentsMap.hasOwnProperty(key)).to.be.false;
 		}
 	});
@@ -230,7 +230,7 @@ describe('d2l-my-courses-content', () => {
 				name: 'test',
 				href: href,
 				fields: fields
-			}
+			};
 		});
 
 		it('should set refetch when course enrollment changed and it is all tab', () => {
@@ -238,7 +238,7 @@ describe('d2l-my-courses-content', () => {
 				name: 'search-my-enrollments',
 				href: href,
 				fields: fields
-			}
+			};
 			component._onCourseEnrollmentChange(newValue);
 			expect(component._isRefetchNeeded).to.be.true;
 		});
@@ -248,7 +248,7 @@ describe('d2l-my-courses-content', () => {
 				name: 'search-my-pinned-enrollments',
 				href: href,
 				fields: fields
-			}
+			};
 			component._onCourseEnrollmentChange(newValue);
 			expect(component._isRefetchNeeded).to.be.true;
 		});
@@ -546,7 +546,6 @@ describe('d2l-my-courses-content', () => {
 				component.addEventListener('d2l-course-enrollment-change', function(event) {
 					expect(event.detail.orgUnitId).to.equal(orgUnitId);
 					expect(event.detail.isPinned).to.equal(isPinned);
-					done();
 				});
 
 				return component._onEnrollmentPinnedMessage(event);
