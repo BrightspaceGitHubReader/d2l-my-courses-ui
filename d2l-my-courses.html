@@ -16,7 +16,7 @@ If it is off and the attribute is not added, the `d2l-my-courses-content-animate
 -->
 
 <dom-module id="d2l-my-courses">
-	<template>
+	<template strip-whitespace>
 		<template is="dom-if" if="[[!updatedSortLogic]]">
 			<d2l-my-courses-content-animated
 				advanced-search-url="[[advancedSearchUrl]]"
