@@ -1,8 +1,6 @@
 {
+  "npm": true,
   "lint": {
-    "rules": ["polymer-2-hybrid"]
-  },
-  "sources": [
-    "**/*.html"
-  ]
+    "rules": ["polymer-3"]
+  }
 }
