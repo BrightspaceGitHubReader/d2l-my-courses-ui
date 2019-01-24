@@ -647,6 +647,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		e.stopPropagation();
 	},
 	_populateEnrollments: function(enrollmentsEntity) {
+		console.log(enrollmentsEntity);
 		var enrollmentEntities = enrollmentsEntity.getSubEntitiesByClass('enrollment');
 		var hasMoreEnrollments = enrollmentsEntity.hasLinkByRel('next');
 		this._nextEnrollmentEntityUrl = hasMoreEnrollments ? enrollmentsEntity.getLinkByRel('next').href : null;

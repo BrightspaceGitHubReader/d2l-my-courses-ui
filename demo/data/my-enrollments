@@ -179,24 +179,12 @@
         "https://api.brightspace.com/rels/user-enrollment"
       ],
       "href": "../data/enrollment-19"
-    },
+    }
+  ],
+  "links": [
     {
-      "class": [
-        "enrollment"
-      ],
-      "rel": [
-        "https://api.brightspace.com/rels/user-enrollment"
-      ],
-      "href": "../data/enrollment-20"
-    },
-    {
-      "class": [
-        "enrollment"
-      ],
-      "rel": [
-        "https://api.brightspace.com/rels/user-enrollment"
-      ],
-      "href": "../data/enrollment-21"
+      "rel": ["next"],
+      "href": "../data/my-enrollments-next"
     }
   ]
 }
