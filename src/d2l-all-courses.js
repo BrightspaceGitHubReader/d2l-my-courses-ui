@@ -259,7 +259,7 @@ Polymer({
 		_bustCacheToken: {
 			type: Number,
 			value: 1
-		} 
+		}
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -500,16 +500,8 @@ Polymer({
 	_onEnrollmentPinned: function(e) {
 		this._bustCacheToken = Math.random();
 		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
-		if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments){
+		if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments) {
 			this._updateSearchUrlWithNewBustCacheToken();
-		}
-	},
-	_updateSearchUrlWithNewBustCacheToken: function() {
-		var s = this._searchUrl;
-		var r = '&bustCache=';
-		var n = s.indexOf(r);
-		if (n != -1) {
-			this._searchUrl = s.substring(0, n + r.length) + this._bustCacheToken;
 		}
 	},
 
@@ -589,6 +581,14 @@ Polymer({
 	* Utility/helper functions
 	*/
 
+	_updateSearchUrlWithNewBustCacheToken: function() {
+		var s = this._searchUrl;
+		var r = '&bustCache=';
+		var n = s.indexOf(r);
+		if (n !== -1) {
+			this._searchUrl = s.substring(0, n + r.length) + this._bustCacheToken;
+		}
+	},
 	_createActionUrlWithBustCache: function(action, parameters) {
 		return this.createActionUrl(action, parameters) + '&bustCache=' + this._bustCacheToken;
 	},
