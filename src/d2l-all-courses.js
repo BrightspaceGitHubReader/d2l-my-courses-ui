@@ -256,10 +256,7 @@ Polymer({
 			value: false
 		},
 		_isSearched: Boolean,
-		_bustCacheToken: {
-			type: Number,
-			value: 1
-		}
+		_bustCacheToken: Number
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -278,6 +275,7 @@ Polymer({
 	],
 	ready: function() {
 		this._filterText = this.localize('filtering.filter');
+		this._bustCacheToken = Math.random();
 	},
 	attached: function() {
 		this.listen(this.$.sortDropdown, 'd2l-menu-item-change', '_onSortOrderChanged');
@@ -435,7 +433,7 @@ Polymer({
 		this._searchUrl = this._createActionUrlWithBustCache(this._enrollmentsSearchAction, {
 			sort: sortParameter,
 			promotePins: promotePins
-		}) + '&bustCache=' + Math.random();
+		});
 
 		this._sortParameter = sortParameter;
 		this.$.sortText.textContent = this.localize(langterm || '');
