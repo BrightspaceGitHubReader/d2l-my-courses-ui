@@ -255,7 +255,11 @@ Polymer({
 			type: Boolean,
 			value: false
 		},
-		_isSearched: Boolean
+		_isSearched: Boolean,
+		_bustCacheToken: {
+			type: Number,
+			value: 1
+		} 
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -266,7 +270,8 @@ Polymer({
 	],
 	listeners: {
 		'd2l-simple-overlay-opening': '_onSimpleOverlayOpening',
-		'd2l-tab-panel-selected': '_onTabSelected'
+		'd2l-tab-panel-selected': '_onTabSelected',
+		'd2l-course-pinned-change': '_onEnrollmentPinned'
 	},
 	observers: [
 		'_enrollmentsChanged(_filteredPinnedEnrollments.length, _filteredUnpinnedEnrollments.length)'
@@ -318,7 +323,7 @@ Polymer({
 			return;
 		}
 
-		this._searchUrl = this.createActionUrl(this.enrollmentsSearchAction, {
+		this._searchUrl = this._createActionUrlWithBustCache(this.enrollmentsSearchAction, {
 			autoPinCourses: false,
 			embedDepth: this.updatedSortLogic ? 0 : 1,
 			sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
@@ -427,7 +432,7 @@ Polymer({
 				break;
 		}
 
-		this._searchUrl = this.createActionUrl(this._enrollmentsSearchAction, {
+		this._searchUrl = this._createActionUrlWithBustCache(this._enrollmentsSearchAction, {
 			sort: sortParameter,
 			promotePins: promotePins
 		}) + '&bustCache=' + Math.random();
@@ -490,7 +495,22 @@ Polymer({
 		if (this._filterCounts.roles > 0 && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('roles')) {
 			params.roles =  this._enrollmentsSearchAction.getFieldByName('roles').value;
 		}
-		this._searchUrl = this.createActionUrl(tabAction.enrollmentsSearchAction, params);
+		this._searchUrl = this._createActionUrlWithBustCache(tabAction.enrollmentsSearchAction, params);
+	},
+	_onEnrollmentPinned: function(e) {
+		this._bustCacheToken = Math.random();
+		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
+		if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments){
+			this._updateSearchUrlWithNewBustCacheToken();
+		}
+	},
+	_updateSearchUrlWithNewBustCacheToken: function() {
+		var s = this._searchUrl;
+		var r = '&bustCache=';
+		var n = s.indexOf(r);
+		if (n != -1) {
+			this._searchUrl = s.substring(0, n + r.length) + this._bustCacheToken;
+		}
 	},
 
 	/*
@@ -569,6 +589,9 @@ Polymer({
 	* Utility/helper functions
 	*/
 
+	_createActionUrlWithBustCache: function(action, parameters) {
+		return this.createActionUrl(action, parameters) + '&bustCache=' + this._bustCacheToken;
+	},
 	_clearFilteredCourses: function() {
 		if (!this.updatedSortLogic) {
 			this._pinnedCoursesMap = {};
