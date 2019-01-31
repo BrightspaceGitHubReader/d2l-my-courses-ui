@@ -314,7 +314,7 @@ describe('d2l-all-courses', function() {
 				'd2l-tab-panel-selected', { bubbles: true, composed: true }
 			));
 
-			expect(widget._searchUrl).to.equal('/example/foo?autoPinCourses=false&embedDepth=0&sort=SortOrder&search=');
+			expect(widget._searchUrl.indexOf('/example/foo?autoPinCourses=false&embedDepth=0&sort=SortOrder&search=&bustCache=') !== -1).to.be.true;
 		});
 	});
 
