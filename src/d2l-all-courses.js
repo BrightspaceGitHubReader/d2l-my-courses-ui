@@ -373,7 +373,7 @@ Polymer({
 		}
 	},
 	_onFilterChanged: function(e) {
-		this._searchUrl = e.detail.url;
+		this._searchUrl = e.detail.url + '&bustCache=' + this._bustCacheToken;
 		this._filterCounts = e.detail.filterCounts;
 		this._totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
 	},
@@ -585,6 +585,8 @@ Polymer({
 		var n = s.indexOf(r);
 		if (n !== -1) {
 			this._searchUrl = s.substring(0, n + r.length) + this._bustCacheToken;
+		} else {
+			this._searchUrl += (r + this._bustCacheToken);
 		}
 	},
 	_createActionUrlWithBustCache: function(action, parameters) {
