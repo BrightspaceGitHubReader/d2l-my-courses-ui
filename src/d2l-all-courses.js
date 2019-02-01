@@ -256,7 +256,15 @@ Polymer({
 			value: false
 		},
 		_isSearched: Boolean,
-		_bustCacheToken: Number
+		_bustCacheToken: Number,
+		_bustCacheStr: {
+			type: String,
+			value: 'bustCache='
+		},
+		_cacheQueryString: {
+			type: String,
+			computed: '_computeCacheString(_bustCacheStr, _bustCacheToken)'
+		}
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -291,7 +299,6 @@ Polymer({
 		this.unlisten(this.$.filterMenu, 'd2l-filter-menu-change', '_onFilterChanged');
 		this.unlisten(this.$['search-widget'], 'd2l-search-widget-results-changed', '_onSearchResultsChanged');
 	},
-
 	/*
 	* Public API methods
 	*/
@@ -373,7 +380,10 @@ Polymer({
 		}
 	},
 	_onFilterChanged: function(e) {
-		this._searchUrl = e.detail.url + '&bustCache=' + this._bustCacheToken;
+		if (e.detail.url) {
+			var queryString = e.detail.url.indexOf('?') !== -1 ? this._cacheQueryString : ('?' + this._bustCacheStr + this._bustCacheToken);
+			this._searchUrl = e.detail.url + queryString;
+		}
 		this._filterCounts = e.detail.filterCounts;
 		this._totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
 	},
@@ -502,7 +512,9 @@ Polymer({
 			this._updateSearchUrlWithNewBustCacheToken();
 		}
 	},
-
+	_computeCacheString: function(str, token) {
+		return '&' + str + token;
+	},
 	/*
 	* Observers
 	*/
@@ -580,17 +592,21 @@ Polymer({
 	*/
 
 	_updateSearchUrlWithNewBustCacheToken: function() {
-		var s = this._searchUrl;
-		var r = '&bustCache=';
-		var n = s.indexOf(r);
-		if (n !== -1) {
-			this._searchUrl = s.substring(0, n + r.length) + this._bustCacheToken;
+		var url = this._searchUrl;
+		var index = url.indexOf(this._bustCacheStr);
+		if (index !== -1) {
+			index += this._bustCacheStr.length;
+			var prefix = url.substring(0, index);
+			var suffix = url.substring(index, url.length);
+			index = suffix.indexOf('&');
+			suffix = index === -1 ? '' : suffix.substring(index, suffix.length);
+			this._searchUrl = prefix + this._bustCacheToken + suffix;
 		} else {
-			this._searchUrl += (r + this._bustCacheToken);
+			this._searchUrl += this._cacheQueryString;
 		}
 	},
 	_createActionUrlWithBustCache: function(action, parameters) {
-		return this.createActionUrl(action, parameters) + '&bustCache=' + this._bustCacheToken;
+		return this.createActionUrl(action, parameters) + this._cacheQueryString;
 	},
 	_clearFilteredCourses: function() {
 		if (!this.updatedSortLogic) {
