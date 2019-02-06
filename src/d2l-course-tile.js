@@ -451,7 +451,15 @@ Polymer({
 			.then(this.responseToSirenEntity.bind(this));
 	},
 	_fetchNotifications: function() {
-		if (!this._notificationsUrl) {
+		if (!this._notificationsUrl || !this.courseUpdatesConfig) {
+			return Promise.resolve();
+		}
+
+		if (!this.courseUpdatesConfig.showUnattemptedQuizzes
+			&& !this.courseUpdatesConfig.showDropboxUnreadFeedback
+			&& !this.courseUpdatesConfig.showUngradedQuizAttempts
+			&& !this.courseUpdatesConfig.showUnreadDiscussionMessages
+			&& !this.courseUpdatesConfig.showUnreadDropboxSubmissions) {
 			return Promise.resolve();
 		}
 
