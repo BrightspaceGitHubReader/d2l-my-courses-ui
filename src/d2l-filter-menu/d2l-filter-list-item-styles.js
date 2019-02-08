@@ -18,7 +18,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-filter-list-item-styles">
 				margin-right: 0.5rem;
 			}
 
-			:host-context([dir="rtl"]) > d2l-icon {
+			:host(:dir(rtl)) > d2l-icon {
 				margin-left: 0.5rem;
 				margin-right: 0;
 			}
