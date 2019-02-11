@@ -31,9 +31,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-grid-styles">
 			--four-column-width: 24.25%;
 		}
 
-		:host([hide-past-courses]) d2l-course-tile[past-course]:not([pinned]),
-		:host([limit-to-12]:not([hide-past-courses])) d2l-course-tile:not([pinned]):nth-child(n+13),
-		:host([limit-to-12]) d2l-course-tile:not([pinned]):not([past-course]):nth-child(n+13) {
+		:host([hide-past-courses]) d2l-course-tile[past-course]:not([pinned]) {
 			display: none;
 		}
 
