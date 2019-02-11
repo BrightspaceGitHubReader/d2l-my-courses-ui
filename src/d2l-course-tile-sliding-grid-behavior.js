@@ -194,7 +194,7 @@ D2L.MyCourses.CourseTileSlidingGridBehavior = {
 		if (this.__slide_rowChange < 0) {
 			var tiles = this.__slide_knownGridTileElementIds;
 			if (tiles.length > 0) {
-				targetHeight = this._getGridContainerElement().querySelector('[id="' + tiles[tiles.length - 1] + '"]').offsetTop;
+				targetHeight = this._getGridContainerElement().querySelector(`[id="${tiles[tiles.length - 1]}"]`).offsetTop;
 			}
 		} else {
 			targetHeight = container.scrollHeight;
