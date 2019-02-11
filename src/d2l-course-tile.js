@@ -41,15 +41,15 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
 	<template strip-whitespace="">
 		<style include="d2l-course-tile-styles">
 
-		:host(.touch-menu-open) > .tile-container {
+		:host(.touch-menu-open) .tile-container {
 			transform: scale(1.05);
 			box-shadow: 2px 1px 10px rgba(0, 0, 0, 0.3);
 		}
-		:host(.touch-menu-open.unpin-hovered) > .tile-container {
+		:host(.touch-menu-open.unpin-hovered) .tile-container {
 			transform: scale(1.1);
 			box-shadow: 2px 1px 10px rgba(0, 0, 0, 0.3);
 		}
-		:host(.unpin-hovered:not(.touch-menu-open)) >.tile-container {
+		:host(.unpin-hovered:not(.touch-menu-open)) .tile-container {
 			transform: scale(1.05);
 			box-shadow: 3px 2px 10px rgba(0, 0, 0, 0.3);
 		}
@@ -58,7 +58,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
 			animation-iteration-count: 1;
 			pointer-events: none;
 		}
-		:host(.animate-insertion) > .tile-container {
+		:host(.animate-insertion) .tile-container {
 			animation: 0.6s forwards scale-and-fade-in;
 			animation-direction: normal;
 			animation-iteration-count: 1;
@@ -67,7 +67,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
 		:host(.unpin) {
 			z-index: 100;
 		}
-		:host(.unpin) > .tile-container {
+		:host(.unpin) .tile-container {
 			animation: 0.7s forwards scale-and-fade-out;
 			pointer-events: none;
 			z-index: 100;
