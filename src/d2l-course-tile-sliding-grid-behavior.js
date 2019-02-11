@@ -221,7 +221,7 @@ D2L.MyCourses.CourseTileSlidingGridBehavior = {
 	},
 
 	__slide_translateTile: function slideTranslateTile(tileId, change, delay) {
-		var tile = this._getGridContainerElement().querySelector('[id="' + tileId + '"]');
+		var tile = this._getGridContainerElement().querySelector(`[id="${tileId}"]`);
 
 		tile.style.transform =
 			'translate3d('
