@@ -76,13 +76,13 @@ D2L.MyCourses.CourseTileSlidingGridBehavior = {
 		'__slide_onEnrollmentsChanged(enrollments.*)'
 	],
 
-	__slide_knownGridTileElements: null,
+	__slide_knownGridTileElementIds: [],
 	__slide_rowChange: 0,
 
 	created: function slideBehaviorReady() {
 		D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.verifyFunctionPresent.call(this, '_getGridColumnCount');
 		D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.verifyFunctionPresent.call(this, '_getGridContainerElement');
-		D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.verifyFunctionPresent.call(this, '_getGridTileElements');
+		D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.verifyFunctionPresent.call(this, '_getGridTileElementIds');
 		D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.verifyFunctionPresent.call(this, '_getGridTileRepeat');
 	},
 
@@ -92,13 +92,13 @@ D2L.MyCourses.CourseTileSlidingGridBehavior = {
 				return;
 			}
 
-			this.__slide_knownGridTileElements = this._getGridTileElements();
+			this.__slide_knownGridTileElementIds = this._getGridTileElementIds();
 			this.listen(this._getGridTileRepeat(), 'dom-change', '__slide_onDomChange');
 		});
 	},
 
 	detached: function slideBehaviorDetached() {
-		this.__slide_knownGridTileElements = null;
+		this.__slide_knownGridTileElementIds = [];
 		this.unlisten(this._getGridTileRepeat(), 'dom-change', '__slide_onDomChange');
 	},
 
@@ -110,32 +110,35 @@ D2L.MyCourses.CourseTileSlidingGridBehavior = {
 	},
 
 	__slide_onDomChange: function slideOnDomChange() {
-		var oldTiles = this.__slide_knownGridTileElements;
-		var newTiles = this.__slide_knownGridTileElements = this._getGridTileElements();
+		var oldTileIds = this.__slide_knownGridTileElementIds;
+		var newTileIds = this.__slide_knownGridTileElementIds = this._getGridTileElementIds();
 
-		var insert = oldTiles.length < newTiles.length;
-		var diff = D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.findDifferenceInLists(newTiles, oldTiles);
+		var insert = oldTileIds.length < newTileIds.length;
+		var diff = D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.findDifferenceInLists(
+			newTileIds,
+			oldTileIds
+		);
 
 		this.__slide_rowChange = D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.calculatePositionChange(
 			this._getGridColumnCount(),
-			oldTiles.length - 1,
+			oldTileIds.length - 1,
 			insert,
 			diff.count
 		).row;
 
 		if (diff.count > 1 // only animate user's pin/unpin actions for now
-			|| diff.pos === oldTiles.length // tiles were added on to the end
-			|| diff.pos === newTiles.length // tiles were removed from the end
+			|| diff.pos === oldTileIds.length // tiles were added on to the end
+			|| diff.pos === newTileIds.length // tiles were removed from the end
 		) {
 			this.__slide_resizeContainer(0);
 			return;
 		}
 
-		this.__slide_repositionTiles(oldTiles, diff.pos, insert, diff.count);
+		this.__slide_repositionTiles(oldTileIds, diff.pos, insert, diff.count);
 	},
 
-	__slide_repositionTiles: function slideRepositionTiles(tiles, pos, insert, count) {
-		var n = tiles.length;
+	__slide_repositionTiles: function slideRepositionTiles(tileIds, pos, insert, count) {
+		var n = tileIds.length;
 
 		var i = insert
 			? n - 1
@@ -157,7 +160,7 @@ D2L.MyCourses.CourseTileSlidingGridBehavior = {
 
 		for (;;) {
 			this.__slide_translateTile(
-				tiles[i],
+				tileIds[i],
 				D2L.MyCourses.CourseTileSlidingGridBehaviorUtility.calculatePositionChange(this._getGridColumnCount(), i, insert, count),
 				delay
 			);
@@ -189,10 +192,9 @@ D2L.MyCourses.CourseTileSlidingGridBehavior = {
 		var targetHeight = 0;
 
 		if (this.__slide_rowChange < 0) {
-			var tiles = this.__slide_knownGridTileElements;
+			var tiles = this.__slide_knownGridTileElementIds;
 			if (tiles.length > 0) {
-				var lastTile = tiles[tiles.length - 1];
-				targetHeight = lastTile.offsetTop;
+				targetHeight = this._getGridContainerElement().querySelector(`[id="${tiles[tiles.length - 1]}"]`).offsetTop;
 			}
 		} else {
 			targetHeight = container.scrollHeight;
@@ -218,7 +220,9 @@ D2L.MyCourses.CourseTileSlidingGridBehavior = {
 		});
 	},
 
-	__slide_translateTile: function slideTranslateTile(tile, change, delay) {
+	__slide_translateTile: function slideTranslateTile(tileId, change, delay) {
+		var tile = this._getGridContainerElement().querySelector(`[id="${tileId}"]`);
+
 		tile.style.transform =
 			'translate3d('
 			+ (-change.col * 101) + '%,'

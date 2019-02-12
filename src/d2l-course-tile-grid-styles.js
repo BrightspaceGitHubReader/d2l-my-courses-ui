@@ -31,9 +31,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-grid-styles">
 			--four-column-width: 24.25%;
 		}
 
-		:host([hide-past-courses]) d2l-course-tile[past-course]:not([pinned]),
-		:host([limit-to-12]:not([hide-past-courses])) d2l-course-tile:not([pinned]):nth-child(n+13),
-		:host([limit-to-12]) d2l-course-tile:not([pinned]):not([past-course]):nth-child(n+13) {
+		:host([hide-past-courses]) d2l-course-tile[past-course]:not([pinned]) {
 			display: none;
 		}
 
@@ -48,43 +46,43 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-grid-styles">
 			/* To offset 10px left padding on tile containers, where tile image left edge must align with headers */
 			margin-left: -10px;
 		}
-		.course-tile-container.animate > d2l-course-tile {
+		.course-tile-container.animate d2l-course-tile {
 			margin-right: 0;
 			margin-left: 0;
 		}
 
-		.grid-child {
+		.course-tile-item-container {
 			width: 100%;
 		}
 
-		.columns-2 > .grid-child {
+		.columns-2 .course-tile-item-container {
 			width: var(--two-column-width);
 		}
 
-		.columns-3 > .grid-child {
+		.columns-3 .course-tile-item-container {
 			width: var(--three-column-width);
 		}
 
-		.columns-4 > .grid-child {
+		.columns-4 .course-tile-item-container {
 			width: var(--four-column-width);
 		}
 
-		.columns-2 > .grid-child,
-		.columns-3 > .grid-child,
-		.columns-4 > .grid-child {
+		.columns-2 .course-tile-item-container,
+		.columns-3 .course-tile-item-container,
+		.columns-4 .course-tile-item-container {
 			margin-left: 0.5%;
 			margin-right: 0.5%;
 		}
 
-		.columns-2 > .grid-child:nth-child(2n),
-		.columns-3 > .grid-child:nth-child(3n),
-		.columns-4 > .grid-child:nth-child(4n) {
+		.columns-2 .course-tile-item-container:nth-child(2n),
+		.columns-3 .course-tile-item-container:nth-child(3n),
+		.columns-4 .course-tile-item-container:nth-child(4n) {
 			margin-right: 0;
 		}
 
-		.columns-2 > .grid-child:nth-child(2n+1),
-		.columns-3 > .grid-child:nth-child(3n+1),
-		.columns-4 > .grid-child:nth-child(4n+1) {
+		.columns-2 .course-tile-item-container:nth-child(2n+1),
+		.columns-3 .course-tile-item-container:nth-child(3n+1),
+		.columns-4 .course-tile-item-container:nth-child(4n+1) {
 			margin-left: 0;
 		}
 		</style>
