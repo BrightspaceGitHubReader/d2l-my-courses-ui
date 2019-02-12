@@ -104,6 +104,9 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			? this.$$('d2l-my-courses-content').getLastOrgUnitId()
 			: this.$$('d2l-my-courses-content-animated').getLastOrgUnitId();
 	},
+	getLastOrgUnitIdImageSelector: function(orgFromImageSelector){
+		return this.$$('d2l-my-courses-content').getLastOrgUnitIdImageSelector(orgFromImageSelector);
+	},
 	_fetchTabSearchActions: function() {
 		if (!this.userSettingsUrl) {
 			return;

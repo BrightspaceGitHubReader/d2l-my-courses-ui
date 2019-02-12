@@ -192,6 +192,9 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		}
 		return this._getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
 	},
+	getLastOrgUnitIdImageSelector: function(orgFromImageSelector) {
+		this._setImageOrg = orgFromImageSelector;
+	},
 
 	_allCoursesCreated: false,
 	_courseImagesLoadedEventCount: 0,
