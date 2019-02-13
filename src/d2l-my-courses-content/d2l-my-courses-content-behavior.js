@@ -65,6 +65,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			type: String,
 			value: null
 		},
+		_setImageOrgFromImageSelector: String,
 		_hasOnlyPastCourses: {
 			type: Boolean,
 			value: false,
@@ -129,7 +130,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		'started-inactive': '_onStartedInactiveAlert',
 		'd2l-enrollment-card-fetched': '_onD2lEnrollmentCardFetched',
 		'd2l-enrollment-card-status': '_onD2lEnrollmentCardStatus',
-		'd2l-enrollment-new': '_onD2lEnrollmentNew'
+		'd2l-enrollment-new': '_onD2lEnrollmentNew',
 	},
 	attached: function() {
 		this.performanceMark('d2l.my-courses.attached');
@@ -191,9 +192,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			return;
 		}
 		return this._getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
-	},
-	getLastOrgUnitIdImageSelector: function(orgFromImageSelector) {
-		this._setImageOrg = orgFromImageSelector;
 	},
 
 	_allCoursesCreated: false,
@@ -458,7 +456,15 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			}, 10);
 		}
 		this._setLastSearchName(this.enrollmentsSearchAction.name);
-
+		//send event when tab is changed
+		var tabChanged = new CustomEvent('d2l-tab-changed', {
+			bubbles: true,
+			composed: true,
+			detail: {
+				_tabId: this.enrollmentsSearchAction.name
+			}
+		});
+		this.dispatchEvent(tabChanged);
 		// Whenever the selected tab changes, update tabSearchActions so
 		// All Courses will have the same tab selected when it opens
 		this.tabSearchActions = this.tabSearchActions.map(function(action) {

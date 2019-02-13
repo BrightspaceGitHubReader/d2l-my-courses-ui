@@ -41,7 +41,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			type: Boolean,
 			value: false
 		},
-
+		currentTabId: String,
 		_enrollmentsSearchAction: Object,
 		_pinnedTabAction: Object,
 		_showGroupByTabs: {
@@ -59,7 +59,8 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
 	},
 	listeners: {
-		'd2l-course-enrollment-change': '_onCourseEnrollmentChange'
+		'd2l-course-enrollment-change': '_onCourseEnrollmentChange',
+		'd2l-tab-changed': '_tabSelectedChanged'
 	},
 	attached: function() {
 		if (!this.enrollmentsUrl || !this.userSettingsUrl) {
@@ -94,6 +95,9 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			isPinned: e.detail.isPinned
 		};
 	},
+	_tabSelectedChanged: function(e) {
+		this.currentTabId = 'panel-'.concat(e.detail._tabId);
+	},
 	courseImageUploadCompleted: function(success) {
 		return this.updatedSortLogic
 			? this.$$('d2l-my-courses-content').courseImageUploadCompleted(success)
@@ -101,8 +105,13 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 	},
 	getLastOrgUnitId: function() {
 		return this.updatedSortLogic
-			? this.$$('d2l-my-courses-content').getLastOrgUnitId()
+			? (this._showGroupByTabs
+				? this._fetchCurrentTabCoursesContent().getLastOrgUnitId()
+				: this.$$('d2l-my-courses-content').getLastOrgUnitId())
 			: this.$$('d2l-my-courses-content-animated').getLastOrgUnitId();
+	},
+	_fetchCurrentTabCoursesContent: function() {
+		return this.$$('#'+this.currentTabId).firstChild;
 	},
 	getLastOrgUnitIdImageSelector: function(orgFromImageSelector) {
 		return this.$$('d2l-my-courses-content').getLastOrgUnitIdImageSelector(orgFromImageSelector);
@@ -156,7 +165,6 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			var lastEnrollmentsSearchName = userSettingsEntity
 						&& userSettingsEntity.properties
 						&& userSettingsEntity.properties.MostRecentEnrollmentsSearchName;
-
 			if (promotedSearchesEntity.actions.length > 1) {
 				this._tabSearchActions = promotedSearchesEntity.actions.map(function(action) {
 					return {
