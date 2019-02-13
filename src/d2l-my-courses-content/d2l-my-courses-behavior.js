@@ -111,7 +111,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			: this.$$('d2l-my-courses-content-animated').getLastOrgUnitId();
 	},
 	_fetchCurrentTabCoursesContent: function() {
-		return this.$$('#'+this.currentTabId).firstChild;
+		return this.$$('#' + this.currentTabId).firstChild;
 	},
 	getLastOrgUnitIdImageSelector: function(orgFromImageSelector) {
 		return this.$$('d2l-my-courses-content').getLastOrgUnitIdImageSelector(orgFromImageSelector);
@@ -165,6 +165,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			var lastEnrollmentsSearchName = userSettingsEntity
 						&& userSettingsEntity.properties
 						&& userSettingsEntity.properties.MostRecentEnrollmentsSearchName;
+
 			if (promotedSearchesEntity.actions.length > 1) {
 				this._tabSearchActions = promotedSearchesEntity.actions.map(function(action) {
 					return {
