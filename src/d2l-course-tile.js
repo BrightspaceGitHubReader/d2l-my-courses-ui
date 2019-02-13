@@ -570,7 +570,8 @@ Polymer({
 		}
 
 		this.toggleClass('unpin', false, this);
-		this._setCourseTileHovered(false);
+		this._pinAnimationInProgress = false;
+		this._unhoverCourseTile();
 	},
 	_onOrganizationResponse: function(organization) {
 
