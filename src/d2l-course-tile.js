@@ -53,7 +53,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
 			transform: scale(1.05);
 			box-shadow: 3px 2px 10px rgba(0, 0, 0, 0.3);
 		}
-		:host([animate-insertion]:not(.animate-insertion):not(.animation-complete)) > .tile-container {
+		:host([animate-insertion]:not(.animate-insertion):not(.animation-complete)) .tile-container {
 			animation: var(--insertion-delay, 10ms) forwards tile-pre-insertion;
 			animation-iteration-count: 1;
 			pointer-events: none;
@@ -570,6 +570,7 @@ Polymer({
 		}
 
 		this.toggleClass('unpin', false, this);
+		this._setCourseTileHovered(false);
 	},
 	_onOrganizationResponse: function(organization) {
 
