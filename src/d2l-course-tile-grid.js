@@ -31,8 +31,10 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-grid">
 
 		<div class="course-tile-container grid-container">
 			<template id="enrollmentsTemplate" is="dom-repeat" items="[[enrollments]]">
-				<d2l-course-tile enrollment="[[item]]" hover-enabled="[[_hoverInteractionEnabled]]" animate-insertion="[[_grid_shouldAnimateEnrollmentInsertion(item)]]" class="grid-child" enrollment-id="[[getEntityIdentifier(item)]]" tile-sizes="[[tileSizes]]" locale="[[locale]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]" animate="[[animate]]">
-				</d2l-course-tile>
+				<div class="course-tile-item-container" id="[[getEntityIdentifier(item)]]">
+					<d2l-course-tile enrollment="[[item]]" hover-enabled="[[_hoverInteractionEnabled]]" animate-insertion="[[_grid_shouldAnimateEnrollmentInsertion(item)]]" class="grid-child" enrollment-id="[[getEntityIdentifier(item)]]" tile-sizes="[[tileSizes]]" locale="[[locale]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]" animate="[[animate]]">
+					</d2l-course-tile>
+				</div>
 			</template>
 		</div>
 
@@ -236,8 +238,10 @@ Polymer({
 	_getGridContainerElement: function() {
 		return this.$$('.course-tile-container');
 	},
-	_getGridTileElements: function() {
-		return this._getGridContainerElement().querySelectorAll('d2l-course-tile');
+	_getGridTileElementIds: function() {
+		return Array.from(this._getGridContainerElement().querySelectorAll('.course-tile-item-container')).map(function(tile) {
+			return tile.id;
+		});
 	},
 	_getGridTileRepeat: function() {
 		return this.$.enrollmentsTemplate;
