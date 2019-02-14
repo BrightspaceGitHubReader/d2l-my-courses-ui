@@ -99,26 +99,17 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		this.currentTabId = `panel-${e.detail.tabId}`;
 	},
 	courseImageUploadCompleted: function(success) {
-		return this.updatedSortLogic
-			? this._courseImageUploadCompletedHelper(success)
-			: this.$$('d2l-my-courses-content-animated').courseImageUploadCompleted(success);
+		return this._fetchContentComponent().courseImageUploadCompleted(success);
 	},
 	getLastOrgUnitId: function() {
+		return this._fetchContentComponent().getLastOrgUnitId();
+	},
+	_fetchContentComponent: function() {
 		return this.updatedSortLogic
-			? this._getLastOrgUnitIdHelper()
-			: this.$$('d2l-my-courses-content-animated').getLastOrgUnitId();
-	},
-	_courseImageUploadCompletedHelper: function(success) {
-		if (this._showGroupByTabs === false || !this.currentTabId) {
-			return this.$$('d2l-my-courses-content').courseImageUploadCompleted(success);
-		}
-		return this.$$(`#${this.currentTabId} d2l-my-courses-content`).courseImageUploadCompleted(success);
-	},
-	_getLastOrgUnitIdHelper: function() {
-		if (this._showGroupByTabs === false || !this.currentTabId) {
-			return this.$$('d2l-my-courses-content').getLastOrgUnitId();
-		}
-		return this.$$(`#${this.currentTabId} d2l-my-courses-content`).getLastOrgUnitId();
+			? (this._showGroupByTabs === false || !this.currentTabId
+				? this.$$('d2l-my-courses-content')
+				:this.$$(`#${this.currentTabId} d2l-my-courses-content`))
+			: this.$$('d2l-my-courses-content-animated');
 	},
 	_fetchTabSearchActions: function() {
 		if (!this.userSettingsUrl) {
