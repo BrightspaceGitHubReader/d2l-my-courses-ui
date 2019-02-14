@@ -65,7 +65,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			type: String,
 			value: null
 		},
-		_setImageOrgFromImageSelector: String,
 		_hasOnlyPastCourses: {
 			type: Boolean,
 			value: false,
