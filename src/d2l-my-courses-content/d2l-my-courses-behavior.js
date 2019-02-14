@@ -96,7 +96,8 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		};
 	},
 	_tabSelectedChanged: function(e) {
-		this.currentTabId = `panel-`.concat(e.detail._tabId);
+		console.log(e.detail.tabId);
+		this.currentTabId = `panel-${e.detail.tabId}`
 	},
 	courseImageUploadCompleted: function(success) {
 		return this.updatedSortLogic
@@ -113,7 +114,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			: this.$$('d2l-my-courses-content-animated').getLastOrgUnitId();
 	},
 	_fetchCurrentTabCoursesContent: function() {
-		return this.$$(`#`.concat(this.currentTabId)).firstChild;
+		return this.$$(`#${this.currentTabId} d2l-my-courses-content`)
 	},
 	_fetchTabSearchActions: function() {
 		if (!this.userSettingsUrl) {

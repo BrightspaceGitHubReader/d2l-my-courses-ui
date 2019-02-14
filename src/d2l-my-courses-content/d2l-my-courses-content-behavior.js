@@ -129,7 +129,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		'started-inactive': '_onStartedInactiveAlert',
 		'd2l-enrollment-card-fetched': '_onD2lEnrollmentCardFetched',
 		'd2l-enrollment-card-status': '_onD2lEnrollmentCardStatus',
-		'd2l-enrollment-new': '_onD2lEnrollmentNew',
+		'd2l-enrollment-new': '_onD2lEnrollmentNew'
 	},
 	attached: function() {
 		this.performanceMark('d2l.my-courses.attached');
@@ -455,12 +455,12 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			}, 10);
 		}
 		this._setLastSearchName(this.enrollmentsSearchAction.name);
-		//send event when tab is changed
+
 		var tabChanged = new CustomEvent('d2l-tab-changed', {
 			bubbles: true,
 			composed: true,
 			detail: {
-				_tabId: this.enrollmentsSearchAction.name
+				tabId: this.enrollmentsSearchAction.name
 			}
 		});
 		this.dispatchEvent(tabChanged);
