@@ -153,7 +153,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-styles">
 				display: flex;
 			}
 
-			:host-context([dir="rtl"]) .menu-bar {
+			:host(:dir(rtl)) .menu-bar {
 				left: 10px;
 				right: auto;
 			}
@@ -165,10 +165,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-styles">
 				padding-left: 0;
 				padding-right: 0;
 				opacity: 0;
-			}
-
-			:host-context([dir="rtl"]):not([pinned]) .pin-indicator {
-				margin-left: 0;
 			}
 
 			.pin-indicator {
@@ -203,7 +199,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-styles">
 				height: 35px;
 				margin-right: 10px;
 			}
-			:host-context([dir="rtl"]) .menu-item {
+			:host(:dir(rtl)) .menu-item {
 				margin-left: 10px;
 				margin-right: auto;
 			}
@@ -454,7 +450,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-styles">
 				right: -2px;
 			}
 
-			[dir="rtl"] .alert-color-circle {
+			:host(:dir(rtl)) .alert-color-circle {
 				right: auto;
 				left: -2px;
 			}
