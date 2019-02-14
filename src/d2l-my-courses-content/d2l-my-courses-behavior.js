@@ -108,7 +108,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		return this.updatedSortLogic
 			? (this._showGroupByTabs === false || !this.currentTabId
 				? this.$$('d2l-my-courses-content')
-				:this.$$(`#${this.currentTabId} d2l-my-courses-content`))
+				: this.$$(`#${this.currentTabId} d2l-my-courses-content`))
 			: this.$$('d2l-my-courses-content-animated');
 	},
 	_fetchTabSearchActions: function() {
