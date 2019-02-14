@@ -237,7 +237,7 @@ describe('d2l-my-courses', () => {
 			}
 		};
 		component._tabSelectedChanged(event);
-		expect(component.currentTabId).to.equal(`panel-`.concat(event.detail.tabId));
+		expect(component.currentTabId).to.equal(`panel-${event.detail.tabId}`);
 	});
 
 	describe('Public API', () => {
