@@ -17,8 +17,6 @@ import './d2l-course-tile-responsive-grid-behavior.js';
 import './d2l-course-tile-sliding-grid-behavior.js';
 import './localize-behavior.js';
 import './d2l-course-tile-grid-styles.js';
-import './d2l-touch-menu.js';
-import './d2l-touch-menu-item.js';
 import './d2l-utility-behavior.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
@@ -46,17 +44,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-grid">
 				</div>
 			</template>
 		</div>
-
-		<d2l-touch-menu>
-			<d2l-touch-menu-item
-				text="{{localize('pin')}}"
-				background-image="d2l-tier1:pin-filled"
-				hover-event="touch-pin-hover"
-				selection-event="touch-pin-select">
-			</d2l-touch-menu-item>
-		</d2l-touch-menu>
 	</template>
-	
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);
@@ -104,10 +92,6 @@ Polymer({
 	listeners: {
 		'enrollment-pinned': '_onEnrollmentPinAction',
 		'enrollment-unpinned': '_onEnrollmentPinAction',
-		'touch-pin-hover': '_onUnpinHover',
-		'touch-pin-select': '_onTouchPinSelect',
-		'touch-menu-open': '_onTouchMenuOpen',
-		'touch-menu-close': '_onTouchMenuClose',
 		'dom-change': '_onCourseTilesChanged'
 	},
 	getCourseTileItemCount: function() {
@@ -185,7 +169,6 @@ Polymer({
 	},
 	_onCourseTilesChanged: function() {
 		var courseTiles = dom(this.root).querySelectorAll('d2l-course-tile');
-		this.$$('d2l-touch-menu').touchTargets = Array.prototype.slice.call(courseTiles);
 	},
 	_onEnrollmentPinAction: function(e) {
 		var modifiedEnrollmentId = this.getEntityIdentifier(e.detail.enrollment);
@@ -203,32 +186,6 @@ Polymer({
 				break;
 			}
 		}
-	},
-	_onTouchPinSelect: function(e) {
-		e.detail.element.pinClickHandler(true);
-	},
-	_onTouchMenuOpen: function(e) {
-		e.detail.element.setTouchMenuOpen(true);
-	},
-	_onTouchMenuClose: function(e) {
-		e.detail.element.setTouchMenuOpen(false);
-	},
-	_onUnpinHover: function(e) {
-		var pinTouchMenuItem = this.$$('d2l-touch-menu-item');
-		var courseTile = e.detail.element;
-
-		// Get pin state of element and update touch menu
-		if (courseTile.pinned) {
-			dom(pinTouchMenuItem).setAttribute('text', this.localize('unpin'));
-			dom(pinTouchMenuItem).setAttribute('background-image', 'd2l-tier1:pin-hollow');
-			dom(pinTouchMenuItem).setAttribute('action-description', this.localize('unpinCourse', 'course', courseTile._organization.properties.name));
-		} else {
-			dom(pinTouchMenuItem).setAttribute('text', this.localize('pin'));
-			dom(pinTouchMenuItem).setAttribute('background-image', 'd2l-tier1:pin-filled');
-			dom(pinTouchMenuItem).setAttribute('action-description', this.localize('pinCourse', 'course', courseTile._organization.properties.name));
-		}
-
-		e.detail.element._onUnpinHover(e);
 	},
 	checkForStartedInactive: function(type) {
 		var courseTiles = this.$$('.course-tile-container').querySelectorAll('d2l-course-tile');

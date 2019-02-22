@@ -24,10 +24,6 @@ describe('d2l-course-tile-grid', () => {
 		[
 			{ eventName: 'enrollment-pinned', handler: '_onEnrollmentPinAction' },
 			{ eventName: 'enrollment-unpinned', handler: '_onEnrollmentPinAction' },
-			{ eventName: 'touch-pin-hover', handler: '_onUnpinHover' },
-			{ eventName: 'touch-pin-select', handler: '_onTouchPinSelect' },
-			{ eventName: 'touch-menu-open', handler: '_onTouchMenuOpen' },
-			{ eventName: 'touch-menu-close', handler: '_onTouchMenuClose' },
 			{ eventName: 'dom-change', handler: '_onCourseTilesChanged' }
 		].forEach(testCase => {
 			it('should listen for ' + testCase.eventName + ' events', done => {
