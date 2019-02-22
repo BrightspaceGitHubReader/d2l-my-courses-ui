@@ -16,7 +16,6 @@ import './d2l-course-tile.js';
 import './d2l-course-tile-responsive-grid-behavior.js';
 import './d2l-course-tile-sliding-grid-behavior.js';
 import './localize-behavior.js';
-import './d2l-interaction-detection-behavior.js';
 import './d2l-course-tile-grid-styles.js';
 import './d2l-touch-menu.js';
 import './d2l-touch-menu-item.js';
@@ -32,14 +31,28 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-grid">
 		<div class="course-tile-container grid-container">
 			<template id="enrollmentsTemplate" is="dom-repeat" items="[[enrollments]]">
 				<div class="course-tile-item-container" id="[[getEntityIdentifier(item)]]">
-					<d2l-course-tile enrollment="[[item]]" hover-enabled="[[_hoverInteractionEnabled]]" animate-insertion="[[_grid_shouldAnimateEnrollmentInsertion(item)]]" class="grid-child" enrollment-id="[[getEntityIdentifier(item)]]" tile-sizes="[[tileSizes]]" locale="[[locale]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]" animate="[[animate]]">
+					<d2l-course-tile
+						enrollment="[[item]]"
+						animate-insertion="[[_grid_shouldAnimateEnrollmentInsertion(item)]]"
+						class="grid-child"
+						enrollment-id="[[getEntityIdentifier(item)]]"
+						tile-sizes="[[tileSizes]]"
+						locale="[[locale]]"
+						show-course-code="[[showCourseCode]]"
+						show-semester="[[showSemester]]"
+						course-updates-config="[[courseUpdatesConfig]]"
+						animate="[[animate]]">
 					</d2l-course-tile>
 				</div>
 			</template>
 		</div>
 
-		<d2l-touch-menu enabled="[[_touchInteractionEnabled]]">
-			<d2l-touch-menu-item text="{{localize('pin')}}" background-image="d2l-tier1:pin-filled" hover-event="touch-pin-hover" selection-event="touch-pin-select">
+		<d2l-touch-menu>
+			<d2l-touch-menu-item
+				text="{{localize('pin')}}"
+				background-image="d2l-tier1:pin-filled"
+				hover-event="touch-pin-hover"
+				selection-event="touch-pin-select">
 			</d2l-touch-menu-item>
 		</d2l-touch-menu>
 	</template>
@@ -85,7 +98,6 @@ Polymer({
 	behaviors: [
 		D2L.MyCourses.CourseTileSlidingGridBehavior,
 		D2L.MyCourses.CourseTileResponsiveGridBehavior,
-		D2L.MyCourses.InteractionDetectionBehavior,
 		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 		D2L.MyCourses.UtilityBehavior
 	],

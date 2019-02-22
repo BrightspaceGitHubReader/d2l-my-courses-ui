@@ -45,7 +45,7 @@ Polymer({
 	properties: {
 		enabled: {
 			type: Boolean,
-			value: true
+			value: false
 		},
 		// Array of HTMLElement touch targets to be applied to an element
 		touchTargets: {
