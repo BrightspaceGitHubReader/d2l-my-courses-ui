@@ -41,15 +41,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
 	<template strip-whitespace="">
 		<style include="d2l-course-tile-styles">
 
-		:host(.touch-menu-open) .tile-container {
-			transform: scale(1.05);
-			box-shadow: 2px 1px 10px rgba(0, 0, 0, 0.3);
-		}
-		:host(.touch-menu-open.unpin-hovered) .tile-container {
-			transform: scale(1.1);
-			box-shadow: 2px 1px 10px rgba(0, 0, 0, 0.3);
-		}
-		:host(.unpin-hovered:not(.touch-menu-open)) .tile-container {
+		:host(.unpin-hovered) .tile-container {
 			transform: scale(1.05);
 			box-shadow: 3px 2px 10px rgba(0, 0, 0, 0.3);
 		}
@@ -307,7 +299,7 @@ Polymer({
 		this.$['d2l-course-tile-anchor'].focus();
 	},
 	// Handler that triggers the API call to change an enrollment's pin state when the user says DO IT
-	pinClickHandler: function(isTouch) {
+	pinClickHandler: function() {
 		var pinAction = this.pinned
 			? this.enrollment.getActionByName(Actions.enrollments.unpinCourse)
 			: this.enrollment.getActionByName(Actions.enrollments.pinCourse);
@@ -354,10 +346,6 @@ Polymer({
 		if (this.animate) this._pinAnimationInProgress = true;
 		this.toggleClass('unpin-hovered', false, this);
 
-		if (isTouch) {
-			this.updateStyles({'--scale-fade-min-scale': '1.1'});
-		}
-
 		if (this.animate) this.toggleClass('unpin', true, this);
 
 		var localizeKey = this.pinned ? 'pinActionResult' : 'unpinActionResult';
@@ -389,11 +377,6 @@ Polymer({
 			.then(this._onOrganizationResponse.bind(this))
 			.then(this._displaySetImageResult.bind(this, true, true))
 			.catch(this._displaySetImageResult.bind(this, false));
-	},
-	// Sets classes for this tile having the touch menu on it when it is opened/closed
-	setTouchMenuOpen: function(isOpen) {
-		this.toggleClass('touch-menu-open', isOpen, this);
-		this.toggleClass('hover', isOpen, this);
 	},
 	setCourseImage: function(details) {
 		details = details || {};
@@ -531,7 +514,7 @@ Polymer({
 		// Prevent the click from triggering navigation to the course
 		e.preventDefault();
 
-		this.pinClickHandler(false);
+		this.pinClickHandler();
 	},
 	_hoverPinMenuItem: function() {
 		this._onUnpinHover({detail: {hoverState: true}});
@@ -539,7 +522,7 @@ Polymer({
 	},
 	_pinPressHandler: function(e) {
 		if (e.code === 'Space' || e.code === 'Enter') {
-			return this.pinClickHandler(false);
+			return this.pinClickHandler();
 		}
 	},
 	_onAnimationComplete: function(e) {
