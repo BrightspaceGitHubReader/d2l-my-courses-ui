@@ -193,6 +193,7 @@ describe('d2l-my-courses', () => {
 	describe('Listener setup', () => {
 		[
 			{ eventName: 'd2l-course-enrollment-change', handler: '_onCourseEnrollmentChange' },
+			{ eventName: 'd2l-tab-changed', handler: '_tabSelectedChanged' },
 		].forEach(testCase => {
 
 			it('should listen for ' + testCase.eventName + ' events', done => {
@@ -206,7 +207,6 @@ describe('d2l-my-courses', () => {
 					done();
 				});
 			});
-
 		});
 	});
 
@@ -229,6 +229,17 @@ describe('d2l-my-courses', () => {
 		});
 	});
 
+	it('should have updated currentTabId proprety based on thge event', () => {
+		component.currentTabId = null;
+		var event = {
+			detail: {
+				tabId: 1254
+			}
+		};
+		component._tabSelectedChanged(event);
+		expect(component.currentTabId).to.equal(`panel-${event.detail.tabId}`);
+	});
+
 	describe('Public API', () => {
 		it('should call d2l-my-courses-content-animated.courseImageUploadCompleted', done => {
 			component.updatedSortLogic = false;
@@ -240,9 +251,9 @@ describe('d2l-my-courses', () => {
 			});
 		});
 
-		it('should call d2l-my-courses-content.courseImageUploadCompleted', done => {
+		it('should call d2l-my-courses-content.courseImageUploadCompleted when not grouped by tab', done => {
 			component.updatedSortLogic = true;
-			component._tabSearchActions = [{'name': 'testName', 'title': 'testTitle', 'selected': false, 'enrollmentsSearchAction': {}}];
+			component._showGroupByTabs = false;
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
@@ -261,12 +272,36 @@ describe('d2l-my-courses', () => {
 			});
 		});
 
-		it('should call d2l-my-courses-content.getLastOrgUnitId', done => {
+		it('should call d2l-my-courses-content.getLastOrgUnitId when not grouped by tab', done => {
 			component.updatedSortLogic = true;
-			component._tabSearchActions = [{'name': 'testName', 'title': 'testTitle', 'selected': false, 'enrollmentsSearchAction': {}}];
+			component._showGroupByTabs = false;
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
+				expect(stub).to.have.been.called;
+				done();
+			});
+		});
+
+		it('should call d2l-my-courses-content.getLastOrgUnitId when grouped by tab', done => {
+			component.updatedSortLogic = true;
+			component._showGroupByTabs = true;
+			component.currentTabId = 'panel-1234';
+			flush(() => {
+				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
+				component.getLastOrgUnitId();
+				expect(stub).to.have.been.called;
+				done();
+			});
+		});
+
+		it('should call d2l-my-courses-content.courseImageUploadCompleted when grouped by tab', done => {
+			component.updatedSortLogic = true;
+			component._showGroupByTabs = true;
+			component.currentTabId = 'panel-1234';
+			flush(() => {
+				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
+				component.courseImageUploadCompleted();
 				expect(stub).to.have.been.called;
 				done();
 			});

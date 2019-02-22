@@ -41,7 +41,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			type: Boolean,
 			value: false
 		},
-
+		currentTabId: String,
 		_enrollmentsSearchAction: Object,
 		_pinnedTabAction: Object,
 		_showGroupByTabs: {
@@ -59,7 +59,8 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
 	},
 	listeners: {
-		'd2l-course-enrollment-change': '_onCourseEnrollmentChange'
+		'd2l-course-enrollment-change': '_onCourseEnrollmentChange',
+		'd2l-tab-changed': '_tabSelectedChanged'
 	},
 	attached: function() {
 		if (!this.enrollmentsUrl || !this.userSettingsUrl) {
@@ -94,15 +95,21 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			isPinned: e.detail.isPinned
 		};
 	},
+	_tabSelectedChanged: function(e) {
+		this.currentTabId = `panel-${e.detail.tabId}`;
+	},
 	courseImageUploadCompleted: function(success) {
-		return this.updatedSortLogic
-			? this.$$('d2l-my-courses-content').courseImageUploadCompleted(success)
-			: this.$$('d2l-my-courses-content-animated').courseImageUploadCompleted(success);
+		return this._fetchContentComponent().courseImageUploadCompleted(success);
 	},
 	getLastOrgUnitId: function() {
+		return this._fetchContentComponent().getLastOrgUnitId();
+	},
+	_fetchContentComponent: function() {
 		return this.updatedSortLogic
-			? this.$$('d2l-my-courses-content').getLastOrgUnitId()
-			: this.$$('d2l-my-courses-content-animated').getLastOrgUnitId();
+			? (this._showGroupByTabs === false || !this.currentTabId
+				? this.$$('d2l-my-courses-content')
+				: this.$$(`#${this.currentTabId} d2l-my-courses-content`))
+			: this.$$('d2l-my-courses-content-animated');
 	},
 	_fetchTabSearchActions: function() {
 		if (!this.userSettingsUrl) {

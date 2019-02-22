@@ -77,15 +77,6 @@ describe('d2l-course-tile-grid', () => {
 			});
 		});
 
-		it('should only show 12 tiles when limit-to-12 attribute is set', () => {
-			component.setAttribute('limit-to-12', true);
-
-			var twelfthTile = component.$$('.course-tile-container d2l-course-tile:nth-of-type(12)');
-			expect(window.getComputedStyle(twelfthTile).getPropertyValue('display')).to.equal('block');
-			var thirteenthTile = component.$$('.course-tile-container d2l-course-tile:nth-of-type(13)');
-			expect(window.getComputedStyle(thirteenthTile).getPropertyValue('display')).to.equal('none');
-		});
-
 		it('should hide past courses when hide-past-courses attribute is set', () => {
 			component.setAttribute('hide-past-courses', true);
 
@@ -106,21 +97,6 @@ describe('d2l-course-tile-grid', () => {
 			courseTile.setAttribute('past-course', true);
 
 			expect(window.getComputedStyle(courseTile).getPropertyValue('display')).to.equal('block');
-		});
-
-		it('should only show 12 current courses when limit-to-12 and hide-past-courses are both set', () => {
-			var courseTile = component.$$('.course-tile-container d2l-course-tile');
-
-			component.setAttribute('limit-to-12', true);
-			component.setAttribute('hide-past-courses', true);
-			courseTile.setAttribute('past-course', true);
-
-			expect(window.getComputedStyle(courseTile).getPropertyValue('display')).to.equal('none');
-
-			var twelfthTile = component.$$('.course-tile-container d2l-course-tile:nth-of-type(12)');
-			expect(window.getComputedStyle(twelfthTile).getPropertyValue('display')).to.equal('block');
-			var thirteenthTile = component.$$('.course-tile-container d2l-course-tile:nth-of-type(13)');
-			expect(window.getComputedStyle(thirteenthTile).getPropertyValue('display')).to.equal('none');
 		});
 
 	});

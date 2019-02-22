@@ -456,6 +456,14 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		}
 		this._setLastSearchName(this.enrollmentsSearchAction.name);
 
+		var tabChanged = new CustomEvent('d2l-tab-changed', {
+			bubbles: true,
+			composed: true,
+			detail: {
+				tabId: this.enrollmentsSearchAction.name
+			}
+		});
+		this.dispatchEvent(tabChanged);
 		// Whenever the selected tab changes, update tabSearchActions so
 		// All Courses will have the same tab selected when it opens
 		this.tabSearchActions = this.tabSearchActions.map(function(action) {
