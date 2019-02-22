@@ -163,11 +163,6 @@ Polymer({
 		// Course tile enrollment entity
 		enrollment: Object,
 		enrollmentId: String,
-		// Specifies whether the (desktop) hover menu is enabled on the course tile
-		hoverEnabled: {
-			type: Boolean,
-			value: true
-		},
 		// Whether the enrollment represented by this course tile is pinned or not
 		pinned: {
 			type: Boolean,
@@ -176,11 +171,6 @@ Polymer({
 		locale: String,
 		// Size the tile should render with respect to vw
 		tileSizes: Object,
-		// Specifies whether the (mobile) touch menu is enabled on the course tile
-		touchEnabled: {
-			type: Boolean,
-			value: true
-		},
 		// Configuration value passed in to toggle course code
 		showCourseCode: {
 			type: Boolean,
@@ -535,9 +525,7 @@ Polymer({
 	},
 	_hoverCourseTile: function() {
 		this._showHoverMenu = true;
-		if (this.hoverEnabled) {
-			this._setCourseTileHovered(true);
-		}
+		this._setCourseTileHovered(true);
 	},
 	_pinClickHandler: function(e) {
 		// Prevent the click from triggering navigation to the course
