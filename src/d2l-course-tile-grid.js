@@ -91,8 +91,7 @@ Polymer({
 	],
 	listeners: {
 		'enrollment-pinned': '_onEnrollmentPinAction',
-		'enrollment-unpinned': '_onEnrollmentPinAction',
-		'dom-change': '_onCourseTilesChanged'
+		'enrollment-unpinned': '_onEnrollmentPinAction'
 	},
 	getCourseTileItemCount: function() {
 		return this.enrollments.length;
@@ -166,9 +165,6 @@ Polymer({
 		}
 
 		return false;
-	},
-	_onCourseTilesChanged: function() {
-		var courseTiles = dom(this.root).querySelectorAll('d2l-course-tile');
 	},
 	_onEnrollmentPinAction: function(e) {
 		var modifiedEnrollmentId = this.getEntityIdentifier(e.detail.enrollment);
