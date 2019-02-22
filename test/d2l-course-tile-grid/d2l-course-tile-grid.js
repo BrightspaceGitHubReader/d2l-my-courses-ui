@@ -23,8 +23,7 @@ describe('d2l-course-tile-grid', () => {
 	describe('Listener setup', () => {
 		[
 			{ eventName: 'enrollment-pinned', handler: '_onEnrollmentPinAction' },
-			{ eventName: 'enrollment-unpinned', handler: '_onEnrollmentPinAction' },
-			{ eventName: 'dom-change', handler: '_onCourseTilesChanged' }
+			{ eventName: 'enrollment-unpinned', handler: '_onEnrollmentPinAction' }
 		].forEach(testCase => {
 			it('should listen for ' + testCase.eventName + ' events', done => {
 				var stub = sandbox.stub(component, testCase.handler);
