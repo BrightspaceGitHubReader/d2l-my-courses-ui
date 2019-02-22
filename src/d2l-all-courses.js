@@ -256,11 +256,7 @@ Polymer({
 			value: false
 		},
 		_isSearched: Boolean,
-		_bustCacheToken: Number,
-		_bustCacheStr: {
-			type: String,
-			value: 'bustCache'
-		}
+		_bustCacheToken: Number
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -583,7 +579,7 @@ Polymer({
 
 	_createSearchUrlWithNewBustCacheToken: function() {
 		var parsedUrl = new URL(this._searchUrl);
-		parsedUrl.searchParams.set(this._bustCacheStr, this._bustCacheToken);
+		parsedUrl.searchParams.set('bustCache', this._bustCacheToken);
 		return parsedUrl.toString();
 	},
 	_createActionUrlWithBustCache: function(action, parameters) {
@@ -594,8 +590,7 @@ Polymer({
 			return null;
 		}
 
-		var queryStr = this._bustCacheStr + '=' + this._bustCacheToken;
-		return url + (url.indexOf('?') !== -1 ? '&' : '?') + queryStr;
+		return url + (url.indexOf('?') !== -1 ? '&' : '?') + 'bustCache=' + this._bustCacheToken;
 	},
 	_clearFilteredCourses: function() {
 		if (!this.updatedSortLogic) {
