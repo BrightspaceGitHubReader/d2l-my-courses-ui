@@ -259,11 +259,7 @@ Polymer({
 		_bustCacheToken: Number,
 		_bustCacheStr: {
 			type: String,
-			value: 'bustCache='
-		},
-		_cacheQueryString: {
-			type: String,
-			computed: '_computeCacheString(_bustCacheStr, _bustCacheToken)'
+			value: 'bustCache'
 		}
 	},
 	behaviors: [
@@ -380,10 +376,7 @@ Polymer({
 		}
 	},
 	_onFilterChanged: function(e) {
-		if (e.detail.url) {
-			var queryString = e.detail.url.indexOf('?') !== -1 ? this._cacheQueryString : ('?' + this._bustCacheStr + this._bustCacheToken);
-			this._searchUrl = e.detail.url + queryString;
-		}
+		this._searchUrl = this._appendBustCacheQueryString(e.detail.url);
 		this._filterCounts = e.detail.filterCounts;
 		this._totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
 	},
@@ -509,11 +502,8 @@ Polymer({
 		this._bustCacheToken = Math.random();
 		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
 		if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments) {
-			this._updateSearchUrlWithNewBustCacheToken();
+			this._searchUrl = this._createSearchUrlWithNewBustCacheToken();
 		}
-	},
-	_computeCacheString: function(str, token) {
-		return '&' + str + token;
 	},
 	/*
 	* Observers
@@ -591,22 +581,21 @@ Polymer({
 	* Utility/helper functions
 	*/
 
-	_updateSearchUrlWithNewBustCacheToken: function() {
-		var url = this._searchUrl;
-		var index = url.indexOf(this._bustCacheStr);
-		if (index !== -1) {
-			index += this._bustCacheStr.length;
-			var prefix = url.substring(0, index);
-			var suffix = url.substring(index, url.length);
-			index = suffix.indexOf('&');
-			suffix = index === -1 ? '' : suffix.substring(index, suffix.length);
-			this._searchUrl = prefix + this._bustCacheToken + suffix;
-		} else {
-			this._searchUrl += this._cacheQueryString;
-		}
+	_createSearchUrlWithNewBustCacheToken: function() {
+		var parsedUrl = new URL(this._searchUrl);
+		parsedUrl.searchParams.set(this._bustCacheStr, this._bustCacheToken);
+		return parsedUrl.toString();
 	},
 	_createActionUrlWithBustCache: function(action, parameters) {
-		return this.createActionUrl(action, parameters) + this._cacheQueryString;
+		return this._appendBustCacheQueryString(this.createActionUrl(action, parameters));
+	},
+	_appendBustCacheQueryString: function(url) {
+		if (!url) {
+			return null;
+		}
+
+		var queryStr = this._bustCacheStr + '=' + this._bustCacheToken;
+		return url + (url.indexOf('?') !== -1 ? '&' : '?') + queryStr;
 	},
 	_clearFilteredCourses: function() {
 		if (!this.updatedSortLogic) {
