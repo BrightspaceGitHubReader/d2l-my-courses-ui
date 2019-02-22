@@ -255,7 +255,8 @@ Polymer({
 			type: Boolean,
 			value: false
 		},
-		_isSearched: Boolean
+		_isSearched: Boolean,
+		_bustCacheToken: Number
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -266,13 +267,15 @@ Polymer({
 	],
 	listeners: {
 		'd2l-simple-overlay-opening': '_onSimpleOverlayOpening',
-		'd2l-tab-panel-selected': '_onTabSelected'
+		'd2l-tab-panel-selected': '_onTabSelected',
+		'd2l-course-pinned-change': '_onEnrollmentPinned'
 	},
 	observers: [
 		'_enrollmentsChanged(_filteredPinnedEnrollments.length, _filteredUnpinnedEnrollments.length)'
 	],
 	ready: function() {
 		this._filterText = this.localize('filtering.filter');
+		this._bustCacheToken = Math.random();
 	},
 	attached: function() {
 		this.listen(this.$.sortDropdown, 'd2l-menu-item-change', '_onSortOrderChanged');
@@ -288,7 +291,6 @@ Polymer({
 		this.unlisten(this.$.filterMenu, 'd2l-filter-menu-change', '_onFilterChanged');
 		this.unlisten(this.$['search-widget'], 'd2l-search-widget-results-changed', '_onSearchResultsChanged');
 	},
-
 	/*
 	* Public API methods
 	*/
@@ -318,11 +320,13 @@ Polymer({
 			return;
 		}
 
-		this._searchUrl = this.createActionUrl(this.enrollmentsSearchAction, {
-			autoPinCourses: false,
-			embedDepth: this.updatedSortLogic ? 0 : 1,
-			sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
-		});
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+			this.createActionUrl(this.enrollmentsSearchAction, {
+				autoPinCourses: false,
+				embedDepth: this.updatedSortLogic ? 0 : 1,
+				sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
+			})
+		);
 	},
 	open: function() {
 		// Initially hide the content, until we have some data to show
@@ -370,7 +374,7 @@ Polymer({
 		}
 	},
 	_onFilterChanged: function(e) {
-		this._searchUrl = e.detail.url;
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(e.detail.url);
 		this._filterCounts = e.detail.filterCounts;
 		this._totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
 	},
@@ -427,10 +431,12 @@ Polymer({
 				break;
 		}
 
-		this._searchUrl = this.createActionUrl(this._enrollmentsSearchAction, {
-			sort: sortParameter,
-			promotePins: promotePins
-		}) + '&bustCache=' + Math.random();
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+			this.createActionUrl(this._enrollmentsSearchAction, {
+				sort: sortParameter,
+				promotePins: promotePins
+			})
+		);
 
 		this._sortParameter = sortParameter;
 		this.$.sortText.textContent = this.localize(langterm || '');
@@ -490,9 +496,18 @@ Polymer({
 		if (this._filterCounts.roles > 0 && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('roles')) {
 			params.roles =  this._enrollmentsSearchAction.getFieldByName('roles').value;
 		}
-		this._searchUrl = this.createActionUrl(tabAction.enrollmentsSearchAction, params);
-	},
 
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+			this.createActionUrl(tabAction.enrollmentsSearchAction, params)
+		);
+	},
+	_onEnrollmentPinned: function(e) {
+		this._bustCacheToken = Math.random();
+		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
+		if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments) {
+			this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
+		}
+	},
 	/*
 	* Observers
 	*/
@@ -569,6 +584,24 @@ Polymer({
 	* Utility/helper functions
 	*/
 
+	_appendOrUpdateBustCacheQueryString: function(url) {
+		if (!url) {
+			return null;
+		}
+
+		var bustCacheStr = 'bustCache=';
+		var index = url.indexOf(bustCacheStr);
+		if (index === -1) {
+			return url + (url.indexOf('?') !== -1 ? '&' : '?') + 'bustCache=' + this._bustCacheToken;
+		}
+
+		index += bustCacheStr.length;
+		var prefix = url.substring(0, index);
+		var suffix = url.substring(index, url.length);
+		index = suffix.indexOf('&');
+		suffix = index === -1 ? '' : suffix.substring(index, suffix.length);
+		return prefix + this._bustCacheToken + suffix;
+	},
 	_clearFilteredCourses: function() {
 		if (!this.updatedSortLogic) {
 			this._pinnedCoursesMap = {};
