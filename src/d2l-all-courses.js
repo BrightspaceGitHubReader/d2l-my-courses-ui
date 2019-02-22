@@ -320,11 +320,13 @@ Polymer({
 			return;
 		}
 
-		this._searchUrl = this._createActionUrlWithBustCache(this.enrollmentsSearchAction, {
-			autoPinCourses: false,
-			embedDepth: this.updatedSortLogic ? 0 : 1,
-			sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
-		});
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+			this.createActionUrl(this.enrollmentsSearchAction, {
+				autoPinCourses: false,
+				embedDepth: this.updatedSortLogic ? 0 : 1,
+				sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
+			})
+		);
 	},
 	open: function() {
 		// Initially hide the content, until we have some data to show
@@ -372,7 +374,7 @@ Polymer({
 		}
 	},
 	_onFilterChanged: function(e) {
-		this._searchUrl = this._appendBustCacheQueryString(e.detail.url);
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(e.detail.url);
 		this._filterCounts = e.detail.filterCounts;
 		this._totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
 	},
@@ -429,10 +431,12 @@ Polymer({
 				break;
 		}
 
-		this._searchUrl = this._createActionUrlWithBustCache(this._enrollmentsSearchAction, {
-			sort: sortParameter,
-			promotePins: promotePins
-		});
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+			this.createActionUrl(this._enrollmentsSearchAction, {
+				sort: sortParameter,
+				promotePins: promotePins
+			})
+		);
 
 		this._sortParameter = sortParameter;
 		this.$.sortText.textContent = this.localize(langterm || '');
@@ -492,13 +496,16 @@ Polymer({
 		if (this._filterCounts.roles > 0 && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('roles')) {
 			params.roles =  this._enrollmentsSearchAction.getFieldByName('roles').value;
 		}
-		this._searchUrl = this._createActionUrlWithBustCache(tabAction.enrollmentsSearchAction, params);
+
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+			this.createActionUrl(tabAction.enrollmentsSearchAction, params)
+		);
 	},
 	_onEnrollmentPinned: function(e) {
 		this._bustCacheToken = Math.random();
 		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
 		if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments) {
-			this._searchUrl = this._createSearchUrlWithNewBustCacheToken();
+			this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
 		}
 	},
 	/*
@@ -577,20 +584,23 @@ Polymer({
 	* Utility/helper functions
 	*/
 
-	_createSearchUrlWithNewBustCacheToken: function() {
-		var parsedUrl = new URL(this._searchUrl);
-		parsedUrl.searchParams.set('bustCache', this._bustCacheToken);
-		return parsedUrl.toString();
-	},
-	_createActionUrlWithBustCache: function(action, parameters) {
-		return this._appendBustCacheQueryString(this.createActionUrl(action, parameters));
-	},
-	_appendBustCacheQueryString: function(url) {
+	_appendOrUpdateBustCacheQueryString: function(url) {
 		if (!url) {
 			return null;
 		}
 
-		return url + (url.indexOf('?') !== -1 ? '&' : '?') + 'bustCache=' + this._bustCacheToken;
+		var bustCacheStr = 'bustCache=';
+		var index = url.indexOf(bustCacheStr);
+		if (index === -1) {
+			return url + (url.indexOf('?') !== -1 ? '&' : '?') + 'bustCache=' + this._bustCacheToken;
+		}
+
+		index += bustCacheStr.length;
+		var prefix = url.substring(0, index);
+		var suffix = url.substring(index, url.length);
+		index = suffix.indexOf('&');
+		suffix = index === -1 ? '' : suffix.substring(index, suffix.length);
+		return prefix + this._bustCacheToken + suffix;
 	},
 	_clearFilteredCourses: function() {
 		if (!this.updatedSortLogic) {
