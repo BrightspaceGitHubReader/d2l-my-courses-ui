@@ -517,7 +517,6 @@ Polymer({
 			this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
 		}
 
-		var isPinned = e.detail.isPinned;
 		var orgUnitId;
 		if (e.detail.orgUnitId) {
 			orgUnitId = e.detail.orgUnitId;
@@ -532,7 +531,7 @@ Polymer({
 			composed: true,
 			detail: {
 				orgUnitId: orgUnitId,
-				isPinned: isPinned
+				isPinned: e.detail.isPinned
 			}
 		}));
 	},
