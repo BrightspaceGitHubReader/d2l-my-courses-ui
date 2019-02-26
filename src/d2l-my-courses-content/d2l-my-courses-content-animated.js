@@ -132,6 +132,7 @@ Polymer({
 		}
 	},
 	behaviors: [
+		D2L.MyCourses.CourseTileResponsiveGridBehavior,
 		D2L.MyCourses.MyCoursesContentBehavior
 	],
 	listeners: {
