@@ -261,7 +261,8 @@ Polymer({
 			value: false
 		},
 		_isSearched: Boolean,
-		_bustCacheToken: Number
+		_bustCacheToken: Number,
+		_selectedTabId: String
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -511,10 +512,12 @@ Polymer({
 		);
 	},
 	_onEnrollmentPinned: function(e) {
-		this._bustCacheToken = Math.random();
-		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
-		if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments) {
-			this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
+		if (this._showGroupByTabs) {
+			this._bustCacheToken = Math.random();
+			var actionName = this._selectedTabId.replace('all-courses-tab-', '');
+			if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments) {
+				this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
+			}
 		}
 
 		var orgUnitId;
