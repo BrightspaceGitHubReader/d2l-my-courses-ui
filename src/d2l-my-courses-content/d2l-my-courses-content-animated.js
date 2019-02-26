@@ -168,8 +168,7 @@ Polymer({
 			}
 			setTimeout(this._onStartedInactiveAlert.bind(this), 50);
 		} else {
-			this.fetchSirenEntity(this.enrollmentsUrl)
-				.then(this._refetchEnrollments.bind(this));
+			this._refetchEnrollments();
 		}
 	},
 	_onTileRemoveComplete: function(e) {

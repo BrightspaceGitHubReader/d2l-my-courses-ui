@@ -566,7 +566,7 @@ describe('d2l-my-courses-content-animated', function() {
 				widget._addToPinnedEnrollments = sandbox.stub();
 				widget._removeFromPinnedEnrollments = sandbox.stub();
 				widget.fetchSirenEntity = sandbox.stub();
-				widget.fetchSirenEntity.withArgs(rootHref).returns(Promise.resolve());
+				widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve());
 				widget._refetchEnrollments = sandbox.stub();
 				var coursePinnedChangeEvent = new CustomEvent(
 					'd2l-course-pinned-change', {
