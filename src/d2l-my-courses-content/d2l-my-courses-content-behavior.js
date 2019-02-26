@@ -6,9 +6,9 @@ import '../d2l-css-grid-view/d2l-css-grid-view-behavior.js';
 import '../d2l-alert-behavior.js';
 import '../d2l-course-tile-responsive-grid-behavior.js';
 import '../d2l-utility-behavior.js';
-import './d2l-my-courses-behavior.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import '../localize-behavior.js';
 window.D2L = window.D2L || {};
 window.D2L.MyCourses = window.D2L.MyCourses || {};
 
@@ -741,8 +741,8 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 * @polymerBehavior D2L.MyCourses.MyCoursesContentBehavior
 */
 D2L.MyCourses.MyCoursesContentBehavior = [
-	D2L.MyCourses.MyCoursesBehavior,
 	D2L.MyCourses.CourseTileResponsiveGridBehavior,
+	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 	D2L.MyCourses.AlertBehavior,
 	D2L.MyCourses.UtilityBehavior,
 	D2L.MyCourses.CssGridBehavior,
