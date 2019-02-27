@@ -47,13 +47,10 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 							<d2l-my-courses-content
 								advanced-search-url="[[advancedSearchUrl]]"
 								course-image-upload-cb="[[courseImageUploadCb]]"
-								course-updates-config="[[courseUpdatesConfig]]"
 								enrollments-url="[[enrollmentsUrl]]"
 								enrollments-search-action="[[item.enrollmentsSearchAction]]"
 								image-catalog-location="[[imageCatalogLocation]]"
 								presentation-url="[[presentationUrl]]"
-								show-semester="[[showSemester]]"
-								show-course-code="[[showCourseCode]]"
 								standard-department-name="[[standardDepartmentName]]"
 								standard-semester-name="[[standardSemesterName]]"
 								tab-search-actions="[[_tabSearchActions]]"
@@ -69,13 +66,10 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 				<d2l-my-courses-content
 					advanced-search-url="[[advancedSearchUrl]]"
 					course-image-upload-cb="[[courseImageUploadCb]]"
-					course-updates-config="[[courseUpdatesConfig]]"
 					enrollments-url="[[enrollmentsUrl]]"
 					enrollments-search-action="[[_enrollmentsSearchAction]]"
 					image-catalog-location="[[imageCatalogLocation]]"
 					presentation-url="[[presentationUrl]]"
-					show-semester="[[showSemester]]"
-					show-course-code="[[showCourseCode]]"
 					standard-department-name="[[standardDepartmentName]]"
 					standard-semester-name="[[standardSemesterName]]"
 					user-settings-url="[[userSettingsUrl]]">
