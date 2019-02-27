@@ -81,7 +81,14 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content">
 					</d2l-enrollment-card>
 				</template>
 			</div>
-			<d2l-link id="viewAllCourses" hidden$="[[!_numberOfEnrollments]]" href="javascript:void(0);" on-tap="_openAllCoursesView" on-keypress="_keypressOpenAllCoursesView" on-mouseover="_createAllCourses" on-focus="_createAllCourses" tabindex="0">
+			<d2l-link id="viewAllCourses"
+				hidden$="[[!_numberOfEnrollments]]"
+				href="javascript:void(0);"
+				on-tap="_openAllCoursesView"
+				on-keypress="_keypressOpenAllCoursesView"
+				on-mouseover="_createAllCourses"
+				on-focus="_createAllCourses"
+				tabindex="0">
 				<h3 class="d2l-body-standard">[[_viewAllCoursesText]]</h3>
 			</d2l-link>
 		</div>
@@ -89,10 +96,18 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content">
 		<div id="allCoursesPlaceholder">
 		</div>
 
-		<d2l-simple-overlay id="basic-image-selector-overlay" title-name="[[localize('changeImage')]]" close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]" with-backdrop="">
-			<iron-scroll-threshold id="image-selector-threshold" on-lower-threshold="_onChangeImageLowerThreshold">
+		<d2l-simple-overlay id="basic-image-selector-overlay"
+			title-name="[[localize('changeImage')]]"
+			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
+			with-backdrop="">
+			<iron-scroll-threshold
+				id="image-selector-threshold"
+				on-lower-threshold="_onChangeImageLowerThreshold">
 			</iron-scroll-threshold>
-			<d2l-basic-image-selector image-catalog-location="[[imageCatalogLocation]]" organization="[[_setImageOrg]]" course-image-upload-cb="[[courseImageUploadCb]]">
+			<d2l-basic-image-selector
+				image-catalog-location="[[imageCatalogLocation]]"
+				organization="[[_setImageOrg]]"
+				course-image-upload-cb="[[courseImageUploadCb]]">
 			</d2l-basic-image-selector>
 		</d2l-simple-overlay>
 	</template>

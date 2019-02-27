@@ -25,7 +25,17 @@ const $_documentContainer = document.createElement('template');
 $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 	<template strip-whitespace="">
 		<template is="dom-if" if="[[!updatedSortLogic]]">
-			<d2l-my-courses-content-animated advanced-search-url="[[advancedSearchUrl]]" enrollments-url="[[enrollmentsUrl]]" enrollments-search-action="[[_enrollmentsSearchAction]]" image-catalog-location="[[imageCatalogLocation]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" standard-department-name="[[standardDepartmentName]]" standard-semester-name="[[standardSemesterName]]" course-updates-config="[[courseUpdatesConfig]]" course-image-upload-cb="[[courseImageUploadCb]]">
+			<d2l-my-courses-content-animated
+				advanced-search-url="[[advancedSearchUrl]]"
+				enrollments-url="[[enrollmentsUrl]]"
+				enrollments-search-action="[[_enrollmentsSearchAction]]"
+				image-catalog-location="[[imageCatalogLocation]]"
+				show-course-code="[[showCourseCode]]"
+				show-semester="[[showSemester]]"
+				standard-department-name="[[standardDepartmentName]]"
+				standard-semester-name="[[standardSemesterName]]"
+				course-updates-config="[[courseUpdatesConfig]]"
+				course-image-upload-cb="[[courseImageUploadCb]]">
 			</d2l-my-courses-content-animated>
 		</template>
 		<template is="dom-if" if="[[updatedSortLogic]]">
@@ -34,14 +44,41 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 					<template items="[[_tabSearchActions]]" is="dom-repeat">
 						<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
 						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
-							<d2l-my-courses-content advanced-search-url="[[advancedSearchUrl]]" course-image-upload-cb="[[courseImageUploadCb]]" course-updates-config="[[courseUpdatesConfig]]" enrollments-url="[[enrollmentsUrl]]" enrollments-search-action="[[item.enrollmentsSearchAction]]" image-catalog-location="[[imageCatalogLocation]]" presentation-url="[[presentationUrl]]" show-semester="[[showSemester]]" show-course-code="[[showCourseCode]]" standard-department-name="[[standardDepartmentName]]" standard-semester-name="[[standardSemesterName]]" tab-search-actions="[[_tabSearchActions]]" tab-search-type="[[_tabSearchType]]" user-settings-url="[[userSettingsUrl]]" changed-course-enrollment="[[_changedCourseEnrollment]]">
+							<d2l-my-courses-content
+								advanced-search-url="[[advancedSearchUrl]]"
+								course-image-upload-cb="[[courseImageUploadCb]]"
+								course-updates-config="[[courseUpdatesConfig]]"
+								enrollments-url="[[enrollmentsUrl]]"
+								enrollments-search-action="[[item.enrollmentsSearchAction]]"
+								image-catalog-location="[[imageCatalogLocation]]"
+								presentation-url="[[presentationUrl]]"
+								show-semester="[[showSemester]]"
+								show-course-code="[[showCourseCode]]"
+								standard-department-name="[[standardDepartmentName]]"
+								standard-semester-name="[[standardSemesterName]]"
+								tab-search-actions="[[_tabSearchActions]]"
+								tab-search-type="[[_tabSearchType]]"
+								user-settings-url="[[userSettingsUrl]]"
+								changed-course-enrollment="[[_changedCourseEnrollment]]">
 							</d2l-my-courses-content>
 						</d2l-tab-panel>
 					</template>
 				</d2l-tabs>
 			</template>
 			<template is="dom-if" if="[[!_showGroupByTabs]]">
-				<d2l-my-courses-content advanced-search-url="[[advancedSearchUrl]]" course-image-upload-cb="[[courseImageUploadCb]]" course-updates-config="[[courseUpdatesConfig]]" enrollments-url="[[enrollmentsUrl]]" enrollments-search-action="[[_enrollmentsSearchAction]]" image-catalog-location="[[imageCatalogLocation]]" presentation-url="[[presentationUrl]]" show-semester="[[showSemester]]" show-course-code="[[showCourseCode]]" standard-department-name="[[standardDepartmentName]]" standard-semester-name="[[standardSemesterName]]" user-settings-url="[[userSettingsUrl]]">
+				<d2l-my-courses-content
+					advanced-search-url="[[advancedSearchUrl]]"
+					course-image-upload-cb="[[courseImageUploadCb]]"
+					course-updates-config="[[courseUpdatesConfig]]"
+					enrollments-url="[[enrollmentsUrl]]"
+					enrollments-search-action="[[_enrollmentsSearchAction]]"
+					image-catalog-location="[[imageCatalogLocation]]"
+					presentation-url="[[presentationUrl]]"
+					show-semester="[[showSemester]]"
+					show-course-code="[[showCourseCode]]"
+					standard-department-name="[[standardDepartmentName]]"
+					standard-semester-name="[[standardSemesterName]]"
+					user-settings-url="[[userSettingsUrl]]">
 				</d2l-my-courses-content>
 			</template>
 		</template>

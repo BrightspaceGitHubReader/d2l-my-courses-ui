@@ -47,7 +47,12 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 	<template strip-whitespace="">
 		<style include="d2l-all-courses-styles"></style>
 
-		<d2l-simple-overlay id="all-courses" title-name="{{localize('allCourses')}}" close-simple-overlay-alt-text="{{localize('closeSimpleOverlayAltText')}}" with-backdrop="" restore-focus-on-close="">
+		<d2l-simple-overlay
+			id="all-courses"
+			title-name="{{localize('allCourses')}}"
+			close-simple-overlay-alt-text="{{localize('closeSimpleOverlayAltText')}}"
+			with-backdrop=""
+			restore-focus-on-close="">
 
 			<div hidden$="[[!_showContent]]">
 				<iron-scroll-threshold id="all-courses-scroll-threshold" on-lower-threshold="_onAllCoursesLowerThreshold">
@@ -55,7 +60,12 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 
 				<div id="search-and-filter">
 					<div class="search-and-filter-row">
-						<d2l-search-widget-custom id="search-widget" search-button-label="{{localize('search')}}" clear-button-label="{{localize('search.clearSearch')}}" search-action="[[_enrollmentsSearchAction]]" search-url="[[_searchUrl]]">
+						<d2l-search-widget-custom
+							id="search-widget"
+							search-button-label="{{localize('search')}}"
+							clear-button-label="{{localize('search.clearSearch')}}"
+							search-action="[[_enrollmentsSearchAction]]"
+							search-url="[[_searchUrl]]">
 						</d2l-search-widget-custom>
 
 						<div id="filterAndSort">
@@ -65,7 +75,12 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 									<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
 								</button>
 								<d2l-dropdown-content id="filterDropdownContent" no-padding="" min-width="350" render-content="">
-									<d2l-filter-menu id="filterMenu" tab-search-type="[[tabSearchType]]" my-enrollments-entity="[[myEnrollmentsEntity]]" filter-standard-semester-name="[[filterStandardSemesterName]]" filter-standard-department-name="[[filterStandardDepartmentName]]">
+									<d2l-filter-menu
+										id="filterMenu"
+										tab-search-type="[[tabSearchType]]"
+										my-enrollments-entity="[[myEnrollmentsEntity]]"
+										filter-standard-semester-name="[[filterStandardSemesterName]]"
+										filter-standard-department-name="[[filterStandardDepartmentName]]">
 									</d2l-filter-menu>
 								</d2l-dropdown-content>
 							</d2l-dropdown>
@@ -108,7 +123,14 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 							<template items="[[tabSearchActions]]" is="dom-repeat">
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
-										<d2l-all-courses-unified-content presentation-url="[[presentationUrl]]" total-filter-count="[[_totalFilterCount]]" filter-counts="[[_filterCounts]]" is-searched="[[_isSearched]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]">
+										<d2l-all-courses-unified-content
+											presentation-url="[[presentationUrl]]"
+											total-filter-count="[[_totalFilterCount]]"
+											filter-counts="[[_filterCounts]]"
+											is-searched="[[_isSearched]]"
+											show-course-code="[[showCourseCode]]"
+											show-semester="[[showSemester]]"
+											course-updates-config="[[courseUpdatesConfig]]">
 										</d2l-all-courses-unified-content>
 									</div>
 									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
@@ -118,12 +140,28 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 						</d2l-tabs>
 					</template>
 					<template is="dom-if" if="[[!_showGroupByTabs]]">
-						<d2l-all-courses-unified-content presentation-url="[[presentationUrl]]" total-filter-count="[[_totalFilterCount]]" filter-counts="[[_filterCounts]]" is-searched="[[_isSearched]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]" render-contents="true">
+						<d2l-all-courses-unified-content
+							presentation-url="[[presentationUrl]]"
+							total-filter-count="[[_totalFilterCount]]"
+							filter-counts="[[_filterCounts]]"
+							is-searched="[[_isSearched]]"
+							show-course-code="[[showCourseCode]]"
+							show-semester="[[showSemester]]"
+							course-updates-config="[[courseUpdatesConfig]]"
+							render-contents="true">
 						</d2l-all-courses-unified-content>
 					</template>
 				</template>
 				<template is="dom-if" if="[[!updatedSortLogic]]">
-					<d2l-all-courses-segregated-content show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]" total-filter-count="[[_totalFilterCount]]" filter-counts="[[_filterCounts]]" is-searched="[[_isSearched]]" filtered-pinned-enrollments="[[_filteredPinnedEnrollments]]" filtered-unpinned-enrollments="[[_filteredUnpinnedEnrollments]]">
+					<d2l-all-courses-segregated-content
+						show-course-code="[[showCourseCode]]"
+						show-semester="[[showSemester]]"
+						course-updates-config="[[courseUpdatesConfig]]"
+						total-filter-count="[[_totalFilterCount]]"
+						filter-counts="[[_filterCounts]]"
+						is-searched="[[_isSearched]]"
+						filtered-pinned-enrollments="[[_filteredPinnedEnrollments]]"
+						filtered-unpinned-enrollments="[[_filteredUnpinnedEnrollments]]">
 					</d2l-all-courses-segregated-content>
 				</template>
 				<d2l-loading-spinner id="lazyLoadSpinner" hidden$="[[!_hasMoreEnrollments]]" size="100">

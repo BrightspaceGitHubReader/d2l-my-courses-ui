@@ -71,7 +71,13 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content-animated
 					{{item.alertMessage}}
 				</d2l-alert>
 			</template>
-			<d2l-course-tile-grid enrollments="[[_pinnedEnrollments]]" tile-sizes="[[_tileSizes]]" locale="[[locale]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]">
+			<d2l-course-tile-grid
+				enrollments="[[_pinnedEnrollments]]"
+				tile-sizes="[[_tileSizes]]"
+				locale="[[locale]]"
+				show-course-code="[[showCourseCode]]"
+				show-semester="[[showSemester]]"
+				course-updates-config="[[courseUpdatesConfig]]">
 			</d2l-course-tile-grid>
 			<d2l-link id="viewAllCourses" hidden$="[[!_hasEnrollments]]" href="javascript:void(0);" on-tap="_openAllCoursesView" on-keypress="_keypressOpenAllCoursesView" on-mouseover="_createAllCourses" on-focus="_createAllCourses" tabindex="0">
 				<h3 class="d2l-body-standard">[[_viewAllCoursesLinkText]]</h3>
@@ -84,7 +90,10 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content-animated
 		<d2l-simple-overlay id="basic-image-selector-overlay" title-name="{{localize('changeImage')}}" close-simple-overlay-alt-text="{{localize('closeSimpleOverlayAltText')}}" with-backdrop="">
 			<iron-scroll-threshold id="image-selector-threshold" on-lower-threshold="_onChangeImageLowerThreshold">
 			</iron-scroll-threshold>
-			<d2l-basic-image-selector image-catalog-location="[[imageCatalogLocation]]" organization="[[_setImageOrg]]" course-image-upload-cb="[[courseImageUploadCb]]">
+			<d2l-basic-image-selector
+				image-catalog-location="[[imageCatalogLocation]]"
+				organization="[[_setImageOrg]]"
+				course-image-upload-cb="[[courseImageUploadCb]]">
 			</d2l-basic-image-selector>
 		</d2l-simple-overlay>
 
