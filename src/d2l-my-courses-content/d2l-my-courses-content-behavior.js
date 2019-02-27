@@ -645,9 +645,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		allCourses.updatedSortLogic = this.updatedSortLogic;
 		allCourses.cssGridView = this.cssGridView;
 		allCourses.presentationUrl = this.presentationUrl;
-		allCourses.showCourseCode = this.showCourseCode;
-		allCourses.showSemester = this.showSemester;
-		allCourses.courseUpdatesConfig = this.courseUpdatesConfig;
 		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
 
 		allCourses.open();

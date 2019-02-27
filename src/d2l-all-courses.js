@@ -127,10 +127,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 											presentation-url="[[presentationUrl]]"
 											total-filter-count="[[_totalFilterCount]]"
 											filter-counts="[[_filterCounts]]"
-											is-searched="[[_isSearched]]"
-											show-course-code="[[showCourseCode]]"
-											show-semester="[[showSemester]]"
-											course-updates-config="[[courseUpdatesConfig]]">
+											is-searched="[[_isSearched]]">
 										</d2l-all-courses-unified-content>
 									</div>
 									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
@@ -144,11 +141,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 							presentation-url="[[presentationUrl]]"
 							total-filter-count="[[_totalFilterCount]]"
 							filter-counts="[[_filterCounts]]"
-							is-searched="[[_isSearched]]"
-							show-course-code="[[showCourseCode]]"
-							show-semester="[[showSemester]]"
-							course-updates-config="[[courseUpdatesConfig]]"
-							render-contents="true">
+							is-searched="[[_isSearched]]">
 						</d2l-all-courses-unified-content>
 					</template>
 				</template>

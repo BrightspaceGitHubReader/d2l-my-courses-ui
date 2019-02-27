@@ -62,15 +62,6 @@ Polymer({
 		isSearched: Boolean,
 		filteredEnrollments: Array,
 		presentationUrl: String,
-		showCourseCode: {
-			type: Boolean,
-			value: false
-		},
-		showSemester: {
-			type: Boolean,
-			value: false
-		},
-		courseUpdatesConfig: Object,
 
 		_noCoursesInSearch: Boolean,
 		_noCoursesInSelection: Boolean,
