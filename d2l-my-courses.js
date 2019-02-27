@@ -68,8 +68,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 					image-catalog-location="[[imageCatalogLocation]]"
 					presentation-url="[[presentationUrl]]"
 					standard-department-name="[[standardDepartmentName]]"
-					standard-semester-name="[[standardSemesterName]]"
-					user-settings-url="[[userSettingsUrl]]">
+					standard-semester-name="[[standardSemesterName]]">
 				</d2l-my-courses-content>
 			</template>
 		</template>

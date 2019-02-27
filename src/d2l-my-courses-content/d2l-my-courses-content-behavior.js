@@ -223,8 +223,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		}
 	},
 	_computeHasOnlyPastCourses: function() {
-		return this.updatedSortLogic
-			&& this._hidePastCourses
+		return this._hidePastCourses
 			&& this._numberOfEnrollments !== 0
 			&& this._enrollments.length === 0;
 	},
@@ -642,7 +641,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		allCourses.advancedSearchUrl = this.advancedSearchUrl;
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
-		allCourses.updatedSortLogic = this.updatedSortLogic;
+		allCourses.updatedSortLogic = true;
 		allCourses.cssGridView = this.cssGridView;
 		allCourses.presentationUrl = this.presentationUrl;
 		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
