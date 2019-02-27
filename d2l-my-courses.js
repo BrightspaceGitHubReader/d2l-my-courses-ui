@@ -27,7 +27,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 		<template is="dom-if" if="[[!updatedSortLogic]]">
 			<d2l-my-courses-content-animated
 				advanced-search-url="[[advancedSearchUrl]]"
-				enrollments-url="[[enrollmentsUrl]]"
 				enrollments-search-action="[[_enrollmentsSearchAction]]"
 				image-catalog-location="[[imageCatalogLocation]]"
 				show-course-code="[[showCourseCode]]"
@@ -47,7 +46,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 							<d2l-my-courses-content
 								advanced-search-url="[[advancedSearchUrl]]"
 								course-image-upload-cb="[[courseImageUploadCb]]"
-								enrollments-url="[[enrollmentsUrl]]"
 								enrollments-search-action="[[item.enrollmentsSearchAction]]"
 								image-catalog-location="[[imageCatalogLocation]]"
 								presentation-url="[[presentationUrl]]"
@@ -66,7 +64,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 				<d2l-my-courses-content
 					advanced-search-url="[[advancedSearchUrl]]"
 					course-image-upload-cb="[[courseImageUploadCb]]"
-					enrollments-url="[[enrollmentsUrl]]"
 					enrollments-search-action="[[_enrollmentsSearchAction]]"
 					image-catalog-location="[[imageCatalogLocation]]"
 					presentation-url="[[presentationUrl]]"
