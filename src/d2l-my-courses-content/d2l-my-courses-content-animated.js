@@ -243,15 +243,12 @@ Polymer({
 		var allCourses = this.$$('d2l-all-courses');
 
 		allCourses.enrollmentsSearchAction = this.enrollmentsSearchAction;
-		allCourses.tabSearchActions = this.tabSearchActions;
-		allCourses.tabSearchType = this.tabSearchType;
 		allCourses.locale = this.locale;
 		allCourses.advancedSearchUrl = this.advancedSearchUrl;
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
-		allCourses.updatedSortLogic = this.updatedSortLogic;
+		allCourses.updatedSortLogic = false;
 		allCourses.cssGridView = this.cssGridView;
-		allCourses.presentationUrl = this.presentationUrl;
 		allCourses.showCourseCode = this.showCourseCode;
 		allCourses.showSemester = this.showSemester;
 		allCourses.courseUpdatesConfig = this.courseUpdatesConfig;
@@ -261,6 +258,11 @@ Polymer({
 
 		e.preventDefault();
 		e.stopPropagation();
+	},
+
+	// Override for MyCoursesContentBehavior._computeHasOnlyPastCourses
+	_computeHasOnlyPastCourses: function() {
+		return false;
 	},
 
 	/*
