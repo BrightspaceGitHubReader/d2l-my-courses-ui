@@ -46,7 +46,13 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-segregated-cont
 			[[localize('noPinnedCoursesInRole')]]
 		</span>
 
-		<d2l-course-tile-grid id="all-courses-segregated-pinned-tile-grid" enrollments="[[filteredPinnedEnrollments]]" enrollments-to-animate="[[_pinnedEnrollmentsToAnimate]]" tile-sizes="[[_tileSizes]]" locale="[[locale]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]">
+		<d2l-course-tile-grid id="all-courses-segregated-pinned-tile-grid"
+			enrollments="[[filteredPinnedEnrollments]]"
+			enrollments-to-animate="[[_pinnedEnrollmentsToAnimate]]"
+			tile-sizes="[[_tileSizes]]"
+			locale="[[locale]]" show-course-code="[[showCourseCode]]"
+			show-semester="[[showSemester]]"
+			course-updates-config="[[courseUpdatesConfig]]">
 		</d2l-course-tile-grid>
 
 		<h2>[[localize('unpinnedCourses')]]</h2>
@@ -70,7 +76,14 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-segregated-cont
 			[[localize('noUnpinnedCoursesInRole')]]
 		</span>
 
-		<d2l-course-tile-grid id="all-courses-segregated-unpinned-tile-grid" enrollments="[[filteredUnpinnedEnrollments]]" enrollments-to-animate="[[_unpinnedEnrollmentsToAnimate]]" tile-sizes="[[_tileSizes]]" locale="[[locale]]" show-course-code="[[showCourseCode]]" show-semester="[[showSemester]]" course-updates-config="[[courseUpdatesConfig]]">
+		<d2l-course-tile-grid id="all-courses-segregated-unpinned-tile-grid"
+			enrollments="[[filteredUnpinnedEnrollments]]"
+			enrollments-to-animate="[[_unpinnedEnrollmentsToAnimate]]"
+			tile-sizes="[[_tileSizes]]"
+			locale="[[locale]]"
+			show-course-code="[[showCourseCode]]"
+			show-semester="[[showSemester]]"
+			course-updates-config="[[courseUpdatesConfig]]">
 		</d2l-course-tile-grid>
 	</template>
 	
