@@ -50,7 +50,8 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-segregated-cont
 			enrollments="[[filteredPinnedEnrollments]]"
 			enrollments-to-animate="[[_pinnedEnrollmentsToAnimate]]"
 			tile-sizes="[[_tileSizes]]"
-			locale="[[locale]]" show-course-code="[[showCourseCode]]"
+			locale="[[locale]]"
+			show-course-code="[[showCourseCode]]"
 			show-semester="[[showSemester]]"
 			course-updates-config="[[courseUpdatesConfig]]">
 		</d2l-course-tile-grid>
