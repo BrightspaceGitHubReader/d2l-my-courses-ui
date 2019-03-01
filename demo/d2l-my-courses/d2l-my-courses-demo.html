@@ -21,17 +21,10 @@
 		const $_documentContainer = document.createElement('template');
 
 		$_documentContainer.innerHTML = `<custom-style>
-			<style is="custom-style" include="demo-pages-shared-styles"></style>
-			</custom-style>`;
-
-		document.body.appendChild($_documentContainer.content);
-	</script>
-
-	<script type="module">
-		const $_documentContainer = document.createElement('template');
-
-		$_documentContainer.innerHTML = `<custom-style include="d2l-typography">
-			<style is="custom-style" include="d2l-typography"></style>
+				<style is="custom-style" include="demo-pages-shared-styles"></style>
+			</custom-style>
+			<custom-style include="d2l-typography">
+				<style is="custom-style" include="d2l-typography"></style>
 			</custom-style>`;
 
 		document.body.appendChild($_documentContainer.content);
@@ -47,7 +40,12 @@
 	<script type="module">
 		const $_documentContainer = document.createElement('template');
 
-		$_documentContainer.innerHTML = `<d2l-my-courses class="d2l-my-courses-widget" enrollments-url="../data/enrollments" promoted-searches="../data/searches" user-settings-url="../data/user-settings" updated-sort-logic="true">
+		$_documentContainer.innerHTML = `<d2l-my-courses
+				class="d2l-my-courses-widget"
+				enrollments-url="../data/enrollments"
+				promoted-searches="../data/searches"
+				user-settings-url="../data/user-settings"
+				updated-sort-logic="true">
 			</d2l-my-courses>`;
 
 		document.body.appendChild($_documentContainer.content);
