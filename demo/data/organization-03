@@ -1,6 +1,7 @@
 {
   "properties": {
     "name": "Course 03",
+    "code": "C03",
     "isActive": true
   },
   "links": [
@@ -9,6 +10,12 @@
         "self"
       ],
       "href": "../data/organization-03"
+    },
+    {
+       "rel": [
+         "https://api.brightspace.com/rels/parent-semester"
+       ],
+       "href": "../data/semester-00"
     }
   ]
 }

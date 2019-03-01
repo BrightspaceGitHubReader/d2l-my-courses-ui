@@ -1,0 +1,14 @@
+{
+	"properties": {
+		"name": "Semester"
+	},
+	"links": [{
+		"rel": [ "self" ],
+		"href": "../data/semester-00"
+	}, {
+		"rel": [
+			"https://api.brightspace.com/rels/organization"
+		],
+		"href": "../data/semester-00"
+	}]
+}
