@@ -150,7 +150,8 @@ Polymer({
 	behaviors: [
 		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 		D2L.MyCourses.UtilityBehavior,
-		D2L.PolymerBehaviors.SearchWidgetBehavior
+		D2L.PolymerBehaviors.SearchWidgetBehavior,
+		D2L.Dom
 	],
 
 	ready: function() {
@@ -417,19 +418,8 @@ Polymer({
 		this._checkFocusLost(dom(e).rootTarget);
 	},
 	_checkFocusLost: function(focusedElement) {
-		if (this.$.dropdown.opened && !this._isDescendant(focusedElement)) {
+		if (this.$.dropdown.opened && !this.isComposedAncestor(this, focusedElement)) {
 			this.$.dropdown.close();
 		}
-	},
-	// Determines whether the given element is a descendant of this element.
-	_isDescendant: function(element) {
-		var parentNode = element.parentNode;
-		while (parentNode) {
-			if (dom(parentNode).node === this) {
-				return true;
-			}
-			parentNode = parentNode.parentNode;
-		}
-		return false;
 	}
 });
