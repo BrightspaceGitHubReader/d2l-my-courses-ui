@@ -30,7 +30,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 		</template>
 		<template is="dom-if" if="[[updatedSortLogic]]">
 			<template is="dom-if" if="[[_showGroupByTabs]]">
-				<d2l-tabs max-to-show="5">
+				<d2l-tabs>
 					<template items="[[_tabSearchActions]]" is="dom-repeat">
 						<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
 						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
