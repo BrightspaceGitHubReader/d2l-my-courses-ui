@@ -423,9 +423,8 @@ describe('<d2l-course-tile>', function() {
 
 		describe('status: set', function() {
 			it('toggles on the "change-image-loading" class on the tile-container', function() {
-				details.status = 'set';
 				expect(widget.$$('.tile-container.change-image-loading')).to.equal(null);
-				widget.setCourseImage(details);
+				widget.setCourseImage(details.image, 'set');
 				expect(widget.$$('.tile-container.change-image-loading')).to.not.equal(null);
 			});
 		});
@@ -434,7 +433,7 @@ describe('<d2l-course-tile>', function() {
 			it('calls _displaySetImageResult with success = true', function() {
 				details.status = 'success';
 				widget._displaySetImageResult = sinon.stub();
-				widget.setCourseImage(details);
+				widget.setCourseImage(details.image, 'success');
 				expect(widget._displaySetImageResult.calledWith(true)).to.equal(true);
 			});
 		});
@@ -443,7 +442,7 @@ describe('<d2l-course-tile>', function() {
 			it('calls _displaySetImageResult with success = false', function() {
 				details.status = 'failure';
 				widget._displaySetImageResult = sinon.stub();
-				widget.setCourseImage(details);
+				widget.setCourseImage(details.image, 'failure');
 				expect(widget._displaySetImageResult.calledWith(false)).to.equal(true);
 			});
 		});
