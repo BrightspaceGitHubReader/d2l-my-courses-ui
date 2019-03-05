@@ -109,7 +109,7 @@ Polymer({
 			return; // input didn't have a provided organization
 		}
 
-		var courseTiles = this.$$('.course-tile-container').querySelectorAll('d2l-course-tile')
+		var courseTiles = this.$$('.course-tile-container').querySelectorAll('d2l-course-tile');
 		var selectedTileArray = [].filter.call(courseTiles, function(tile) {
 			if (! tile._organization || !tile._organization.properties) {
 				return false;
