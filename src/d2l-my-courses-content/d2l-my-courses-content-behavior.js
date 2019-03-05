@@ -505,9 +505,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 				}.bind(this), 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
 			}
 		}
-		if (this._allCoursesCreated) {
-			this.$$('d2l-all-courses').setCourseImage(e);
-		}
 		!this.cssGridView && this.$$('d2l-course-tile-grid').setCourseImage(e);
 	},
 	_onPresentationUrlChange: function(newValue) {
