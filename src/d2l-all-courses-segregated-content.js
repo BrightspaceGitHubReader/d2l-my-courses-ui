@@ -168,10 +168,6 @@ Polymer({
 	getCourseTileItemCount: function() {
 		return this._itemCount;
 	},
-	setCourseImage: function(details) {
-		this.$$('#all-courses-segregated-pinned-tile-grid').setCourseImage(details);
-		this.$$('#all-courses-segregated-unpinned-tile-grid').setCourseImage(details);
-	},
 
 	_onTileRemoveComplete: function(e) {
 		if (e.detail.pinned) {

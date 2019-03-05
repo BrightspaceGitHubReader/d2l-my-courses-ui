@@ -42,7 +42,6 @@ describe('d2l-course-tile-grid', () => {
 	describe('Public API', () => {
 		[
 			'getCourseTileItemCount',
-			'setCourseImage',
 			'focus',
 			'refreshCourseTileImage'
 		].forEach(methodName => {

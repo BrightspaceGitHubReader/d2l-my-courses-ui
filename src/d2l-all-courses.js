@@ -386,10 +386,6 @@ Polymer({
 				}.bind(this), 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
 			}
 		}
-
-		if (!this.updatedSortLogic) {
-			this.$$('d2l-all-courses-segregated-content').setCourseImage(details);
-		}
 	},
 
 	/*

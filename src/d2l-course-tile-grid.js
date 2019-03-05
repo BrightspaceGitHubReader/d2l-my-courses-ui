@@ -93,23 +93,23 @@ Polymer({
 		'enrollment-pinned': '_onEnrollmentPinAction',
 		'enrollment-unpinned': '_onEnrollmentPinAction'
 	},
+	attached: function() {
+		document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
+	},
+	detached: function() {
+		document.body.removeEventListener('set-course-image', this._onSetCourseImage.bind(this));
+	},
 	getCourseTileItemCount: function() {
 		return this.enrollments.length;
 	},
-	setCourseImage: function(detail) {
-		if (!detail) {
-			return;
-		}
-
-		var container = this.$$('.course-tile-container'),
-			courseTiles = container.querySelectorAll('d2l-course-tile'),
-			organization = (detail.detail || {}).organization;
+	_onSetCourseImage: function(e) {
+		var organization = e && e.detail && e.detail.organization;
 
 		if (!organization || !organization.properties) {
 			return; // input didn't have a provided organization
 		}
 
-		// find isn't compatible with IE
+		var courseTiles = this.$$('.course-tile-container').querySelectorAll('d2l-course-tile');
 		var selectedTileArray = [].filter.call(courseTiles, function(tile) {
 			if (! tile._organization || !tile._organization.properties) {
 				return false;
@@ -120,7 +120,7 @@ Polymer({
 		if (selectedTileArray.length !== 0) {
 			// There should only ever be one instance of the same course tile in a tile grid
 			var selectedTile = selectedTileArray[0];
-			selectedTile.setCourseImage(detail.detail);
+			selectedTile.setCourseImage(e.detail.image, e.detail.status);
 		}
 	},
 	focus: function(organization) {

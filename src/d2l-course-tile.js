@@ -378,18 +378,16 @@ Polymer({
 			.then(this._displaySetImageResult.bind(this, true, true))
 			.catch(this._displaySetImageResult.bind(this, false));
 	},
-	setCourseImage: function(details) {
-		details = details || {};
-		var tileContainer = this.$$('.tile-container');
-		var newImageHref = this.getDefaultImageLink(details.image),
-			newSrcset = this.getImageSrcset(details.image, 'tile');
+	setCourseImage: function(image, status) {
+		var newImageHref = this.getDefaultImageLink(image),
+			newSrcset = this.getImageSrcset(image, 'tile');
 
-		switch (details.status) {
+		switch (status) {
 			case 'set':
-				this.toggleClass('change-image-loading', true, tileContainer);
+				this.toggleClass('change-image-loading', true, this.$$('.tile-container'));
 				// load the image while the loading spinner runs to that we have it when the spinner ends
 				// NOTE: if this needs optimization, we can wait for the image's onload to play the success animation
-				this._nextImage = details.image;
+				this._nextImage = image;
 				var imagePreloader = document.createElement('img');
 				imagePreloader.setAttribute('src', newImageHref);
 				imagePreloader.setAttribute('srcset', newSrcset);
