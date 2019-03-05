@@ -319,6 +319,7 @@ Polymer({
 		this.listen(this.$.filterDropdownContent, 'd2l-dropdown-close', '_onFilterDropdownClose');
 		this.listen(this.$.filterMenu, 'd2l-filter-menu-change', '_onFilterChanged');
 		this.listen(this.$['search-widget'], 'd2l-search-widget-results-changed', '_onSearchResultsChanged');
+		document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
 	},
 	detached: function() {
 		this.unlisten(this.$.sortDropdown, 'd2l-menu-item-change', '_onSortOrderChanged');
@@ -326,6 +327,7 @@ Polymer({
 		this.unlisten(this.$.filterDropdownContent, 'd2l-dropdown-close', '_onFilterDropdownClose');
 		this.unlisten(this.$.filterMenu, 'd2l-filter-menu-change', '_onFilterChanged');
 		this.unlisten(this.$['search-widget'], 'd2l-search-widget-results-changed', '_onSearchResultsChanged');
+		document.body.removeEventListener('set-course-image', this._onSetCourseImage.bind(this));
 	},
 	/*
 	* Public API methods
@@ -374,7 +376,7 @@ Polymer({
 		this.$$('#all-courses').open();
 		this.load();
 	},
-	setCourseImage: function(details) {
+	_onSetCourseImage: function(details) {
 		this._removeAlert('setCourseImageFailure');
 
 		if (details && details.detail) {
