@@ -96,6 +96,9 @@ Polymer({
 	attached: function() {
 		document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
 	},
+	detached: function() {
+		document.body.removeEventListener('set-course-image', this._onSetCourseImage.bind(this));
+	},
 	getCourseTileItemCount: function() {
 		return this.enrollments.length;
 	},
