@@ -119,7 +119,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 
 				<template is="dom-if" if="[[updatedSortLogic]]">
 					<template is="dom-if" if="[[_showGroupByTabs]]">
-						<d2l-tabs max-to-show="5">
+						<d2l-tabs>
 							<template items="[[tabSearchActions]]" is="dom-repeat">
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
