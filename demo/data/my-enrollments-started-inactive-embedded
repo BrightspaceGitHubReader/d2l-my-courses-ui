@@ -1,4 +1,8 @@
 {
+  "class": [
+    "enrollments",
+    "collection"
+  ],
   "entities": [{
       "class": [
         "enrollment",
@@ -14,7 +18,7 @@
           "rel": [
               "https://api.brightspace.com/rels/organization"
           ],
-          "href": "../data/enrollment-inactive"
+          "href": "../data/organization-inactive-88"
       }]
   }, {
       "class": [
@@ -31,7 +35,7 @@
           "rel": [
               "https://api.brightspace.com/rels/organization"
           ],
-          "href": "../data/enrollment-started-inactive"
+          "href": "../data/organization-started-inactive-66"
       }]
   }]
 }
