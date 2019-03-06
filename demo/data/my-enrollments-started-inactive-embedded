@@ -1,0 +1,37 @@
+{
+  "entities": [{
+      "class": [
+        "enrollment",
+        "pinned"
+      ],
+      "rel": [
+          "https://api.brightspace.com/rels/user-enrollment"
+      ],
+      "links": [{
+          "rel": [ "self" ],
+          "href": "../data/enrollment-inactive"
+      }, {
+          "rel": [
+              "https://api.brightspace.com/rels/organization"
+          ],
+          "href": "../data/enrollment-inactive"
+      }]
+  }, {
+      "class": [
+          "enrollment",
+          "pinned"
+      ],
+      "rel": [
+          "https://api.brightspace.com/rels/user-enrollment"
+      ],
+      "links": [{
+          "rel": [ "self" ],
+          "href": "../data/enrollment-started-inactive"
+      }, {
+          "rel": [
+              "https://api.brightspace.com/rels/organization"
+          ],
+          "href": "../data/enrollment-started-inactive"
+      }]
+  }]
+}
