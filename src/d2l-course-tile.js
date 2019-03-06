@@ -623,8 +623,8 @@ Polymer({
 		}
 
 		var nowDate = Date.now();
-		var endDate = Date.parse(organization.properties.endDate || Number.MAX_VALUE);
-		var startDate = Date.parse(organization.properties.startDate || Number.MIN_VALUE);
+		var endDate = Date.parse(organization.properties.endDate);
+		var startDate = Date.parse(organization.properties.startDate);
 		var inactive = !organization.properties.isActive;
 
 		this.removeAttribute('past-course');
