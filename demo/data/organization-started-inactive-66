@@ -8,5 +8,8 @@
   "links": [{
     "rel": ["self"],
     "href": "../data/organization-started-inactive-66"
+  },{
+    "rel": ["https://api.brightspace.com/rels/course-offering-info-page"],
+    "href": "../data/organization-inactive-88"
   }]
 }
