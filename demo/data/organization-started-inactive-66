@@ -2,7 +2,8 @@
   "properties": {
     "name": "Course 66",
     "isActive": false,
-    "startDate": 100
+    "startDate": 100,
+    "endDate": null
   },
   "links": [{
     "rel": ["self"],
