@@ -574,8 +574,11 @@ Polymer({
 		}
 		this._canChangeCourseImage = this._getCanChangeCourseImage(organization);
 		this._pinnedChanged();
-		this._courseSettingsLabel = this.localize('courseSettings', 'course', this._organization.properties.name);
-		this._coursePinButtonLabel = this.localize('coursePinButton', 'course', this._organization.properties.name);
+
+		if( organization.properties ) {
+			this._courseSettingsLabel = this.localize('courseSettings', 'course', this._organization.properties.name);
+			this._coursePinButtonLabel = this.localize('coursePinButton', 'course', this._organization.properties.name);
+		}
 
 		var notificationsLink = organization && organization.getLinkByRel(Rels.Notifications.organizationNotifications);
 		this._notificationsUrl = notificationsLink ? notificationsLink.href : null;
@@ -615,9 +618,13 @@ Polymer({
 		this.$$('#courseUpdates').setAttribute('aria-hidden', updates === 0 ? 'true' : 'false');
 	},
 	_checkDateBounds: function(organization) {
+		if( !organization.properties ) {
+			return;
+		}
+
 		var nowDate = Date.now();
-		var endDate = Date.parse(organization.properties.endDate);
-		var startDate = Date.parse(organization.properties.startDate);
+		var endDate = Date.parse(organization.properties.endDate || Number.MAX_VALUE);
+		var startDate = Date.parse(organization.properties.startDate || Number.MIN_VALUE);
 		var inactive = !organization.properties.isActive;
 
 		this.removeAttribute('past-course');
