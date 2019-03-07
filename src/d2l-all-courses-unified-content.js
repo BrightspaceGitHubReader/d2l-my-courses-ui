@@ -68,7 +68,6 @@ Polymer({
 		_noCoursesInDepartment: Boolean,
 		_noCoursesInSemester: Boolean,
 		_noCoursesInRole: Boolean,
-		_tileSizes: Object,
 		_itemCount: {
 			type: Number,
 			value: 0

@@ -39,11 +39,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			type: Array,
 			value: function() { return []; }
 		},
-		// Whether course tiles should animate during pin/unpin
-		_animateCourseTileGrid: {
-			type: Boolean,
-			value: false
-		},
 		_courseTileOrganizationEventCount: {
 			type: Number,
 			value: 0
@@ -90,11 +85,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		_showContent: {
 			type: Boolean,
 			value: false
-		},
-		// Size the tile should render with respect to vw
-		_tileSizes: {
-			type: Object,
-			value: function() { return {}; }
 		},
 		// Text to render for "View All Courses" link (includes enrollment count approximation)
 		_viewAllCoursesText: {
