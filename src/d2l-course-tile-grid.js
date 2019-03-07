@@ -183,10 +183,10 @@ Polymer({
 			}
 		}
 	},
-	checkForStartedInactive: function(type) {
+	checkForStartedInactive: function(removed) {
 		var courseTiles = this.$$('.course-tile-container').querySelectorAll('d2l-course-tile');
 		// When this runs, the removed tile won't be gone yet, so we have to check for an additional tile
-		var searchAmount = type === 'remove' ? 2 : 1;
+		var searchAmount = removed ? 2 : 1;
 
 		for (var i = 0; i < courseTiles.length; i++) {
 			if (courseTiles[i].isStartedInactive && --searchAmount === 0) {

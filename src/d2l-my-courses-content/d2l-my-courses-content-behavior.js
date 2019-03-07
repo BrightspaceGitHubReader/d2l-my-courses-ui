@@ -417,8 +417,8 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 
 		this._onResize();
 	},
-	_onStartedInactiveAlert: function(e) {
-		if (this._checkIfStartedInactiveCourses(e)) {
+	_onStartedInactiveAlert: function() {
+		if (this.$$('.course-tile-grid d2l-enrollment-card[started-inactive]')) {
 			this._addAlert('warning', 'startedInactiveCourses', this.localize('startedInactiveAlert'));
 		}
 	},
@@ -465,16 +465,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 				enrollmentsSearchAction: action.enrollmentsSearchAction
 			};
 		}.bind(this));
-	},
-	_checkIfStartedInactiveCourses: function(e) {
-		var type = e && e.detail && e.detail.type;
-		var hasStartedInactiveCourses = false;
-		if (this.cssGridView) {
-			hasStartedInactiveCourses = !!this.$$('.course-tile-grid d2l-enrollment-card[started-inactive]');
-		} else {
-			hasStartedInactiveCourses = this.$$('d2l-course-tile-grid').checkForStartedInactive(type);
-		}
-		return hasStartedInactiveCourses;
 	},
 	_onSimpleOverlayClosed: function() {
 		this._removeAlert('setCourseImageFailure');
