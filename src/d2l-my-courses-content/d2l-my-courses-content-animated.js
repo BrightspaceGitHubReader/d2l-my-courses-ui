@@ -250,7 +250,7 @@ Polymer({
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
 		allCourses.updatedSortLogic = false;
-		allCourses.cssGridView = this.cssGridView;
+		allCourses.cssGridView = false;
 		allCourses.showCourseCode = this.showCourseCode;
 		allCourses.showSemester = this.showSemester;
 		allCourses.courseUpdatesConfig = this.courseUpdatesConfig;
@@ -265,6 +265,14 @@ Polymer({
 	// Override for MyCoursesContentBehavior._computeHasOnlyPastCourses
 	_computeHasOnlyPastCourses: function() {
 		return false;
+	},
+
+	_getTileGrid: function() {
+		return this.$$('d2l-course-tile-grid');
+	},
+
+	_refreshTileGridImages: function() {
+		this.$$('d2l-course-tile-grid').refreshCourseTileImage(this._setImageOrg);
 	},
 
 	/*

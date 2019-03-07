@@ -160,21 +160,12 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 	courseImageUploadCompleted: function(success) {
 		if (success) {
 			this.$['basic-image-selector-overlay'].close();
-
-			if (this.cssGridView) {
-				var courseTiles = this.$$('.course-tile-grid').querySelectorAll('d2l-enrollment-card');
-				for (var i = 0; i < courseTiles.length; i++) {
-					courseTiles[i].refreshImage(this._setImageOrg);
-				}
-			} else {
-				this.$$('d2l-course-tile-grid').refreshCourseTileImage(this._setImageOrg);
-			}
+			this._refreshTileGridImages();
 		}
 		this.focus();
 	},
 	focus: function() {
-		var tileGrid = this.cssGridView ? this.$$('.course-tile-grid') : this.$$('d2l-course-tile-grid');
-		if (tileGrid.focus(this._setImageOrg)) {
+		if (this._getTileGrid().focus(this._setImageOrg)) {
 			return;
 		}
 		this.$.viewAllCourses.focus();
@@ -219,6 +210,15 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		return this._hidePastCourses
 			&& this._numberOfEnrollments !== 0
 			&& this._enrollments.length === 0;
+	},
+	_getTileGrid: function() {
+		return this.$$('.course-tile-grid');
+	},
+	_refreshTileGridImages: function() {
+		var courseTiles = this._getTileGrid().querySelectorAll('d2l-enrollment-card');
+		for (var i = 0; i < courseTiles.length; i++) {
+			courseTiles[i].refreshImage(this._setImageOrg);
+		}
 	},
 
 	/*
@@ -621,7 +621,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
 		allCourses.updatedSortLogic = true;
-		allCourses.cssGridView = this.cssGridView;
+		allCourses.cssGridView = true;
 		allCourses.presentationUrl = this.presentationUrl;
 		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
 
@@ -648,8 +648,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			)
 		) {
 			// When using Current sort, hide past courses in the widget view
-			var tileGrid = this.cssGridView ? this.$$('.course-tile-grid') : this.$$('d2l-course-tile-grid');
-			tileGrid.setAttribute('hide-past-courses', '');
+			this._getTileGrid().setAttribute('hide-past-courses', '');
 			this._hidePastCourses = true;
 		}
 
