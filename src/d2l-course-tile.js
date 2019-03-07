@@ -682,7 +682,7 @@ Polymer({
 		this.isStartedInactive = true;
 		this.toggleClass('notification-overlay-active', true, this.$$('.tile-container'));
 		if (this.hasCourseInfoUrl) {
-			this.dispatchEvent( new CustomEvent(
+			this.dispatchEvent(new CustomEvent(
 				'started-inactive',
 				{ bubbles: true, composed: true, details: { type: 'add' }}
 			));
@@ -711,7 +711,7 @@ Polymer({
 		this._pinLabel = this.localize(this._pinned ? 'unpin' : 'pin');
 
 		if (pinned === false && this.isStartedInactive) {
-			this.dispatchEvent( new CustomEvent(
+			this.dispatchEvent(new CustomEvent(
 				'started-inactive',
 				{ bubbles: true, composed: true, details: { type: 'remove' }}
 			));

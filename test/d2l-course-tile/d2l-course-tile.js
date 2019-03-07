@@ -806,7 +806,7 @@ describe('<d2l-course-tile>', function() {
 				var fireSpy = sandbox.spy(widget, 'dispatchEvent');
 				widget._setOverlayStartedInactive();
 				expect(fireSpy).to.have.been.calledWithMatch(function(e) {
-					return e.type == 'started-inactive';
+					return e.type === 'started-inactive';
 				});
 			});
 
@@ -815,7 +815,7 @@ describe('<d2l-course-tile>', function() {
 				var fireSpy = sandbox.spy(widget, 'dispatchEvent');
 				widget._setOverlayStartedInactive();
 				expect(fireSpy).to.not.have.been.calledWithMatch(function(e) {
-					return e.type == 'started-inactive';
+					return e.type === 'started-inactive';
 				});
 			});
 
