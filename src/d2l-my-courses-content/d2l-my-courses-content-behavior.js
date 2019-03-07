@@ -142,12 +142,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected.bind(this));
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
-
-		afterNextRender(this, function() {
-			if (!this.cssGridView) {
-				this.$$('d2l-course-tile-grid').addEventListener('startedInactiveAlert', this._onStartedInactiveAlert.bind(this));
-			}
-		}.bind(this));
 	},
 	detached: function() {
 		document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
