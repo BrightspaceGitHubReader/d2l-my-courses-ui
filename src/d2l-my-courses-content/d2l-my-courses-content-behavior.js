@@ -411,8 +411,8 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 
 		this._onResize();
 	},
-	_onStartedInactiveAlert: function(e) {
-		if (!!this.$$('.course-tile-grid d2l-enrollment-card[started-inactive]')) {
+	_onStartedInactiveAlert: function() {
+		if (this.$$('.course-tile-grid d2l-enrollment-card[started-inactive]')) {
 			this._addAlert('warning', 'startedInactiveCourses', this.localize('startedInactiveAlert'));
 		}
 	},
