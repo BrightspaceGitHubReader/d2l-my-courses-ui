@@ -682,7 +682,10 @@ Polymer({
 		this.isStartedInactive = true;
 		this.toggleClass('notification-overlay-active', true, this.$$('.tile-container'));
 		if (this.hasCourseInfoUrl) {
-			this.fire('startedInactiveAlert', { type: 'add' });
+			this.dispatchEvent(new CustomEvent(
+				'started-inactive',
+				{ bubbles: true, composed: true, details: { type: 'add' }}
+			));
 			this.toggleClass('warning-circle', true, this.$$('.alert-color-circle'));
 		}
 	},
@@ -708,7 +711,10 @@ Polymer({
 		this._pinLabel = this.localize(this._pinned ? 'unpin' : 'pin');
 
 		if (pinned === false && this.isStartedInactive) {
-			this.fire('startedInactiveAlert', { type: 'remove' });
+			this.dispatchEvent(new CustomEvent(
+				'started-inactive',
+				{ bubbles: true, composed: true, details: { type: 'remove' }}
+			));
 		}
 	},
 	_setCourseTileHovered: function(isHovered) {

@@ -6,7 +6,6 @@ import '../d2l-css-grid-view/d2l-css-grid-view-behavior.js';
 import '../d2l-alert-behavior.js';
 import '../d2l-course-tile-responsive-grid-behavior.js';
 import '../d2l-utility-behavior.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import '../localize-behavior.js';
 window.D2L = window.D2L || {};
@@ -142,12 +141,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected.bind(this));
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
-
-		afterNextRender(this, function() {
-			if (!this.cssGridView) {
-				this.$$('d2l-course-tile-grid').addEventListener('startedInactiveAlert', this._onStartedInactiveAlert.bind(this));
-			}
-		}.bind(this));
 	},
 	detached: function() {
 		document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);

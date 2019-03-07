@@ -803,16 +803,20 @@ describe('<d2l-course-tile>', function() {
 		describe('_setOverlayStartedInactive', () => {
 			it('should fire startedInactiveAlert event when course is inactive but started, and instructor can access course info link', () => {
 				widget.hasCourseInfoUrl = true;
-				var fireSpy = sandbox.spy(widget, 'fire');
+				var fireSpy = sandbox.spy(widget, 'dispatchEvent');
 				widget._setOverlayStartedInactive();
-				expect(fireSpy).to.have.been.calledWith('startedInactiveAlert');
+				expect(fireSpy).to.have.been.calledWithMatch(function(e) {
+					return e.type === 'started-inactive';
+				});
 			});
 
 			it('should not fire startedInactiveAlert event when course is inactive but started, and instructor cant access course info link', () => {
 				widget.hasCourseInfoUrl = false;
-				var fireSpy = sandbox.spy(widget, 'fire');
+				var fireSpy = sandbox.spy(widget, 'dispatchEvent');
 				widget._setOverlayStartedInactive();
-				expect(fireSpy).to.not.have.been.calledWith('startedInactiveAlert');
+				expect(fireSpy).to.not.have.been.calledWithMatch(function(e) {
+					return e.type === 'started-inactive';
+				});
 			});
 
 			it('should add warning circle when course is inactive but started, and instructor can access course info link', () => {
