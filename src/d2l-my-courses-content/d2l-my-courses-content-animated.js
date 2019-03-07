@@ -231,7 +231,9 @@ Polymer({
 	// Override for MyCoursesContentBehavior._onStartedInactiveAlert
 	_onStartedInactiveAlert: function(e) {
 		this._removeAlert('startedInactiveCourses');
-		if (this._checkIfStartedInactiveCourses(e)) {
+
+		var removed = (e && e.detail && e.detail.type) === 'remove';
+		if (this.$$('d2l-course-tile-grid').checkForStartedInactive(removed)) {
 			this._addAlert('warning', 'startedInactiveCourses', this.localize('startedInactiveAlertPinned'));
 		}
 	},
