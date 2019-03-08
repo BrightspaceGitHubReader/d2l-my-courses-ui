@@ -120,11 +120,6 @@ Polymer({
 			type: Boolean,
 			value: false
 		},
-		// Override for MyCoursesContentBehavior._animateCourseTileGrid
-		_animateCourseTileGrid: {
-			type: Boolean,
-			value: true
-		},
 		_pinnedEnrollments: {
 			type: Array,
 			value: function() { return []; }
@@ -135,6 +130,11 @@ Polymer({
 			value: false
 		},
 		_viewAllCoursesLinkText: String,
+		// Size the tile should render with respect to vw
+		_tileSizes: {
+			type: Object,
+			value: function() { return {}; }
+		},
 		_pinnedEnrollmentsMap: {
 			type: Object,
 			value: function() { return {}; }

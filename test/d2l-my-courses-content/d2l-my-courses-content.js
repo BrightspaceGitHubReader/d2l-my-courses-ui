@@ -196,7 +196,6 @@ describe('d2l-my-courses-content', () => {
 		expect(component._orgUnitIdMap).to.be.an('object');
 		expect(component._setImageOrg).to.be.an('object');
 		expect(component._showContent).to.exist;
-		expect(component._tileSizes).to.be.an('object');
 	});
 
 	it('should reset enrollments related properties', () => {
