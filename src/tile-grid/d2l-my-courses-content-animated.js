@@ -307,6 +307,9 @@ Polymer({
 		}
 		return enrollmentsSearchUrl;
 	},
+	_populateNextPinnedEnrollments: function(enrollmentsEntity) {
+		return this._populateEnrollments(enrollmentsEntity.entity);
+	},
 	// Override for MyCoursesContentBehavior._populateEnrollments
 	_populateEnrollments: function(enrollmentsEntity) {
 		var enrollmentEntities = enrollmentsEntity.getSubEntitiesByClass('enrollment');
@@ -349,8 +352,8 @@ Polymer({
 		var lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
 		if (lastEnrollment.hasClass('pinned') && this._hasMoreEnrollments) {
 			var url = enrollmentsEntity.getLinkByRel('next').href;
-			return this.fetchSirenEntity(url)
-				.then(this._populateEnrollments.bind(this));
+			return window.D2L.Siren.EntityStore.fetch(url, this.token)
+				.then(this._populateNextPinnedEnrollments.bind(this));
 		}
 	},
 	_addToPinnedEnrollments: function(enrollment) {
