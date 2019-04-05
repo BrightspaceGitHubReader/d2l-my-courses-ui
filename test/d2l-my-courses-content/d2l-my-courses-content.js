@@ -856,10 +856,6 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should measure d2l.my-courses.search-enrollments when the enrollment search call has finished', () => {
-			sandbox.stub(component, 'fetchSirenEntity')
-				.onFirstCall().returns(Promise.resolve(enrollmentsRootEntity))
-				.onSecondCall().returns(Promise.resolve({}));
-
 			return component._fetchRoot().then(() => {
 				expect(stub).to.have.been.calledWith(
 					'd2l.my-courses.search-enrollments',
