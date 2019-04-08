@@ -664,7 +664,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
 		allCourses.updatedSortLogic = true;
-		allCourses.presentationUrl = this.presentationUrl;
 		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
 
 		allCourses.token = this.token;
