@@ -11,7 +11,7 @@ describe('d2l-my-courses', () => {
 		enrollmentsSearchResponse,
 		promotedSearchResponse,
 		promotedSearchMultipleResponse,
-		lastSearchResponse
+		lastSearchResponse;
 
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
