@@ -8,7 +8,7 @@
 	</head>
 	<body>
 		<script>
-			var testVariants = [], tests = [
+			WCT.loadSuites([
 				'./d2l-all-courses/d2l-all-courses.html',
 				'./d2l-all-courses-unified-content/d2l-all-courses-unified-content.html',
 				'./d2l-filter-menu/d2l-filter-menu.html',
@@ -21,14 +21,7 @@
 				'./d2l-search-widget-custom/d2l-search-widget-custom.html',
 				'./d2l-utility-behavior/d2l-utility-behavior.html',
 				'./localize-behavior/localize-behavior.html'
-			];
-
-			for (var i = 0; i < tests.length; i++) {
-				testVariants.push(tests[i] + '?wc-shadydom=true');
-				testVariants.push(tests[i] + '?dom=shadow');
-			}
-
-			WCT.loadSuites(testVariants);
+			]);
 		</script>
 	</body>
 </html>
