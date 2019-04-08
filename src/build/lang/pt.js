@@ -1,4 +1,3 @@
-import '@polymer/polymer/polymer-legacy.js';
 /* eslint-disable quotes, indent */
 window.D2L = window.D2L || {};
 window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
@@ -16,7 +15,7 @@ D2L.PolymerBehaviors.MyCourses.LangPtBehavior = {
 			"changeImage": "Alterar imagem",
 			"closeSimpleOverlayAltText": "Fechar Caixa de Diálogo",
 			"courseOfferingInformation": "Informações de Oferta de Curso",
-			"coursePinButton": "{curso} está fixado. Desafixar curso",
+			"coursePinButton": "{course} está fixado. Desafixar curso",
 			"courseSearchInputPlaceholder": "Encontrar um curso",
 			"courseSettings": "Configurações de curso de {course}",
 			"courseTile.updates": "atualizações:",
