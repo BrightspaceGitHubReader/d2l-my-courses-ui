@@ -106,7 +106,6 @@ describe('d2l-my-courses', () => {
 		});
 
 		component = fixture('d2l-my-courses-fixture');
-		component.fetchSirenEntity = sandbox.stub();
 
 		fetchStub = sandbox.stub(window.D2L.Siren.EntityStore, 'fetch');
 		SetupFetchStub(enrollmentsHref, enrollmentsSearchResponse);
