@@ -1,10 +1,21 @@
 describe('d2l-my-courses', () => {
 	var component,
 		sandbox,
+		fetchStub,
 		enrollmentsHref = '/enrollments/users/169',
 		promotedSearchHref = '/promoted-search-url',
-		promotedSearchHrefMultiple = '/promoted-search-url-multiple',
+		promotedSearchHrefMultiple = '/promoted-search-multiple-url',
 		lastSearchHref = 'homepages/components/1/user-settings/169',
+		searchAction,
+		searchPinnedEnrollmentsAction,
+		enrollmentsSearchResponse,
+		promotedSearchResponse,
+		promotedSearchMultipleResponse,
+		lastSearchResponse;
+
+	beforeEach(() => {
+		sandbox = sinon.sandbox.create();
+
 		searchAction = {
 			name: 'search-my-enrollments',
 			method: 'GET',
@@ -31,15 +42,15 @@ describe('d2l-my-courses', () => {
 				{ name: 'promotePins', type: 'checkbox', value: false }
 			]
 		},
-		enrollmentsSearchResponse = {
+		enrollmentsSearchResponse = window.D2L.Hypermedia.Siren.Parse({
 			actions: [searchAction],
-		},
-		promotedSearchResponse = {
+		}),
+		promotedSearchResponse = window.D2L.Hypermedia.Siren.Parse({
 			actions: [
 				{
 					title: 'Department 1',
 					href: '/enrollments/users/169',
-					name: '6607',
+					name: '6604',
 					method: 'GET',
 					fields: [
 						{ name: 'search', type: 'search', value: '' },
@@ -52,8 +63,8 @@ describe('d2l-my-courses', () => {
 					]
 				}
 			]
-		},
-		promotedSearchMultipleResponse = {
+		}),
+		promotedSearchMultipleResponse = window.D2L.Hypermedia.Siren.Parse({
 			actions: [
 				{
 					title: 'Semester 1',
@@ -86,27 +97,32 @@ describe('d2l-my-courses', () => {
 					]
 				}
 			]
-		},
-		lastSearchResponse = {
+		}),
+		lastSearchResponse = window.D2L.Hypermedia.Siren.Parse({
 			properties: {
 				MostRecentEnrollmentsSearchType: 0,
 				MostRecentEnrollmentsSearchName: '6607'
 			}
-		};
+		});
 
-	beforeEach(() => {
-		sandbox = sinon.sandbox.create();
 		component = fixture('d2l-my-courses-fixture');
-		component.fetchSirenEntity = sandbox.stub();
 
-		component.fetchSirenEntity.withArgs(sinon.match(enrollmentsHref))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse)));
-		component.fetchSirenEntity.withArgs(sinon.match(lastSearchHref))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(lastSearchResponse)));
+		fetchStub = sandbox.stub(window.D2L.Siren.EntityStore, 'fetch');
+		SetupFetchStub(enrollmentsHref, enrollmentsSearchResponse);
+		SetupFetchStub(lastSearchHref, lastSearchResponse);
+		SetupFetchStub(promotedSearchHref, promotedSearchResponse);
+		SetupFetchStub(promotedSearchHrefMultiple, promotedSearchMultipleResponse);
+
 		component.enrollmentsUrl = enrollmentsHref;
 		component.promotedSearches = promotedSearchHref;
 		component.userSettingsUrl = lastSearchHref;
+		component.token = 'fake';
 	});
+
+	function SetupFetchStub(url, entity) {
+		fetchStub.withArgs(sinon.match(url), sinon.match.string)
+			.returns(Promise.resolve({entity: entity}));
+	}
 
 	afterEach(() => {
 		sandbox.restore();
@@ -119,72 +135,60 @@ describe('d2l-my-courses', () => {
 	});
 
 	it('should hide the only saved search action', () => {
-		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHref))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchResponse)));
 		return component._fetchTabSearchActions()
 			.then(function() {
-				expect(component.fetchSirenEntity).to.be.called;
+				expect(fetchStub).to.be.called;
 				expect(component._tabSearchActions.length).to.equal(0);
 			});
 	});
 
 	it('should properly fetch default search data and hide the only saved search action', () => {
-		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHref))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchResponse)));
 		component._enrollmentsSearchAction = searchAction;
 		return component._fetchTabSearchActions()
 			.then(function() {
-				expect(component.fetchSirenEntity).to.be.called;
+				expect(fetchStub).to.be.called;
 				expect(component._tabSearchActions.length).to.equal(1);
 			});
 	});
 
 	it('should properly fetch saved search data with two saved search actions', () => {
-		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHrefMultiple))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchMultipleResponse)));
 		component.promotedSearches = promotedSearchHrefMultiple;
 		return component._fetchTabSearchActions()
 			.then(function() {
-				expect(component.fetchSirenEntity).to.be.called;
+				expect(fetchStub).to.be.called;
 				expect(component._tabSearchActions.length).to.equal(2);
 				expect(component._tabSearchActions[0].selected).to.be.true;
 			});
 	});
 
 	it('should properly fetch default search data when set with two saved search actions', () => {
-		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHrefMultiple))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchMultipleResponse)));
 		component.promotedSearches = promotedSearchHrefMultiple;
 		component._enrollmentsSearchAction = searchAction;
 		return component._fetchTabSearchActions()
 			.then(function() {
-				expect(component.fetchSirenEntity).to.be.called;
+				expect(fetchStub).to.be.called;
 				expect(component._tabSearchActions.length).to.equal(3);
 				expect(component._tabSearchActions[1].selected).to.be.true;
 			});
 	});
 
 	it('should have search pinned enrollments action and hide the only saved search action', () => {
-		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHref))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchResponse)));
 		component._enrollmentsSearchAction = searchAction;
 		component._pinnedTabAction = searchPinnedEnrollmentsAction;
 		return component._fetchTabSearchActions()
 			.then(function() {
-				expect(component.fetchSirenEntity).to.be.called;
+				expect(fetchStub).to.be.called;
 				expect(component._tabSearchActions.length).to.equal(2);
 			});
 	});
 
 	it('should have search pinned enrollments action with two saved search actions', () => {
-		component.fetchSirenEntity.withArgs(sinon.match(promotedSearchHrefMultiple))
-			.returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(promotedSearchMultipleResponse)));
 		component.promotedSearches = promotedSearchHrefMultiple;
 		component._enrollmentsSearchAction = searchAction;
 		component._pinnedTabAction = searchPinnedEnrollmentsAction;
 		return component._fetchTabSearchActions()
 			.then(function() {
-				expect(component.fetchSirenEntity).to.be.called;
+				expect(fetchStub).to.be.called;
 				expect(component._tabSearchActions.length).to.equal(4);
 				expect(component._tabSearchActions[2].selected).to.be.true;
 			});
