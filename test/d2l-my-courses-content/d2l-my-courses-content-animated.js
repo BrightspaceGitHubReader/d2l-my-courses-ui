@@ -8,7 +8,6 @@ describe('d2l-my-courses-content-animated', function() {
 				href: '/organizations/1'
 			}]
 		},
-		rootHref = '/enrollments',
 		searchHref = '/enrollments/users/169',
 		searchAction = {
 			name: 'search-my-enrollments',
@@ -34,14 +33,6 @@ describe('d2l-my-courses-content-animated', function() {
 				name: 'autoPinCourses',
 				type: 'checkbox',
 				value: false
-			}]
-		},
-		enrollmentsRootResponse = {
-			class: ['enrollments', 'root'],
-			actions: [searchAction],
-			links: [{
-				rel: ['self'],
-				href: rootHref
 			}]
 		},
 		enrollmentsSearchResponse = {
@@ -268,8 +259,8 @@ describe('d2l-my-courses-content-animated', function() {
 				rel: ['next'],
 				href: '/more-pinned-enrollments'
 			});
-				SetupFetchStub(/\/enrollments\/users\/169\/organizations\/1/, enrollmentsSearchResponse);
-				SetupFetchStub(/\/enrollments\/users\/169\/organizations\/2/, enrollmentsSearchResponse);
+			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/1/, enrollmentsSearchResponse);
+			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/2/, enrollmentsSearchResponse);
 
 			fetchStub.withArgs(sinon.match('/enrollments/users/169?search='))
 				.returns(Promise.resolve(
