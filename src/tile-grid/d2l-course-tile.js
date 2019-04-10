@@ -35,6 +35,7 @@ import '../d2l-utility-behavior.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import 'd2l-polymer-siren-behaviors/store/siren-action-behavior.js';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
@@ -234,7 +235,8 @@ Polymer({
 	behaviors: [
 		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 		D2L.MyCourses.UtilityBehavior,
-		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior
+		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
+		D2L.PolymerBehaviors.Siren.SirenActionBehavior,
 	],
 	observers: [
 		'_fetchEnrollmentData(_load, enrollment)'
@@ -315,19 +317,15 @@ Polymer({
 			body = body + encodeURIComponent(field.name) + '=' + encodeURIComponent(field.value) + '&';
 		});
 
-		var promise = window.d2lfetch
-			.fetch(new Request(pinAction.href, {
-				method: pinAction.method,
-				body: body,
-				headers: {
-					'accept':'application/vnd.siren+json',
-					'content-type':'application/x-www-form-urlencoded'
-				}
-			}))
-			.then(this.responseToSirenEntity.bind(this))
+		var promise = this.performSirenAction(pinAction)
 			.then(function(enrollment) {
 				// The pin action returns the updated enrollment, so update
 				// this.enrollment with the modified one
+				if (!enrollment || !enrollment.entity) {
+					return Promise.resolve();
+				}
+
+				enrollment = enrollment && enrollment.entity;
 				this.enrollment = enrollment;
 				this.pinned = this.enrollment.hasClass(Classes.enrollments.pinned);
 				if (!this.animate) this.fire('tile-remove-complete', {enrollment: this.enrollment, pinned: this.pinned});
@@ -405,21 +403,15 @@ Polymer({
 	_notificationsUrl: null,
 	_pendingPinAction: false,
 	_pinAnimationInProgress: false,
+	_fetchEntityStore: function(url, no_caches) {
+		return window.D2L.Siren.EntityStore.fetch(url, this.token, no_caches);
+	},
 	_fetchOrganization: function() {
 		if (!this._organizationUrl) {
 			return;
 		}
 
-		return window.d2lfetch
-			.fetch(new Request(this._organizationUrl, {
-				headers: {
-					'accept': 'application/vnd.siren+json',
-					// Needs no-cache so that images refresh if the users here using the back button
-					'cache-control': 'no-cache',
-					'pragma': 'no-cache'
-				}
-			}))
-			.then(this.responseToSirenEntity.bind(this));
+		return this._fetchEntityStore(this._organizationUrl, true);
 	},
 	_fetchNotifications: function() {
 		if (!this._notificationsUrl || !this.courseUpdatesConfig) {
@@ -434,11 +426,11 @@ Polymer({
 			return Promise.resolve();
 		}
 
-		return this.fetchSirenEntity(this._notificationsUrl);
+		return this._fetchEntityStore(this._notificationsUrl);
 	},
 	_fetchSemester: function() {
 		if (this._semesterUrl && this.showSemester) {
-			return this.fetchSirenEntity(this._semesterUrl)
+			return this._fetchEntityStore(this._semesterUrl)
 				.then(this._onSemesterResponse.bind(this));
 		}
 		return Promise.resolve();
@@ -543,7 +535,11 @@ Polymer({
 		this._unhoverCourseTile();
 	},
 	_onOrganizationResponse: function(organization) {
+		if (!organization || !organization.entity) {
+			return Promise.resolve();
+		}
 
+		organization = organization && organization.entity;
 		this._organization = organization;
 		afterNextRender(this, function() {
 			this.fire('course-tile-organization');
@@ -586,10 +582,11 @@ Polymer({
 		return Promise.resolve();
 	},
 	_onNotificationsResponse: function(notifications) {
-		if (!this.courseUpdatesConfig || !notifications) {
+		if (!this.courseUpdatesConfig || !notifications || !notifications.entity) {
 			return Promise.resolve();
 		}
 
+		notifications = notifications && notifications.entity;
 		var total = 0;
 		if (this.courseUpdatesConfig.showUnattemptedQuizzes) {
 			total += notifications.properties.UnattemptedQuizzes;
@@ -609,6 +606,11 @@ Polymer({
 		this._setCourseUpdates(total);
 	},
 	_onSemesterResponse: function(semester) {
+		if (!semester || !semester.entity) {
+			return Promise.resolve();
+		}
+
+		semester = semester && semester.entity;
 		this._semesterName = (semester.properties || {}).name;
 		return Promise.resolve();
 	},

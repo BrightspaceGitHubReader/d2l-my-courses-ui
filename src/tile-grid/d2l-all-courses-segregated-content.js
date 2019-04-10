@@ -52,7 +52,8 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-segregated-cont
 			locale="[[locale]]"
 			show-course-code="[[showCourseCode]]"
 			show-semester="[[showSemester]]"
-			course-updates-config="[[courseUpdatesConfig]]">
+			course-updates-config="[[courseUpdatesConfig]]"
+			token="[[token]]">
 		</d2l-course-tile-grid>
 
 		<h2>[[localize('unpinnedCourses')]]</h2>
@@ -83,7 +84,8 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-segregated-cont
 			locale="[[locale]]"
 			show-course-code="[[showCourseCode]]"
 			show-semester="[[showSemester]]"
-			course-updates-config="[[courseUpdatesConfig]]">
+			course-updates-config="[[courseUpdatesConfig]]"
+			token="[[token]]">
 		</d2l-course-tile-grid>
 	</template>
 	
