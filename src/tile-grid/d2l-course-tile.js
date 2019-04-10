@@ -236,7 +236,7 @@ Polymer({
 		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 		D2L.MyCourses.UtilityBehavior,
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
-		D2L.PolymerBehaviors.Siren.SirenActionBehavior,
+		D2L.PolymerBehaviors.Siren.SirenActionBehavior
 	],
 	observers: [
 		'_fetchEnrollmentData(_load, enrollment)'
@@ -310,12 +310,6 @@ Polymer({
 		// the previous value in the error handler; if the request succeeds, we also set it in the response
 		// handler (to this same value), but that could take a few hundred ms, so do it before the request too.
 		this.pinned = !this.pinned;
-
-		var body = '';
-		var fields = pinAction.fields || [];
-		fields.forEach(function(field) {
-			body = body + encodeURIComponent(field.name) + '=' + encodeURIComponent(field.value) + '&';
-		});
 
 		var promise = this.performSirenAction(pinAction)
 			.then(function(enrollment) {
