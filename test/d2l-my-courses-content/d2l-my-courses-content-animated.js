@@ -191,6 +191,15 @@ describe('d2l-my-courses-content-animated', function() {
 				href: searchHref
 			}]
 		},
+		organizationEntity = {
+			properties: {
+				name: 'Course One'
+			},
+			links: [{
+				rel: ['self'],
+				href: '/organizations/1'
+			}]
+		},
 		enrollmentsSearchEntity,
 		clock;
 
@@ -201,9 +210,12 @@ describe('d2l-my-courses-content-animated', function() {
 
 	beforeEach(function(done) {
 		enrollmentsSearchEntity = window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse);
+		organizationEntity = window.D2L.Hypermedia.Siren.Parse(organizationEntity);
 		sandbox = sinon.sandbox.create();
 
 		fetchStub = sandbox.stub(window.D2L.Siren.EntityStore, 'fetch');
+		SetupFetchStub(/\/organizations\/1\?embedDepth=1$/, organizationEntity);
+		SetupFetchStub(/\/organizations\/2\?embedDepth=1$/, organizationEntity);
 		widget = fixture('d2l-my-courses-content-animated-fixture');
 		widget.token = 'a1';
 
