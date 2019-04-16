@@ -556,10 +556,12 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		return window.D2L.Siren.EntityStore.fetch(url, this.token);
 	},
 	_createFetchEnrollmentsUrl: function(bustCache) {
+
 		var query = {
 			pageSize: 20,
 			sort: 'current',
 			autoPinCourses: false,
+			orgUnitTypeId: this.showLearningPaths ? '3&orgUnitTypeId=7' : '3',
 			promotePins: true,
 			embedDepth: 0
 		};
@@ -663,6 +665,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		allCourses.advancedSearchUrl = this.advancedSearchUrl;
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
+		allCourses.showLearningPaths = this.showLearningPaths;
 		allCourses.updatedSortLogic = true;
 		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
 

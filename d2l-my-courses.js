@@ -31,6 +31,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 				enrollments-search-action="[[_enrollmentsSearchAction]]"
 				image-catalog-location="[[imageCatalogLocation]]"
 				show-course-code="[[showCourseCode]]"
+				show-learning-paths="[[showLearningPaths]]"
 				show-semester="[[showSemester]]"
 				standard-department-name="[[standardDepartmentName]]"
 				standard-semester-name="[[standardSemesterName]]"
@@ -53,6 +54,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 								image-catalog-location="[[imageCatalogLocation]]"
 								standard-department-name="[[standardDepartmentName]]"
 								standard-semester-name="[[standardSemesterName]]"
+								show-learning-paths="[[showLearningPaths]]"
 								tab-search-actions="[[_tabSearchActions]]"
 								tab-search-type="[[_tabSearchType]]"
 								update-user-settings-action="[[_updateUserSettingsAction]]"
@@ -66,6 +68,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 				<d2l-my-courses-content
 					token="[[token]]"
 					advanced-search-url="[[advancedSearchUrl]]"
+					show-learning-paths="[[showLearningPaths]]"
 					course-image-upload-cb="[[courseImageUploadCb]]"
 					enrollments-search-action="[[_enrollmentsSearchAction]]"
 					image-catalog-location="[[imageCatalogLocation]]"
