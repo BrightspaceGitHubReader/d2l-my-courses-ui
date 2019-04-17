@@ -29,7 +29,7 @@ D2L.MyCourses.UtilityBehavior = {
 					if (i === 0) {
 						collapsedVal += val[i];
 					} else {
-						collapsedVal += field.name + "=" + val[i];
+						collapsedVal += field.name + '=' + val[i];
 					}
 					if (i < val.length) { collapsedVal += '&'; }
 				}
