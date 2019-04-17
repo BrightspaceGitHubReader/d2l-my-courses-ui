@@ -416,7 +416,7 @@ Polymer({
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this.enrollmentsSearchAction, {
 				autoPinCourses: false,
-				orgUnitTypeId: this.showLearningPaths ? [3,7] : [3],
+				orgUnitTypeId: this.showLearningPaths ? [3, 7] : [3],
 				embedDepth: this.updatedSortLogic ? 0 : 1,
 				sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
 			})
@@ -527,7 +527,7 @@ Polymer({
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this._enrollmentsSearchAction, {
 				sort: sortParameter,
-				orgUnitTypeId: this.showLearningPaths ? [3,7] : [3],
+				orgUnitTypeId: this.showLearningPaths ? [3, 7] : [3],
 				promotePins: promotePins
 			})
 		);
@@ -584,7 +584,7 @@ Polymer({
 		this._showTabContent = false;
 		var params = {
 			search: search,
-			orgUnitTypeId: this.showLearningPaths ? [3,7] : [3],
+			orgUnitTypeId: this.showLearningPaths ? [3, 7] : [3],
 			autoPinCourses: false,
 			sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId'),
 			embedDepth: 0

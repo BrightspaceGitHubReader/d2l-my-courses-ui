@@ -190,7 +190,7 @@ Polymer({
 
 		var queryParams = {
 			page: 1,
-			orgUnitTypeId: this.showLearningPaths ? [3,7] : [3],
+			orgUnitTypeId: this.showLearningPaths ? [3, 7] : [3],
 			pageSize: pageSize
 		};
 		queryParams[this.searchFieldName] = encodeURIComponent(this._searchInput.trim());

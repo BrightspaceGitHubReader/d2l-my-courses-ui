@@ -25,13 +25,13 @@ D2L.MyCourses.UtilityBehavior = {
 
 			if (val && typeof val === 'object' && val.constructor === Array) {
 				var collapsedVal = '';
-				for (var i = 0; i < val.length; i++) { 
-					if (i == 0) { 
-						collapsedVal += val[i]; 
+				for (var i = 0; i < val.length; i++) {
+					if (i === 0) {
+						collapsedVal += val[i];
 					} else {
 						collapsedVal += field.name + "=" + val[i];
 					}
-  					if (i < val.length) { collapsedVal += '&'; }
+					if (i < val.length) { collapsedVal += '&'; }
 				}
 				query[field.name] = collapsedVal;
 			} else {
