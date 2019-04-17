@@ -561,7 +561,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			pageSize: 20,
 			sort: 'current',
 			autoPinCourses: false,
-			orgUnitTypeId: this.showLearningPaths ? '3&orgUnitTypeId=7' : '3',
+			orgUnitTypeId: this.showLearningPaths ? [3,7] : [3],
 			promotePins: true,
 			embedDepth: 0
 		};

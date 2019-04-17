@@ -284,7 +284,7 @@ Polymer({
 		var departmentSemesterFilters = this._semesterFilters.concat(this._departmentFilters);
 
 		var searchUrl = this.createActionUrl(this._searchMyEnrollmentsAction, {
-			orgUnitTypeId: this.showLearningPaths ? '3&orgUnitTypeId=7' : '3',
+			orgUnitTypeId: this.showLearningPaths ? [3,7] : [3],
 			parentOrganizations: departmentSemesterFilters.join(',')
 		});
 

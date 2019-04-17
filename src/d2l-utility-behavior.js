@@ -14,12 +14,28 @@ D2L.MyCourses.UtilityBehavior = {
 		parameters = parameters || {};
 		action.fields = action.fields || [];
 		var query = {};
+		var val;
 
 		action.fields.forEach(function(field) {
 			if (parameters.hasOwnProperty(field.name)) {
-				query[field.name] = parameters[field.name];
+				val = parameters[field.name];
 			} else {
-				query[field.name] = field.value;
+				val = field.value;
+			}
+
+			if (val && typeof val === 'object' && val.constructor === Array) {
+				var collapsedVal = '';
+				for (var i = 0; i < val.length; i++) { 
+					if (i == 0) { 
+						collapsedVal += val[i]; 
+					} else {
+						collapsedVal += field.name + "=" + val[i];
+					}
+  					if (i < val.length) { collapsedVal += '&'; }
+				}
+				query[field.name] = collapsedVal;
+			} else {
+				query[field.name] = val;
 			}
 		});
 
