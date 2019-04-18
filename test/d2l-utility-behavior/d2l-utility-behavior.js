@@ -84,7 +84,7 @@ describe('d2l-utility-behavior', function() {
 		it('should generate orgUnitTypeId query string as expected for more than one orgUnitTypeId', function() {
 			var url = component.createActionUrl(
 				enrollmentEntity.getActionByName(Actions.enrollments.searchMyEnrollments),
-				{ orgUnitTypeId: [3,7] }
+				{ orgUnitTypeId: [3, 7] }
 			);
 
 			expect(url).to.equal('/enrollments?orgUnitTypeId=3&orgUnitTypeId=7');
