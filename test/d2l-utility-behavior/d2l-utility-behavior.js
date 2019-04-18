@@ -22,6 +22,12 @@ describe('d2l-utility-behavior', function() {
 					name: 'param2',
 					value: 'bar'
 				}]
+			}, {
+				name: 'search-my-enrollments',
+				href: '/enrollments',
+				fields: [{
+					name: 'orgUnitTypeId'
+				}]
 			}],
 			links: [{
 				rel: ['https://api.brightspace.com/rels/organization'],
@@ -73,6 +79,33 @@ describe('d2l-utility-behavior', function() {
 			);
 
 			expect(url).to.equal('/enrollments?param1=foo&param2=baz');
+		});
+
+		it('should generate orgUnitTypeId query string as expected for more than one orgUnitTypeId', function() {
+			var url = component.createActionUrl(
+				enrollmentEntity.getActionByName(Actions.enrollments.searchMyEnrollments),
+				{ orgUnitTypeId: [3,7] }
+			);
+
+			expect(url).to.equal('/enrollments?orgUnitTypeId=3&orgUnitTypeId=7');
+		});
+
+		it('should generate orgUnitTypeId query string as expected when only one orgUnitTypeId given as array', function() {
+			var url = component.createActionUrl(
+				enrollmentEntity.getActionByName(Actions.enrollments.searchMyEnrollments),
+				{ orgUnitTypeId: [3] }
+			);
+
+			expect(url).to.equal('/enrollments?orgUnitTypeId=3');
+		});
+
+		it('should generate orgUnitTypeId query string as expected when only one orgUnitTypeId given as number', function() {
+			var url = component.createActionUrl(
+				enrollmentEntity.getActionByName(Actions.enrollments.searchMyEnrollments),
+				{ orgUnitTypeId: 3 }
+			);
+
+			expect(url).to.equal('/enrollments?orgUnitTypeId=3');
 		});
 	});
 
