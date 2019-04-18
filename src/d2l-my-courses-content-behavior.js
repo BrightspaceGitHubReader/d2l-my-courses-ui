@@ -561,7 +561,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			pageSize: 20,
 			sort: 'current',
 			autoPinCourses: false,
-			orgUnitTypeId: this.showLearningPaths ? [3, 7] : [3],
+			orgUnitTypeId: this.orgUnitTypeIds.split(','),
 			promotePins: true,
 			embedDepth: 0
 		};
@@ -665,7 +665,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		allCourses.advancedSearchUrl = this.advancedSearchUrl;
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
-		allCourses.showLearningPaths = this.showLearningPaths;
+		allCourses.orgUnitTypeIds = this.orgUnitTypeIds;
 		allCourses.updatedSortLogic = true;
 		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
 

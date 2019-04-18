@@ -22,7 +22,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		// Configuration value passed in to toggle course code -- passed to animation tile
 		showCourseCode: Boolean,
 		// Configuration value passed in to toggle Learning Paths code
-		showLearningPaths: Boolean,
+		orgUnitTypeIds: String,
 		// Configuration value passed in to toggle semester on course tile -- passed to animation tile
 		showSemester: Boolean,
 		// Standard Semester OU Type name to be displayed in the all-courses filter dropdown

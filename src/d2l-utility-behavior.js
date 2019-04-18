@@ -31,7 +31,7 @@ D2L.MyCourses.UtilityBehavior = {
 					} else {
 						collapsedVal += field.name + '=' + val[i];
 					}
-					if (i < val.length) { collapsedVal += '&'; }
+					if (i < val.length - 1) { collapsedVal += '&'; }
 				}
 				query[field.name] = collapsedVal;
 			} else {
