@@ -166,6 +166,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected.bind(this));
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
+		this.orgUnitTypeIds = JSON.parse(this.orgUnitTypeIds).value;
 	},
 	detached: function() {
 		document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
@@ -561,7 +562,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			pageSize: 20,
 			sort: 'current',
 			autoPinCourses: false,
-			orgUnitTypeId: this.orgUnitTypeIds.split(','),
+			orgUnitTypeId: this.orgUnitTypeIds,
 			promotePins: true,
 			embedDepth: 0
 		};

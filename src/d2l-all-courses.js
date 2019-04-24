@@ -253,7 +253,7 @@ Polymer({
 		},
 		showCourseCode: Boolean,
 		showSemester: Boolean,
-		orgUnitTypeIds: String,
+		orgUnitTypeIds: Array,
 		// Siren Actions corresponding to each tab that is displayed
 		tabSearchActions: {
 			type: Array,
@@ -416,7 +416,7 @@ Polymer({
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this.enrollmentsSearchAction, {
 				autoPinCourses: false,
-				orgUnitTypeId: this.orgUnitTypeIds.split(','),
+				orgUnitTypeId: this.orgUnitTypeIds,
 				embedDepth: this.updatedSortLogic ? 0 : 1,
 				sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
 			})
@@ -527,7 +527,7 @@ Polymer({
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this._enrollmentsSearchAction, {
 				sort: sortParameter,
-				orgUnitTypeId: this.orgUnitTypeIds.split(','),
+				orgUnitTypeId: this.orgUnitTypeIds,
 				promotePins: promotePins
 			})
 		);
@@ -584,7 +584,7 @@ Polymer({
 		this._showTabContent = false;
 		var params = {
 			search: search,
-			orgUnitTypeId: this.orgUnitTypeIds.split(','),
+			orgUnitTypeId: this.orgUnitTypeIds,
 			autoPinCourses: false,
 			sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId'),
 			embedDepth: 0
