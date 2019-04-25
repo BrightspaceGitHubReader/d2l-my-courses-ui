@@ -1,0 +1,40 @@
+{
+    "class": [
+        "completion-tracked",
+        "active",
+        "self-assignable",
+        "course-offering"
+    ],
+    "properties": {
+        "name": "JE Course 1",
+        "code": "JEC1",
+        "startDate": null,
+        "endDate": null,
+        "isActive": true,
+        "description": "org-ct-01"
+    },
+	"entities": [
+        {
+            "class": [
+                "course-image"
+            ],
+            "rel": [
+                "https://api.brightspace.com/rels/organization-image"
+            ],
+            "href":"../data/images/image"
+        },
+        {
+            "class": [
+                "relative-uri"
+            ],
+            "rel": [
+                "item",
+                "https://api.brightspace.com/rels/organization-homepage"
+            ],
+            "properties": {
+                "path": "http://example.com"
+            }
+        }
+    ],
+    "links": []
+}
