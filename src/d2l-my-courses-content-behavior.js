@@ -270,6 +270,9 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		if (hide && index !== -1 && index > this._lastPinnedIndex) {
 			this.splice('_enrollments', index, 1);
 		}
+		const temp = this._enrollments;
+		this._enrollments = [];
+		this._enrollments = temp;
 
 		if (this._enrollments.length < this._widgetMaxCardVisible && this._nextEnrollmentEntityUrl) {
 			this._entityStoreFetch(this._nextEnrollmentEntityUrl)
