@@ -167,7 +167,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected.bind(this));
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
 
-		var ouTypeIds = [3]; //default value
+		var ouTypeIds = []; //default value
 		try {
 			ouTypeIds = JSON.parse(this.orgUnitTypeIds).value;
 		} catch (e) {
