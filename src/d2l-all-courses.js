@@ -62,6 +62,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 							id="search-widget"
 							search-button-label="{{localize('search')}}"
 							clear-button-label="{{localize('search.clearSearch')}}"
+							org-unit-type-ids="[[orgUnitTypeIds]]"
 							search-action="[[_enrollmentsSearchAction]]"
 							search-url="[[_searchUrl]]">
 						</d2l-search-widget-custom>
@@ -76,6 +77,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 									<d2l-filter-menu
 										id="filterMenu"
 										tab-search-type="[[tabSearchType]]"
+										org-unit-type-ids="[[orgUnitTypeIds]]"
 										my-enrollments-entity="[[myEnrollmentsEntity]]"
 										filter-standard-semester-name="[[filterStandardSemesterName]]"
 										filter-standard-department-name="[[filterStandardDepartmentName]]">
@@ -126,6 +128,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 											filter-counts="[[_filterCounts]]"
 											is-searched="[[_isSearched]]"
 											token="[[token]]"
+											org-unit-type-ids="[[orgUnitTypeIds]]"
 											show-organization-code="[[showOrganizationCode]]"
 											show-semester-name="[[showSemesterName]]"
 											show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
@@ -149,6 +152,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 							filter-counts="[[_filterCounts]]"
 							is-searched="[[_isSearched]]"
 							token="[[token]]"
+							org-unit-type-ids="[[orgUnitTypeIds]]"
 							show-organization-code="[[showOrganizationCode]]"
 							show-semester-name="[[showSemesterName]]"
 							show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
@@ -249,6 +253,7 @@ Polymer({
 		},
 		showCourseCode: Boolean,
 		showSemester: Boolean,
+		orgUnitTypeIds: Array,
 		// Siren Actions corresponding to each tab that is displayed
 		tabSearchActions: {
 			type: Array,
@@ -411,6 +416,7 @@ Polymer({
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this.enrollmentsSearchAction, {
 				autoPinCourses: false,
+				orgUnitTypeId: this.orgUnitTypeIds,
 				embedDepth: this.updatedSortLogic ? 0 : 1,
 				sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId')
 			})
@@ -521,6 +527,7 @@ Polymer({
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this._enrollmentsSearchAction, {
 				sort: sortParameter,
+				orgUnitTypeId: this.orgUnitTypeIds,
 				promotePins: promotePins
 			})
 		);
@@ -577,6 +584,7 @@ Polymer({
 		this._showTabContent = false;
 		var params = {
 			search: search,
+			orgUnitTypeId: this.orgUnitTypeIds,
 			autoPinCourses: false,
 			sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId'),
 			embedDepth: 0

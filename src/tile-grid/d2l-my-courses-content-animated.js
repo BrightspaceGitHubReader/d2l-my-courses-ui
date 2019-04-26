@@ -299,6 +299,7 @@ Polymer({
 			pageSize: 20,
 			embedDepth: 1,
 			sort: '-PinDate,OrgUnitName,OrgUnitId',
+			orgUnitTypeId: this.orgUnitTypeIds,
 			autoPinCourses: true
 		};
 		var enrollmentsSearchUrl = this.createActionUrl(this.enrollmentsSearchAction, query);

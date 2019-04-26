@@ -166,6 +166,15 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected.bind(this));
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
+
+		var ouTypeIds = []; //default value
+		try {
+			ouTypeIds = JSON.parse(this.orgUnitTypeIds).value;
+		} catch (e) {
+			// default value used
+		}
+
+		this.orgUnitTypeIds = ouTypeIds;
 	},
 	detached: function() {
 		document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
@@ -560,10 +569,12 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		return window.D2L.Siren.EntityStore.fetch(url, this.token);
 	},
 	_createFetchEnrollmentsUrl: function(bustCache) {
+
 		var query = {
 			pageSize: 20,
 			sort: 'current',
 			autoPinCourses: false,
+			orgUnitTypeId: this.orgUnitTypeIds,
 			promotePins: true,
 			embedDepth: 0
 		};
@@ -667,6 +678,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		allCourses.advancedSearchUrl = this.advancedSearchUrl;
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
+		allCourses.orgUnitTypeIds = this.orgUnitTypeIds;
 		allCourses.updatedSortLogic = true;
 		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
 
