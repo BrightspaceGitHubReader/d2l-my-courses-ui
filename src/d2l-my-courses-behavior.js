@@ -72,8 +72,8 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		}
 
 		Promise.all([
-			this._entityStoreFetch(this.enrollmentsUrl),
-			this._entityStoreFetch(this.userSettingsUrl)
+			this.sirenEntityStoreFetch(this.enrollmentsUrl),
+			this.sirenEntityStoreFetch(this.userSettingsUrl)
 		])
 			.then(function(values) {
 				var enrollmentsRootEntity = values[0] && values[0].entity;
@@ -123,7 +123,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		}
 
 		if (!this.promotedSearches && this._enrollmentsSearchAction && this._pinnedTabAction) {
-			return this._entityStoreFetch(this.userSettingsUrl).then(function(value) {
+			return this.sirenEntityStoreFetch(this.userSettingsUrl).then(function(value) {
 				var entity = value && value.entity;
 				var lastEnrollmentsSearchName = entity
 						&& entity.properties
