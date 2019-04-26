@@ -1,0 +1,157 @@
+{
+    "class": [
+        "enrollments",
+        "collection"
+    ],
+	"entities": [
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-00"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-01"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-02"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-03"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-04"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-05"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-06"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-07"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-08"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-09"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-10"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-11"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-12"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-13"
+		},
+		{
+			"class": [
+				"enrollment"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/user-enrollment"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-14"
+		}
+	],
+	"actions": [
+		{
+            "href": "../data/completion-tracking/my-enrollments-completion-tracking",
+            "name": "search-my-enrollments",
+            "method": "GET",
+            "fields": [
+                {
+                    "type": "text",
+                    "name": "sort",
+                    "value": "current"
+                }
+            ]
+        }
+	]
+}

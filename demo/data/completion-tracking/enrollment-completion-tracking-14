@@ -1,0 +1,43 @@
+{
+    "class": [
+        "enrollment",
+        "unpinned"
+    ],
+    "links": [
+		{
+			"rel": [
+				"self"
+			],
+			"href": "../data/completion-tracking/enrollment-completion-tracking-14"
+		},
+		{
+			"rel": [
+				"https://api.brightspace.com/rels/organization"
+			],
+			"href": "../data/completion-tracking/organization-ct-14"
+		},
+		{
+			"rel": [
+				"https://activities.api.brightspace.com/rels/user-activity-usage"
+			],
+			"href": "../data/completion-tracking/user-activity-usage-incomplete"
+		}
+    ],
+    "actions": [
+        {
+            "href": "#pinned",
+            "name": "pin-course",
+            "method": "PUT",
+            "fields": [
+                {
+                    "type": "hidden",
+                    "name": "pinned",
+                    "value": true
+                }
+            ]
+        }
+    ],
+    "rel": [
+        "https://api.brightspace.com/rels/user-enrollment"
+    ]
+}
