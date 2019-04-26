@@ -1,0 +1,85 @@
+{
+    "class": [
+        "enrollments",
+        "root"
+    ],
+    "links": [
+        {
+            "rel": [
+                "self"
+            ],
+            "href": "../data/completion-tracking/enrollments-completion-tracking"
+        },
+        {
+            "rel": [
+                "https://api.brightspace.com/rels/my-enrollments"
+            ],
+            "href": "../data/completion-tracking/my-enrollments-completion-tracking"
+        },
+        {
+            "rel": [
+                "https://api.brightspace.com/rels/default-search"
+            ],
+            "href": "../data/completion-tracking/my-enrollments-completion-tracking"
+        }
+    ],
+	"actions": [{
+		"name": "search-my-enrollments",
+		"href": "../data/completion-tracking/my-enrollments-completion-tracking",
+		"method": "GET",
+		"fields": [
+			{
+				"type": "search",
+				"name": "search",
+				"value": ""
+			},
+			{
+				"type": "number",
+				"name": "pageSize",
+				"value": 20
+			},
+			{
+				"type": "number",
+				"name": "embedDepth",
+				"value": 0
+			},
+			{
+				"type": "text",
+				"name": "sort",
+				"value": ""
+			},
+			{
+				"type": "hidden",
+				"name": "parentOrganizations",
+				"value": ""
+			},
+			{
+				"type": "hidden",
+				"name": "orgUnitTypeId",
+				"value": [
+					"3"
+				]
+			},
+			{
+				"type": "checkbox",
+				"name": "promotePins",
+				"value": false
+			},
+			{
+				"type": "checkbox",
+				"name": "autoPinCourses",
+				"value": false
+			},
+			{
+				"type": "hidden",
+				"name": "roles",
+				"value": ""
+			},
+			{
+				"type": "checkbox",
+				"name": "excludeEnded",
+				"value": false
+			}
+		]
+	}]
+}

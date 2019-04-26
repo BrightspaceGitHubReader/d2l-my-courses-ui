@@ -1,0 +1,46 @@
+{
+	"class": [
+		"user-course-offering-activity-usage",
+		"attended",
+		"activity"
+	],
+	"entities": [
+		{
+			"class": [
+				"date",
+				"localized-formatted-date"
+			],
+			"rel": [
+				"https://api.brightspace.com/rels/date"
+			],
+			"properties": {
+				"date": "2019-04-22T20:06:54.695Z",
+				"text": "4/22/2019 4:06 PM"
+			}
+		},
+		{
+			"class": [
+				"completion",
+				"complete"
+			],
+			"rel": [
+				"item"
+			],
+			"entities": [
+				{
+					"class": [
+						"date",
+						"completion-date"
+					],
+					"rel": [
+						"https://api.brightspace.com/rels/date"
+					],
+					"properties": {
+						"date": "2019-04-22T20:06:54.695Z"
+					}
+				}
+			]
+		}
+	],
+	"links": []
+}

@@ -1,0 +1,19 @@
+{
+	"class": [
+		"user-course-offering-activity-usage",
+		"activity"
+	],
+	"entities": [
+		{
+			"class": [
+				"completion",
+				"incomplete"
+			],
+			"rel": [
+				"item",
+				"https://activities.api.brightspace.com/rels/completion"
+			]
+		}
+	],
+	"links": []
+}

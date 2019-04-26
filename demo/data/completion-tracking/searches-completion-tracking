@@ -1,0 +1,9 @@
+{
+    "class": [
+        "user-enrollments-searches",
+        "collection"
+    ],
+	"properties":{
+		"UserEnrollmentsSearchType":"None"
+	}
+}
