@@ -26,6 +26,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 	<template strip-whitespace="">
 		<template is="dom-if" if="[[!updatedSortLogic]]">
 			<d2l-my-courses-content-animated
+				href="[[presentationUrl]]"
 				token="[[token]]"
 				advanced-search-url="[[advancedSearchUrl]]"
 				enrollments-search-action="[[_enrollmentsSearchAction]]"
@@ -66,6 +67,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 			</template>
 			<template is="dom-if" if="[[!_showGroupByTabs]]">
 				<d2l-my-courses-content
+					href="[[presentationUrl]]"
 					token="[[token]]"
 					advanced-search-url="[[advancedSearchUrl]]"
 					org-unit-type-ids="[[orgUnitTypeIds]]"
