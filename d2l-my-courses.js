@@ -74,7 +74,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 					course-image-upload-cb="[[courseImageUploadCb]]"
 					enrollments-search-action="[[_enrollmentsSearchAction]]"
 					image-catalog-location="[[imageCatalogLocation]]"
-					presentation-url="[[presentationUrl]]"
 					standard-department-name="[[standardDepartmentName]]"
 					standard-semester-name="[[standardSemesterName]]">
 				</d2l-my-courses-content>
