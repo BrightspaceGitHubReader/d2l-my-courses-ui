@@ -35,13 +35,13 @@ import './search-filter/d2l-filter-menu.js';
 import './search-filter/d2l-search-widget-custom.js';
 import './d2l-utility-behavior.js';
 import './localize-behavior.js';
-import '../legacy/tile-grid/d2l-all-courses-segregated-content.js';
-import './card-grid/d2l-all-courses-unified-content.js';
+import './tile-grid/d2l-all-courses-segregated-content.js';
+import '../src/card-grid/d2l-all-courses-unified-content.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
+$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
 	<template strip-whitespace="">
 		<style include="d2l-all-courses-styles"></style>
 
@@ -58,14 +58,14 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 
 				<div id="search-and-filter">
 					<div class="search-and-filter-row">
-						<d2l-search-widget-custom
+						<d2l-search-widget-custom-legacy
 							id="search-widget"
 							search-button-label="{{localize('search')}}"
 							clear-button-label="{{localize('search.clearSearch')}}"
 							org-unit-type-ids="[[orgUnitTypeIds]]"
 							search-action="[[_enrollmentsSearchAction]]"
 							search-url="[[_searchUrl]]">
-						</d2l-search-widget-custom>
+						</d2l-search-widget-custom-legacy>
 
 						<div id="filterAndSort">
 							<d2l-dropdown id="filterDropdown">
@@ -74,14 +74,14 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 									<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
 								</button>
 								<d2l-dropdown-content id="filterDropdownContent" no-padding="" min-width="350" render-content="">
-									<d2l-filter-menu
+									<d2l-filter-menu-legacy
 										id="filterMenu"
 										tab-search-type="[[tabSearchType]]"
 										org-unit-type-ids="[[orgUnitTypeIds]]"
 										my-enrollments-entity="[[myEnrollmentsEntity]]"
 										filter-standard-semester-name="[[filterStandardSemesterName]]"
 										filter-standard-department-name="[[filterStandardDepartmentName]]">
-									</d2l-filter-menu>
+									</d2l-filter-menu-legacy>
 								</d2l-dropdown-content>
 							</d2l-dropdown>
 
@@ -189,7 +189,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 
 document.head.appendChild($_documentContainer.content);
 Polymer({
-	is: 'd2l-all-courses',
+	is: 'd2l-all-courses-legacy',
 	properties: {
 		/*
 		* Public Polymer properties
