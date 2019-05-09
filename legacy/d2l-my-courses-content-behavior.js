@@ -4,7 +4,7 @@ import { Actions } from 'd2l-hypermedia-constants';
 import 'd2l-polymer-siren-behaviors/store/entity-behavior.js';
 import 'd2l-polymer-siren-behaviors/store/siren-action-behavior.js';
 import './d2l-all-courses.js';
-import './card-grid/d2l-card-grid-behavior.js';
+import '../src/card-grid/d2l-card-grid-behavior.js';
 import './d2l-alert-behavior.js';
 import './d2l-utility-behavior.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
