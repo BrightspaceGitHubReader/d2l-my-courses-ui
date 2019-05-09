@@ -7,9 +7,9 @@ window.D2L.MyCourses = window.D2L.MyCourses || {};
 *
 * This contains utility functions for adding and removing alerts
 *
-* @polymerBehavior D2L.MyCourses.AlertBehavior
+* @polymerBehavior D2L.MyCourses.AlertBehaviorLegacy
 */
-D2L.MyCourses.AlertBehavior = {
+D2L.MyCourses.AlertBehaviorLegacy = {
 	properties: {
 		// Array containing alert objects for display
 		_alertsView: {

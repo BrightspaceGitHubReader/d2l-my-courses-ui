@@ -85,8 +85,8 @@ Polymer({
 		}
 	},
 	behaviors: [
-		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.UtilityBehavior
+		D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
+		D2L.MyCourses.UtilityBehaviorLegacy
 	],
 	listeners: {
 		'd2l-search-widget-results-changed': '_onSearchWidgetResultsChanged',

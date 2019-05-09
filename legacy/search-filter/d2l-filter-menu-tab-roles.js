@@ -66,7 +66,7 @@ Polymer({
 		}
 	},
 	behaviors: [
-		D2L.MyCourses.UtilityBehavior
+		D2L.MyCourses.UtilityBehaviorLegacy
 	],
 	listeners: {
 		'd2l-menu-item-change': '_onMenuItemChange'

@@ -18,9 +18,9 @@ window.D2L = window.D2L || {};
 window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
 window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
 /*
-* @polymerBehavior D2L.PolymerBehaviors.MyCourses.LocalizeBehavior
+* @polymerBehavior D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy
 */
-D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImpl = {
+D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImplLegacy = {
 	properties: {
 		locale: {
 			type: String,
@@ -55,11 +55,11 @@ D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImpl = {
 };
 
 /*
-* @polymerBehavior D2L.PolymerBehaviors.MyCourses.LocalizeBehavior
+* @polymerBehavior D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy
 */
-D2L.PolymerBehaviors.MyCourses.LocalizeBehavior = [
+D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy = [
 	D2L.PolymerBehaviors.LocalizeBehavior,
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImpl,
+	D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImplLegacy,
 	D2L.PolymerBehaviors.MyCourses.LangArBehavior,
 	D2L.PolymerBehaviors.MyCourses.LangDeBehavior,
 	D2L.PolymerBehaviors.MyCourses.LangEnBehavior,

@@ -3,6 +3,6 @@ import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 Polymer({
 	is: 'consumer-element',
 	behaviors: [
-		D2L.MyCourses.UtilityBehavior
+		D2L.MyCourses.UtilityBehaviorLegacy
 	]
 });

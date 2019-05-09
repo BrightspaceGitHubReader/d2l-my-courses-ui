@@ -4,7 +4,7 @@ import { Actions } from 'd2l-hypermedia-constants';
 import 'd2l-polymer-siren-behaviors/store/entity-behavior.js';
 import 'd2l-polymer-siren-behaviors/store/siren-action-behavior.js';
 import './d2l-all-courses.js';
-import '../src/card-grid/d2l-card-grid-behavior.js';
+import './card-grid/d2l-card-grid-behavior.js';
 import './d2l-alert-behavior.js';
 import './d2l-utility-behavior.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
@@ -788,9 +788,9 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 * @polymerBehavior D2L.MyCourses.MyCoursesContentBehavior
 */
 D2L.MyCourses.MyCoursesContentBehavior = [
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-	D2L.MyCourses.AlertBehavior,
-	D2L.MyCourses.UtilityBehavior,
+	D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
+	D2L.MyCourses.AlertBehaviorLegacy,
+	D2L.MyCourses.UtilityBehaviorLegacy,
 	D2L.PolymerBehaviors.Siren.EntityBehavior,
 	D2L.PolymerBehaviors.Siren.SirenActionBehavior,
 	D2L.MyCourses.MyCoursesContentBehaviorImpl

@@ -6,9 +6,9 @@ window.D2L.MyCourses = window.D2L.MyCourses || {};
 
 /*
 * General utility functions that can be used in many places.
-* @polymerBehavior D2L.MyCourses.UtilityBehavior
+* @polymerBehavior D2L.MyCourses.UtilityBehaviorLegacy
 */
-D2L.MyCourses.UtilityBehavior = {
+D2L.MyCourses.UtilityBehaviorLegacy = {
 	// Creates a URL with a query from an Action and an object of required parameters
 	createActionUrl: function(action, parameters) {
 		parameters = parameters || {};

@@ -124,8 +124,8 @@ Polymer({
 	},
 
 	behaviors: [
-		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.UtilityBehavior,
+		D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
+		D2L.MyCourses.UtilityBehaviorLegacy,
 		D2L.PolymerBehaviors.SearchWidgetBehavior,
 		D2L.Dom
 	],

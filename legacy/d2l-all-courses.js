@@ -352,9 +352,9 @@ Polymer({
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
-		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.AlertBehavior,
-		D2L.MyCourses.UtilityBehavior
+		D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
+		D2L.MyCourses.AlertBehaviorLegacy,
+		D2L.MyCourses.UtilityBehaviorLegacy
 	],
 	listeners: {
 		'd2l-simple-overlay-opening': '_onSimpleOverlayOpening',

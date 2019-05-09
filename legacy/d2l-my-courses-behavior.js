@@ -209,8 +209,8 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 * @polymerBehavior D2L.MyCourses.MyCoursesBehavior
 */
 D2L.MyCourses.MyCoursesBehavior = [
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
+	D2L.PolymerBehaviors.MyCourses.LocalizLegacyeBehavior,
 	D2L.PolymerBehaviors.Siren.EntityBehavior,
-	D2L.MyCourses.UtilityBehavior,
+	D2L.MyCourses.UtilityBehaviorLegacy,
 	D2L.MyCourses.MyCoursesBehaviorImpl
 ];
