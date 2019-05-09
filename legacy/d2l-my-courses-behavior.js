@@ -9,9 +9,9 @@ window.D2L.MyCourses = window.D2L.MyCourses || {};
 
 /*
 * Common properties between d2l-my-courses and d2l-my-courses-content-behavior-animated
-* @polymerBehavior D2L.MyCourses.MyCoursesBehavior
+* @polymerBehavior D2L.MyCourses.MyCoursesBehaviorLegacy
 */
-D2L.MyCourses.MyCoursesBehaviorImpl = {
+D2L.MyCourses.MyCoursesBehaviorLegacyImpl = {
 	properties: {
 		// URL that directs to the advanced search page
 		advancedSearchUrl: String,
@@ -206,11 +206,11 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 };
 
 /*
-* @polymerBehavior D2L.MyCourses.MyCoursesBehavior
+* @polymerBehavior D2L.MyCourses.MyCoursesBehaviorLegacy
 */
-D2L.MyCourses.MyCoursesBehavior = [
+D2L.MyCourses.MyCoursesBehaviorLegacy = [
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
 	D2L.PolymerBehaviors.Siren.EntityBehavior,
 	D2L.MyCourses.UtilityBehaviorLegacy,
-	D2L.MyCourses.MyCoursesBehaviorImpl
+	D2L.MyCourses.MyCoursesBehaviorLegacyImpl
 ];

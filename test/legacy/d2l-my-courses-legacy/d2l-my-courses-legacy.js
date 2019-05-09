@@ -105,7 +105,7 @@ describe('d2l-my-courses', () => {
 			}
 		});
 
-		component = fixture('d2l-my-courses-fixture');
+		component = fixture('d2l-my-courses-legacy-fixture');
 
 		fetchStub = sandbox.stub(window.D2L.Siren.EntityStore, 'fetch');
 		SetupFetchStub(enrollmentsHref, enrollmentsSearchResponse);
@@ -255,57 +255,11 @@ describe('d2l-my-courses', () => {
 			});
 		});
 
-		it('should call d2l-my-courses-content.courseImageUploadCompleted when not grouped by tab', done => {
-			component.updatedSortLogic = true;
-			component._showGroupByTabs = false;
-			flush(() => {
-				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
-				component.courseImageUploadCompleted();
-				expect(stub).to.have.been.called;
-				done();
-			});
-		});
-
 		it('should call d2l-my-courses-content-animated.getLastOrgUnitId', done => {
 			component.updatedSortLogic = false;
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content-animated'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
-				expect(stub).to.have.been.called;
-				done();
-			});
-		});
-
-		it('should call d2l-my-courses-content.getLastOrgUnitId when not grouped by tab', done => {
-			component.updatedSortLogic = true;
-			component._showGroupByTabs = false;
-			flush(() => {
-				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
-				component.getLastOrgUnitId();
-				expect(stub).to.have.been.called;
-				done();
-			});
-		});
-
-		it('should call d2l-my-courses-content.getLastOrgUnitId when grouped by tab', done => {
-			component.updatedSortLogic = true;
-			component._showGroupByTabs = true;
-			component.currentTabId = 'panel-1234';
-			flush(() => {
-				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
-				component.getLastOrgUnitId();
-				expect(stub).to.have.been.called;
-				done();
-			});
-		});
-
-		it('should call d2l-my-courses-content.courseImageUploadCompleted when grouped by tab', done => {
-			component.updatedSortLogic = true;
-			component._showGroupByTabs = true;
-			component.currentTabId = 'panel-1234';
-			flush(() => {
-				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
-				component.courseImageUploadCompleted();
 				expect(stub).to.have.been.called;
 				done();
 			});
