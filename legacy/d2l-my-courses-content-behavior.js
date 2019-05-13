@@ -17,9 +17,9 @@ window.D2L.MyCourses = window.D2L.MyCourses || {};
 * This exists as a temporary behavior, to be removed when the -content-animated component is removed,
 * and the functionality can be merged back into d2l-my-courses-content.
 *
-* @polymerBehavior D2L.MyCourses.MyCoursesContentBehavior
+* @polymerBehavior D2L.MyCourses.MyCoursesContentBehaviorLegacy
 */
-D2L.MyCourses.MyCoursesContentBehaviorImpl = {
+D2L.MyCourses.MyCoursesContentBehaviorLegacyImpl = {
 	properties: {
 		enrollmentsSearchAction: Object,
 		tabSearchActions: {
@@ -785,13 +785,13 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 };
 
 /*
-* @polymerBehavior D2L.MyCourses.MyCoursesContentBehavior
+* @polymerBehavior D2L.MyCourses.MyCoursesContentBehaviorLegacy
 */
-D2L.MyCourses.MyCoursesContentBehavior = [
+D2L.MyCourses.MyCoursesContentBehaviorLegacy = [
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
 	D2L.MyCourses.AlertBehaviorLegacy,
 	D2L.MyCourses.UtilityBehaviorLegacy,
 	D2L.PolymerBehaviors.Siren.EntityBehavior,
 	D2L.PolymerBehaviors.Siren.SirenActionBehavior,
-	D2L.MyCourses.MyCoursesContentBehaviorImpl
+	D2L.MyCourses.MyCoursesContentBehaviorLegacyImpl
 ];

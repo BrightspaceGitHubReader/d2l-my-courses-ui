@@ -1,9 +1,8 @@
 /*
-`d2l-my-courses`
+`d2l-my-courses-container`
 Polymer-based web component for the my-courses widget that appears on the LE homepage.
 
-If the `US90527-my-courses-updates` LD flag is on, the `updated-sort-logic` attribute is added and the `d2l-my-courses-content` component is rendered.
-If it is off and the attribute is not added, the `d2l-my-courses-content-animated` component is rendered.
+Component for when the `US90527-my-courses-updates` LD flag is on.
 
 */
 /*

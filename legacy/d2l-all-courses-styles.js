@@ -1,7 +1,7 @@
 import 'd2l-typography/d2l-typography-shared-styles.js';
 const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-styles">
+$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-styles-legacy">
 	<template strip-whitespace="">
 		<style>
 			:host {

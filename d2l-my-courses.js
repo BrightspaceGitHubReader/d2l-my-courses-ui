@@ -67,7 +67,6 @@ document.head.appendChild($_documentContainer.content);
 Polymer({
 	is: 'd2l-my-courses',
 	behaviors: [
-		D2L.MyCourses.MyCoursesBehavior,
-		D2L.MyCourses.MyCoursesBehaviorLegacy
+		D2L.MyCourses.MyCoursesBehavior
 	]
 });

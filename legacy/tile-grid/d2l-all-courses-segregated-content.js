@@ -26,7 +26,7 @@ const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-segregated-content">
 	<template strip-whitespace="">
-		<style include="d2l-all-courses-styles"></style>
+		<style include="d2l-all-courses-styles-legacy"></style>
 
 		<h2>[[localize('pinnedCourses')]]</h2>
 		<span hidden$="[[!_noPinnedCoursesInSearch]]">

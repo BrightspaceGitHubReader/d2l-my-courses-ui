@@ -138,13 +138,13 @@ Polymer({
 	},
 	behaviors: [
 		D2L.MyCourses.CourseTileResponsiveGridBehavior,
-		D2L.MyCourses.MyCoursesContentBehavior
+		D2L.MyCourses.MyCoursesContentBehaviorLegacy
 	],
 	listeners: {
 		'tile-remove-complete': '_onTileRemoveComplete'
 	},
 	observers: [
-		// Override for MyCoursesContentBehavior observer
+		// Override for MyCoursesContentBehaviorLegacy observer
 		'_enrollmentsChanged(_pinnedEnrollments.length, _allEnrollments.length)'
 	],
 
@@ -152,7 +152,7 @@ Polymer({
 	* Public API functions
 	*/
 
-	// Override for MyCoursesContentBehavior.getCourseTileItemCount
+	// Override for MyCoursesContentBehaviorLegacy.getCourseTileItemCount
 	getCourseTileItemCount: function() {
 		return this._pinnedEnrollments.length;
 	},
@@ -161,7 +161,7 @@ Polymer({
 	* Listeners
 	*/
 
-	// Override for MyCoursesContentBehavior._onEnrollmentPinnedMessage
+	// Override for MyCoursesContentBehaviorLegacy._onEnrollmentPinnedMessage
 	_onEnrollmentPinnedMessage: function(e) {
 		if (dom(e).rootTarget === this) return;
 
@@ -184,7 +184,7 @@ Polymer({
 			this._removeFromPinnedEnrollments(e.detail.enrollment);
 		}
 	},
-	// Override for MyCoursesContentBehavior._onCourseTileOrganization
+	// Override for MyCoursesContentBehaviorLegacy._onCourseTileOrganization
 	_onCourseTileOrganization: function() {
 		if (this._initiallyVisibleCourseTileCount === 0 && this._courseTileOrganizationEventCount === 0) {
 			// If no course tiles are initially visible (widget is outside of initial viewport)
@@ -224,7 +224,7 @@ Polymer({
 			);
 		}
 	},
-	// Override for MyCoursesContentBehavior._onStartedInactiveAlert
+	// Override for MyCoursesContentBehaviorLegacy._onStartedInactiveAlert
 	_onStartedInactiveAlert: function(e) {
 		this._removeAlert('startedInactiveCourses');
 
@@ -234,7 +234,7 @@ Polymer({
 		}
 	},
 
-	// Override for MyCoursesContentBehavior._openAllCoursesView
+	// Override for MyCoursesContentBehaviorLegacy._openAllCoursesView
 	_openAllCoursesView: function(e) {
 		this._createAllCourses();
 
@@ -257,7 +257,7 @@ Polymer({
 		e.stopPropagation();
 	},
 
-	// Override for MyCoursesContentBehavior._computeHasOnlyPastCourses
+	// Override for MyCoursesContentBehaviorLegacy._computeHasOnlyPastCourses
 	_computeHasOnlyPastCourses: function() {
 		return false;
 	},
@@ -274,7 +274,7 @@ Polymer({
 	* Observers
 	*/
 
-	// Override for MyCoursesContentBehavior._enrollmentsChanged
+	// Override for MyCoursesContentBehaviorLegacy._enrollmentsChanged
 	_enrollmentsChanged: function(pinnedEnrollmentsLength, allEnrollmentsLength) {
 		this._hasPinnedEnrollments = pinnedEnrollmentsLength > 0;
 		this._hasEnrollments = allEnrollmentsLength > 0;
@@ -293,7 +293,7 @@ Polymer({
 	/*
 	* Utility/helper functions
 	*/
-	// Override for MyCoursesContentBehavior._createFetchEnrollmentsUrl
+	// Override for MyCoursesContentBehaviorLegacy._createFetchEnrollmentsUrl
 	_createFetchEnrollmentsUrl: function(bustCache) {
 		var query = {
 			pageSize: 20,
@@ -309,7 +309,7 @@ Polymer({
 		}
 		return enrollmentsSearchUrl;
 	},
-	// Override for MyCoursesContentBehavior._populateEnrollments
+	// Override for MyCoursesContentBehaviorLegacy._populateEnrollments
 	_populateEnrollments: function(enrollmentsEntity) {
 		if (!enrollmentsEntity || !enrollmentsEntity.entity) {
 			return;
