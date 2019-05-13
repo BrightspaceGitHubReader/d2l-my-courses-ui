@@ -23,7 +23,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 	<template strip-whitespace="">
 		<template is="dom-if" if="[[!updatedSortLogic]]">
 			<d2l-my-courses-legacy
-				class="[[class]]"
 				enrollments-url="[[enrollmentsUrl]]"
 				advanced-search-url="[[advancedSearchUrl]]"
 				standard-semester-name="[[standardSemesterName]]"
@@ -42,7 +41,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses">
 		</template>
 		<template is="dom-if" if="[[updatedSortLogic]]">
 			<d2l-my-courses-container
-				class="[[class]]"
 				enrollments-url="[[enrollmentsUrl]]"
 				advanced-search-url="[[advancedSearchUrl]]"
 				standard-semester-name="[[standardSemesterName]]"
@@ -97,9 +95,7 @@ Polymer({
 		updatedSortLogic: {
 			type: Boolean,
 			value: false
-		}
-	},
-	behaviors: [
-		D2L.PolymerBehaviors.Siren.EntityBehavior
-	]
+		},
+		token: String
+	}
 });
