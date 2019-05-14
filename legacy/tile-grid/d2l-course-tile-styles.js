@@ -110,7 +110,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-styles">
 			}
 
 			.separator-icon {
-				color: var(--d2l-color-tungsten)
+				color: var(--d2l-color-tungsten);
 			}
 			.course-text {
 				margin-top: 0.6rem;
@@ -186,6 +186,10 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-styles">
 				color: white;
 				--d2l-icon-width: 18px;
 				--d2l-icon-height: 18px;
+			}
+			d2l-icon[hidden] {
+				--d2l-icon-width: 0px;
+				--d2l-icon-height: 0px;
 			}
 			.menu-item {
 				color: white;
