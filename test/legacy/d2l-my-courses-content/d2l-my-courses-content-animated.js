@@ -1,13 +1,13 @@
 describe('d2l-my-courses-content-animated', function() {
 	var sandbox,
 		widget,
-		fetchStub,
 		organization = {
 			links: [{
 				rel: ['self'],
 				href: '/organizations/1'
 			}]
 		},
+		rootHref = '/enrollments',
 		searchHref = '/enrollments/users/169',
 		searchAction = {
 			name: 'search-my-enrollments',
@@ -33,6 +33,14 @@ describe('d2l-my-courses-content-animated', function() {
 				name: 'autoPinCourses',
 				type: 'checkbox',
 				value: false
+			}]
+		},
+		enrollmentsRootResponse = {
+			class: ['enrollments', 'root'],
+			actions: [searchAction],
+			links: [{
+				rel: ['self'],
+				href: rootHref
 			}]
 		},
 		enrollmentsSearchResponse = {
@@ -191,33 +199,21 @@ describe('d2l-my-courses-content-animated', function() {
 				href: searchHref
 			}]
 		},
-		organizationEntity = {
-			properties: {
-				name: 'Course One'
-			},
-			links: [{
-				rel: ['self'],
-				href: '/organizations/1'
-			}]
-		},
 		enrollmentsSearchEntity,
 		clock;
 
-	function SetupFetchStub(url, entity) {
-		fetchStub.withArgs(sinon.match(url), sinon.match.string)
-			.returns(Promise.resolve({entity: entity}));
-	}
-
 	beforeEach(function(done) {
 		enrollmentsSearchEntity = window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse);
-		organizationEntity = window.D2L.Hypermedia.Siren.Parse(organizationEntity);
 		sandbox = sinon.sandbox.create();
 
-		fetchStub = sandbox.stub(window.D2L.Siren.EntityStore, 'fetch');
-		SetupFetchStub(/\/organizations\/1\?embedDepth=1$/, organizationEntity);
-		SetupFetchStub(/\/organizations\/2\?embedDepth=1$/, organizationEntity);
 		widget = fixture('d2l-my-courses-content-animated-fixture');
-		widget.token = 'a1';
+		widget.fetchSirenEntity = sandbox.stub();
+		widget.fetchSirenEntity.withArgs(rootHref).returns(Promise.resolve(
+			window.D2L.Hypermedia.Siren.Parse(enrollmentsRootResponse)
+		));
+		widget.fetchSirenEntity.withArgs(searchHref).returns(Promise.resolve(
+			enrollmentsSearchEntity
+		));
 
 		setTimeout(() => {
 			done();
@@ -233,7 +229,10 @@ describe('d2l-my-courses-content-animated', function() {
 	});
 
 	it('should load', function() {
-		SetupFetchStub(/\/enrollments\/users\/169\?search=/, enrollmentsSearchEntity);
+		widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search='))
+		.returns(Promise.resolve(
+			enrollmentsSearchEntity
+		));
 		widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
 
 		expect(widget).to.exist;
@@ -241,29 +240,38 @@ describe('d2l-my-courses-content-animated', function() {
 
 	describe('Enrollments requests and responses', function() {
 		it('should send a search request for enrollments with the correct query params', function() {
-			SetupFetchStub(/\/enrollments\/users\/169\?search=/, enrollmentsSearchEntity);
-			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
-
-			expect(fetchStub).to.have.been.calledWith(sinon.match('autoPinCourses=true'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('pageSize=20'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('embedDepth=1'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('sort=-PinDate,OrgUnitName,OrgUnitId'));
-		});
-
-		it('should append enrollments on successive search requests', function() {
-			fetchStub.returns(Promise.resolve());
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/2/, enrollmentsNextPageSearchResponse);
-			fetchStub.withArgs(sinon.match('/enrollments/users/169?search='))
-				.onFirstCall().returns(Promise.resolve(
-					{entity: enrollmentsSearchEntity}
-				))
-				.onSecondCall().returns(Promise.resolve(
-					{entity: window.D2L.Hypermedia.Siren.Parse(enrollmentsNextPageSearchResponse)}
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search='))
+				.returns(Promise.resolve(
+					enrollmentsSearchEntity
 				));
 			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
 
-			widget._populateEnrollments({entity: enrollmentsSearchEntity});
-			expect(widget._pinnedEnrollments.length).to.equal(2);
+			var spy = sandbox.spy(widget, '_fetchEnrollments');
+			return widget._fetchRoot().then(function() {
+				expect(spy).to.have.been.called;
+				expect(widget.fetchSirenEntity).to.have.been.calledWith(sinon.match('autoPinCourses=true'));
+				expect(widget.fetchSirenEntity).to.have.been.calledWith(sinon.match('pageSize=20'));
+				expect(widget.fetchSirenEntity).to.have.been.calledWith(sinon.match('embedDepth=1'));
+				expect(widget.fetchSirenEntity).to.have.been.calledWith(sinon.match('sort=-PinDate,OrgUnitName,OrgUnitId'));
+			});
+		});
+
+		it('should append enrollments on successive search requests', function() {
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search='))
+				.onFirstCall().returns(Promise.resolve(
+					enrollmentsSearchEntity
+				))
+				.onSecondCall().returns(Promise.resolve(
+					window.D2L.Hypermedia.Siren.Parse(enrollmentsNextPageSearchResponse)
+				));
+			// first call to _fetchRoot on enrollmentsSearchActionChanged
+			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
+
+			// second call to _fetchRoot done explicitly
+			return widget._fetchRoot()
+				.then(function() {
+					expect(widget._pinnedEnrollments.length).to.equal(2);
+				});
 		});
 
 		it('should fetch all pinned enrollments', function() {
@@ -271,73 +279,70 @@ describe('d2l-my-courses-content-animated', function() {
 				rel: ['next'],
 				href: '/more-pinned-enrollments'
 			});
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/1/, enrollmentsSearchResponse);
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/2/, enrollmentsSearchResponse);
-
-			fetchStub.withArgs(sinon.match('/enrollments/users/169?search='))
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search='))
 				.returns(Promise.resolve(
-					{entity: window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse)}
+					window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse)
 				))
 				.withArgs(sinon.match('/more-pinned-enrollments'))
 				.returns(Promise.resolve(
-					{entity: window.D2L.Hypermedia.Siren.Parse(enrollmentsNextPageSearchResponse)}
+					window.D2L.Hypermedia.Siren.Parse(enrollmentsNextPageSearchResponse)
 				));
 
 			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
 
-			widget._populateEnrollments({entity: window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse)});
-			widget._populateEnrollments({entity: window.D2L.Hypermedia.Siren.Parse(enrollmentsNextPageSearchResponse)});
-
-			expect(fetchStub).to.have.been.calledWith(sinon.match('/more-pinned-enrollments'));
+			return widget._fetchRoot()
+				.then(function() {
+					expect(widget.fetchSirenEntity).to.have.been.calledWith(sinon.match('/more-pinned-enrollments'));
+				});
 		});
 
 		it('should rescale the course tile grid on search response', function() {
-			SetupFetchStub(/\/enrollment$/, noEnrollmentsResponse);
-			fetchStub.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
-				{entity: window.D2L.Hypermedia.Siren.Parse(noEnrollmentsResponse)}
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
+				window.D2L.Hypermedia.Siren.Parse(noEnrollmentsResponse)
 			));
 			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
 			var gridRescaleSpy = sandbox.spy(widget.$$('d2l-course-tile-grid'), '_rescaleCourseTileRegions');
 
-			expect(gridRescaleSpy.called);
+			return widget._fetchRoot().then(function() {
+				expect(gridRescaleSpy.called);
+			});
 		});
 
 		it('should display appropriate alert when there are no enrollments', function() {
-			SetupFetchStub(/\/enrollment$/, noEnrollmentsResponse);
-			fetchStub.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
-				{entity: window.D2L.Hypermedia.Siren.Parse(noEnrollmentsResponse)}
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
+				window.D2L.Hypermedia.Siren.Parse(noEnrollmentsResponse)
 			));
 			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
 
-			expect(widget._hasEnrollments).to.equal(false);
-			expect(widget._alertsView).to.include({ alertName: 'noCourses', alertType: 'call-to-action', alertMessage: 'You don\'t have any courses to display.' });
+			return widget._fetchRoot().then(function() {
+				expect(widget._hasEnrollments).to.equal(false);
+				expect(widget._alertsView).to.include({ alertName: 'noCourses', alertType: 'call-to-action', alertMessage: 'You don\'t have any courses to display.' });
+			});
 		});
 
 		it('should display appropriate message when there are no pinned enrollments', function() {
-			SetupFetchStub(/\/enrollments\/users\/169.*&.*$/, noPinnedEnrollmentsResponse);
-			fetchStub.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
-				{entity: window.D2L.Hypermedia.Siren.Parse(noPinnedEnrollmentsResponse)}
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
+				window.D2L.Hypermedia.Siren.Parse(noPinnedEnrollmentsResponse)
 			));
 			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
-			widget._populateEnrollments({entity: window.D2L.Hypermedia.Siren.Parse(noPinnedEnrollmentsResponse)});
-
-			expect(widget._hasEnrollments).to.equal(true);
-			expect(widget._alertsView).to.include({ alertName: 'noPinnedCourses', alertType: 'call-to-action', alertMessage: 'You don\'t have any pinned courses. View All Courses to browse all available courses.' });
+			return widget._fetchRoot().then(function() {
+				expect(widget._hasEnrollments).to.equal(true);
+				expect(widget._alertsView).to.include({ alertName: 'noPinnedCourses', alertType: 'call-to-action', alertMessage: 'You don\'t have any pinned courses. View All Courses to browse all available courses.' });
+			});
 		});
 
 		it('should update enrollment alerts when enrollment information is updated', function() {
-			SetupFetchStub(/\/enrollments\/users\/169.*&.*$/, noPinnedEnrollmentsResponse);
-			fetchStub.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
-				{entity: window.D2L.Hypermedia.Siren.Parse(noPinnedEnrollmentsResponse)}
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
+				window.D2L.Hypermedia.Siren.Parse(noPinnedEnrollmentsResponse)
 			));
 			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
-			widget._populateEnrollments({entity: window.D2L.Hypermedia.Siren.Parse(noPinnedEnrollmentsResponse)});
-
-			expect(widget._hasEnrollments).to.equal(true);
-			expect(widget._alertsView).to.include({ alertName: 'noPinnedCourses', alertType: 'call-to-action', alertMessage: 'You don\'t have any pinned courses. View All Courses to browse all available courses.' });
-			var enrollmentsLengthChangedSpy = sandbox.spy(widget, '_enrollmentsChanged');
-			widget._hasPinnedEnrollments = true;
-			expect(enrollmentsLengthChangedSpy.called);
+			return widget._fetchRoot().then(function() {
+				expect(widget._hasEnrollments).to.equal(true);
+				expect(widget._alertsView).to.include({ alertName: 'noPinnedCourses', alertType: 'call-to-action', alertMessage: 'You don\'t have any pinned courses. View All Courses to browse all available courses.' });
+				var enrollmentsLengthChangedSpy = sandbox.spy(widget, '_enrollmentsChanged');
+				widget._hasPinnedEnrollments = true;
+				expect(enrollmentsLengthChangedSpy.called);
+			});
 		});
 
 		it('should remove all existing alerts when enrollment alerts are updated', function() {
@@ -353,23 +358,23 @@ describe('d2l-my-courses-content-animated', function() {
 		beforeEach(function() {
 			// Prevents the _searchPath of the image selector from being null (causes failures in Firefox)
 			widget.imageCatalogLocation = '/foo/bar';
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/1/, enrollmentsSearchResponse);
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/2/, enrollmentsSearchResponse);
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
+				enrollmentsSearchEntity
+			));
+			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
 		});
 
 		it('should return the correct value from getCourseTileItemCount', function() {
-			fetchStub.returns(Promise.resolve());
-			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
-			widget._populateEnrollments({entity: enrollmentsSearchEntity});
-			expect(widget.getCourseTileItemCount()).to.equal(2);
+			return widget._fetchRoot().then(function() {
+				expect(widget.getCourseTileItemCount()).to.equal(2);
+			});
 		});
 
 		it('should correctly evaluate whether it has pinned/unpinned enrollments', function() {
-			fetchStub.returns(Promise.resolve());
-			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
-			widget._populateEnrollments({entity: enrollmentsSearchEntity});
-			expect(widget._hasEnrollments).to.be.true;
-			expect(widget._hasPinnedEnrollments).to.be.true;
+			return widget._fetchRoot().then(function() {
+				expect(widget._hasEnrollments).to.be.true;
+				expect(widget._hasPinnedEnrollments).to.be.true;
+			});
 		});
 
 		it('should add a setCourseImageFailure warning alert when a request to set the image fails', function() {
@@ -409,8 +414,8 @@ describe('d2l-my-courses-content-animated', function() {
 			);
 
 			it.skip('should focus on view all courses link when focus called initially', function() {
-				fetchStub.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
-					{entity: enrollmentsSearchEntity}
+				widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
+					enrollmentsSearchEntity
 				));
 				widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
 				return widget._fetchRoot().then(function() {
@@ -557,8 +562,8 @@ describe('d2l-my-courses-content-animated', function() {
 			it('should refetch enrollments if the pinned enrollment has no previously been fetched', function(done) {
 				widget._addToPinnedEnrollments = sandbox.stub();
 				widget._removeFromPinnedEnrollments = sandbox.stub();
-				fetchStub = sandbox.stub();
-				fetchStub.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve());
+				widget.fetchSirenEntity = sandbox.stub();
+				widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve());
 				widget._refetchEnrollments = sandbox.stub();
 				var coursePinnedChangeEvent = new CustomEvent(
 					'd2l-course-pinned-change', {
@@ -584,8 +589,7 @@ describe('d2l-my-courses-content-animated', function() {
 
 	describe('User interaction', function() {
 		beforeEach(function() {
-			SetupFetchStub(/\/enrollment$/, noEnrollmentsResponse);
-			fetchStub.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
+			widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search=')).returns(Promise.resolve(
 				window.D2L.Hypermedia.Siren.Parse(noEnrollmentsResponse)
 			));
 			widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
@@ -622,24 +626,21 @@ describe('d2l-my-courses-content-animated', function() {
 	describe('Pinning and unpinning enrollments', () => {
 
 		it('should populate the _pinnedEnrollmentsMap when populating enrollments', () => {
-			fetchStub.returns(Promise.resolve());
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/1/, enrollmentsSearchResponse);
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/2/, enrollmentsSearchResponse);
-			widget._populateEnrollments({entity: window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse)});
+			widget.fetchSirenEntity = sandbox.stub();
+			widget.fetchSirenEntity.returns(Promise.resolve());
+			widget._populateEnrollments(window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse));
 			expect(widget._pinnedEnrollmentsMap.hasOwnProperty('/enrollments/users/169/organizations/1')).to.be.true;
 			expect(widget._pinnedEnrollmentsMap.hasOwnProperty('/enrollments/users/169/organizations/2')).to.be.true;
 		});
 
 		it('should remove unpinned enrollments from the _pinnedEnrollmentsMap when populating enrollments', () => {
-			fetchStub.returns(Promise.resolve());
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/1/, enrollmentsSearchResponse);
-			SetupFetchStub(/\/enrollments\/users\/169\/organizations\/2/, enrollmentsSearchResponse);
-			widget._populateEnrollments({entity: window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse)});
+			widget.fetchSirenEntity = sandbox.stub();
+			widget.fetchSirenEntity.returns(Promise.resolve());
+			widget._populateEnrollments(window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponse));
 			expect(widget._pinnedEnrollmentsMap.hasOwnProperty('/enrollments/users/169/organizations/1')).to.be.true;
 			expect(widget._pinnedEnrollmentsMap.hasOwnProperty('/enrollments/users/169/organizations/2')).to.be.true;
 
-			SetupFetchStub(/\/enrollments\/users\/169.*&.*$/, enrollmentsSearchResponseOneUnpinned);
-			widget._populateEnrollments({entity: window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponseOneUnpinned)});
+			widget._populateEnrollments(window.D2L.Hypermedia.Siren.Parse(enrollmentsSearchResponseOneUnpinned));
 			expect(widget._pinnedEnrollmentsMap.hasOwnProperty('/enrollments/users/169/organizations/1')).to.be.false;
 			expect(widget._pinnedEnrollmentsMap.hasOwnProperty('/enrollments/users/169/organizations/2')).to.be.true;
 		});

@@ -81,90 +81,37 @@ describe('d2l-all-courses-legacy', function() {
 		});
 	});
 
-	describe('getCourseTileItemCount', function() {
-		it('should return the correct value from getCourseTileItemCount (should be maximum of pinned or unpinned course count)', function() {
-			widget._filteredPinnedEnrollments = [pinnedEnrollmentEntity];
-			widget._filteredUnpinnedEnrollments = [unpinnedEnrollmentEntity];
+	it('should return the correct value from getCourseTileItemCount (should be maximum of pinned or unpinned course count)', function() {
+		widget._filteredPinnedEnrollments = [pinnedEnrollmentEntity];
+		widget._filteredUnpinnedEnrollments = [unpinnedEnrollmentEntity];
 
-			expect(widget.$$('d2l-all-courses-segregated-content').getCourseTileItemCount()).to.equal(1);
-		});
-
-		it('should set getCourseTileItemCount on its child course-tile-grids', function() {
-			widget._filteredPinnedEnrollments = [pinnedEnrollmentEntity];
-			widget._filteredUnpinnedEnrollments = [unpinnedEnrollmentEntity];
-			var courseTileGrids;
-			var segregatedContent = widget.$$('d2l-all-courses-segregated-content');
-			if (segregatedContent.shadowRoot) {
-				courseTileGrids = segregatedContent.shadowRoot.querySelectorAll('d2l-course-tile-grid');
-			} else {
-				courseTileGrids = segregatedContent.querySelectorAll('d2l-course-tile-grid');
-			}
-			expect(courseTileGrids.length).to.equal(2);
-
-			for (var i = 0; i < courseTileGrids.length; i++) {
-				expect(courseTileGrids[i].getCourseTileItemCount()).to.equal(1);
-			}
-		});
+		expect(widget.$$('d2l-all-courses-segregated-content').getCourseTileItemCount()).to.equal(1);
 	});
 
-	describe('filter menu', function() {
-		it('should load filter menu content when filter menu is opened', function() {
-			var semestersTabStub = sandbox.stub(widget.$.filterMenu.$.semestersTab, 'load');
-			var departmentsTabStub = sandbox.stub(widget.$.filterMenu.$.departmentsTab, 'load');
+	it('should set getCourseTileItemCount on its child course-tile-grids', function() {
+		widget._filteredPinnedEnrollments = [pinnedEnrollmentEntity];
+		widget._filteredUnpinnedEnrollments = [unpinnedEnrollmentEntity];
+		var courseTileGrids;
+		var segregatedContent = widget.$$('d2l-all-courses-segregated-content');
+		if (segregatedContent.shadowRoot) {
+			courseTileGrids = segregatedContent.shadowRoot.querySelectorAll('d2l-course-tile-grid');
+		} else {
+			courseTileGrids = segregatedContent.querySelectorAll('d2l-course-tile-grid');
+		}
+		expect(courseTileGrids.length).to.equal(2);
 
-			return widget._onFilterDropdownOpen().then(function() {
-				expect(semestersTabStub.called).to.be.true;
-				expect(departmentsTabStub.called).to.be.true;
-			});
-		});
+		for (var i = 0; i < courseTileGrids.length; i++) {
+			expect(courseTileGrids[i].getCourseTileItemCount()).to.equal(1);
+		}
 	});
 
-	describe('opening the overlay', function() {
-		it('should initially hide content', function() {
-			widget.open();
-			expect(widget._showContent).to.be.false;
-		});
-	});
+	it('should load filter menu content when filter menu is opened', function() {
+		var semestersTabStub = sandbox.stub(widget.$.filterMenu.$.semestersTab, 'load');
+		var departmentsTabStub = sandbox.stub(widget.$.filterMenu.$.departmentsTab, 'load');
 
-	describe('Alerts', function() {
-		var setCourseImageFailureAlert = { alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' };
-
-		it('should remove a setCourseImageFailure alert when the overlay is opened', function() {
-			widget._addAlert('warning', 'setCourseImageFailure', 'failed to do that thing it should do');
-			expect(widget._alertsView).to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'failed to do that thing it should do' });
-			widget.$$('d2l-simple-overlay')._renderOpened();
-			expect(widget._alertsView).to.not.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'failed to do that thing it should do' });
-		});
-
-		it('should remove and course image failure alerts before adding and new ones', function() {
-			var removeAlertSpy = sandbox.spy(widget, '_removeAlert');
-			widget._onSetCourseImage();
-			expect(removeAlertSpy.called);
-		});
-
-		it('should add an alert after setting the course image results in failure (after a timeout)', function() {
-			clock = sinon.useFakeTimers();
-			var setCourseImageEvent = { detail: { status: 'failure'} };
-			widget._onSetCourseImage(setCourseImageEvent);
-			clock.tick(1001);
-			expect(widget._alertsView).to.include(setCourseImageFailureAlert);
-		});
-
-		it('should not add a setCourseImageFailure warning alert when a request to set the image succeeds', function() {
-			var setCourseImageEvent = { detail: { status: 'success'} };
-			widget._onSetCourseImage(setCourseImageEvent);
-			expect(widget._alertsView).not.to.include(setCourseImageFailureAlert);
-		});
-
-		it('should remove a setCourseImageFailure warning alert when a request to set the image is made', function() {
-			clock = sinon.useFakeTimers();
-			var setCourseImageEvent = { detail: { status: 'failure'} };
-			widget._onSetCourseImage(setCourseImageEvent);
-			clock.tick(1001);
-			expect(widget._alertsView).to.include(setCourseImageFailureAlert);
-			setCourseImageEvent = { detail: { status: 'set'} };
-			widget._onSetCourseImage(setCourseImageEvent);
-			expect(widget._alertsView).not.to.include(setCourseImageFailureAlert);
+		return widget._onFilterDropdownOpen().then(function() {
+			expect(semestersTabStub.called).to.be.true;
+			expect(departmentsTabStub.called).to.be.true;
 		});
 	});
 
@@ -235,6 +182,55 @@ describe('d2l-all-courses-legacy', function() {
 		it('should read "Filter: 2 filters" when any 2 filters are selected', function() {
 			fireEvents(2);
 			expect(widget._filterText).to.equal('Filter: 2 Filters');
+		});
+	});
+
+	describe('Alerts', function() {
+		var setCourseImageFailureAlert = { alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' };
+
+		it('should remove a setCourseImageFailure alert when the overlay is opened', function() {
+			widget._addAlert('warning', 'setCourseImageFailure', 'failed to do that thing it should do');
+			expect(widget._alertsView).to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'failed to do that thing it should do' });
+			widget.$$('d2l-simple-overlay')._renderOpened();
+			expect(widget._alertsView).to.not.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'failed to do that thing it should do' });
+		});
+
+		it('should remove and course image failure alerts before adding and new ones', function() {
+			var removeAlertSpy = sandbox.spy(widget, '_removeAlert');
+			widget._onSetCourseImage();
+			expect(removeAlertSpy.called);
+		});
+
+		it('should add an alert after setting the course image results in failure (after a timeout)', function() {
+			clock = sinon.useFakeTimers();
+			var setCourseImageEvent = { detail: { status: 'failure'} };
+			widget._onSetCourseImage(setCourseImageEvent);
+			clock.tick(1001);
+			expect(widget._alertsView).to.include(setCourseImageFailureAlert);
+		});
+
+		it('should not add a setCourseImageFailure warning alert when a request to set the image succeeds', function() {
+			var setCourseImageEvent = { detail: { status: 'success'} };
+			widget._onSetCourseImage(setCourseImageEvent);
+			expect(widget._alertsView).not.to.include(setCourseImageFailureAlert);
+		});
+
+		it('should remove a setCourseImageFailure warning alert when a request to set the image is made', function() {
+			clock = sinon.useFakeTimers();
+			var setCourseImageEvent = { detail: { status: 'failure'} };
+			widget._onSetCourseImage(setCourseImageEvent);
+			clock.tick(1001);
+			expect(widget._alertsView).to.include(setCourseImageFailureAlert);
+			setCourseImageEvent = { detail: { status: 'set'} };
+			widget._onSetCourseImage(setCourseImageEvent);
+			expect(widget._alertsView).not.to.include(setCourseImageFailureAlert);
+		});
+	});
+
+	describe('opening the overlay', function() {
+		it('should initially hide content', function() {
+			widget.open();
+			expect(widget._showContent).to.be.false;
 		});
 	});
 

@@ -456,12 +456,9 @@ Polymer({
 				this._enrollmentsSearchUrl = lastResponseEntity.getLinkByRel('next').href;
 				this.$.lazyLoadSpinner.scrollIntoView();
 
-				return this.sirenEntityStoreFetch(this._enrollmentsSearchUrl, this.token)
+				return this.fetchSirenEntity(this._enrollmentsSearchUrl)
 					.then(function(enrollmentsEntity) {
-						if (!enrollmentsEntity || !enrollmentsEntity.entity) {
-							return Promise.resolve();
-						}
-						this._updateFilteredEnrollments(enrollmentsEntity.entity, true);
+						this._updateFilteredEnrollments(enrollmentsEntity, true);
 					}.bind(this));
 			}
 		}

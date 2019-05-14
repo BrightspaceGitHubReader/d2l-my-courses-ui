@@ -22,8 +22,6 @@ const $_documentContainer = document.createElement('template');
 $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-legacy">
 	<template strip-whitespace="">
 		<d2l-my-courses-content-animated
-			href="[[presentationUrl]]"
-			token="[[token]]"
 			advanced-search-url="[[advancedSearchUrl]]"
 			enrollments-search-action="[[_enrollmentsSearchAction]]"
 			image-catalog-location="[[imageCatalogLocation]]"

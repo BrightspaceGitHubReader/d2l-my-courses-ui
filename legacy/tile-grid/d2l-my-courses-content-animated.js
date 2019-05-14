@@ -77,8 +77,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content-animated
 				locale="[[locale]]"
 				show-course-code="[[showCourseCode]]"
 				show-semester="[[showSemester]]"
-				course-updates-config="[[courseUpdatesConfig]]"
-				token="[[token]]">
+				course-updates-config="[[courseUpdatesConfig]]">
 			</d2l-course-tile-grid>
 			<d2l-link id="viewAllCourses" hidden$="[[!_hasEnrollments]]" href="javascript:void(0);" on-tap="_openAllCoursesView" on-keypress="_keypressOpenAllCoursesView" on-mouseover="_createAllCourses" on-focus="_createAllCourses" tabindex="0">
 				<h3 class="d2l-body-standard">[[_viewAllCoursesLinkText]]</h3>
@@ -311,11 +310,6 @@ Polymer({
 	},
 	// Override for MyCoursesContentBehaviorLegacy._populateEnrollments
 	_populateEnrollments: function(enrollmentsEntity) {
-		if (!enrollmentsEntity || !enrollmentsEntity.entity) {
-			return;
-		}
-
-		enrollmentsEntity = enrollmentsEntity && enrollmentsEntity.entity;
 		var enrollmentEntities = enrollmentsEntity.getSubEntitiesByClass('enrollment');
 		this._hasMoreEnrollments = enrollmentsEntity.hasLinkByRel('next');
 		var newEnrollments = [];
@@ -356,7 +350,7 @@ Polymer({
 		var lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
 		if (lastEnrollment.hasClass('pinned') && this._hasMoreEnrollments) {
 			var url = enrollmentsEntity.getLinkByRel('next').href;
-			return this.sirenEntityStoreFetch(url, this.token)
+			return this.fetchSirenEntity(url)
 				.then(this._populateEnrollments.bind(this));
 		}
 	},
