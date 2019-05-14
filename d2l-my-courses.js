@@ -89,8 +89,6 @@ Polymer({
 		promotedSearches: String,
 		// URL to fetch a user's settings (e.g. default tab to select)
 		userSettingsUrl: String,
-		// URL to fetch widget settings
-		presentationUrl: String,
 		// Feature flag (switch) for using the updated sort logic and related fetaures
 		updatedSortLogic: {
 			type: Boolean,

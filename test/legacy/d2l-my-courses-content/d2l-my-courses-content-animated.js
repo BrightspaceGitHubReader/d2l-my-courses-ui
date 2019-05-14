@@ -230,9 +230,9 @@ describe('d2l-my-courses-content-animated', function() {
 
 	it('should load', function() {
 		widget.fetchSirenEntity.withArgs(sinon.match('/enrollments/users/169?search='))
-		.returns(Promise.resolve(
-			enrollmentsSearchEntity
-		));
+			.returns(Promise.resolve(
+				enrollmentsSearchEntity
+			));
 		widget.enrollmentsSearchAction = enrollmentsSearchEntity.actions[0];
 
 		expect(widget).to.exist;

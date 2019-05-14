@@ -95,8 +95,8 @@ describe('d2l-my-courses', () => {
 			}
 		};
 
-		beforeEach(() => {
-			sandbox = sinon.sandbox.create();
+	beforeEach(() => {
+		sandbox = sinon.sandbox.create();
 
 		component = fixture('d2l-my-courses-legacy-fixture');
 		component.fetchSirenEntity = sandbox.stub();

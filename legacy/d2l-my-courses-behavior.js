@@ -43,7 +43,6 @@ D2L.MyCourses.MyCoursesBehaviorLegacyImpl = {
 			type: Boolean,
 			value: false
 		},
-		presentationUrl: String,
 		currentTabId: String,
 		_enrollmentsSearchAction: Object,
 		_pinnedTabAction: Object,
@@ -88,9 +87,7 @@ D2L.MyCourses.MyCoursesBehaviorLegacyImpl = {
 				}
 
 				if (userSettingsEntity && userSettingsEntity.hasLinkByRel(Rels.widgetSettings)) {
-					console.log(this.href);
 					this.presentationUrl = userSettingsEntity.getLinkByRel(Rels.widgetSettings).href;
-					console.log(this.presentationUrl);
 				}
 
 				this._updateUserSettingsAction = userSettingsEntity.getActionByName(Actions.enrollments.updateUserSettings);

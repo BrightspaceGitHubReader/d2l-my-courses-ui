@@ -304,12 +304,12 @@ describe('<d2l-course-tile>', function() {
 
 		it('should set the update action parameters correctly and call the pinning API', function(done) {
 			window.d2lfetch.fetch = sandbox.stub()
-			.withArgs(sinon.match.has('url', sinon.match('/enrollments/users/169/organizations/1'))
-				.and(sinon.match.has('method', 'PUT')))
-			.returns(Promise.resolve({
-				ok: true,
-				json: function() { return Promise.resolve(enrollment); }
-			}));
+				.withArgs(sinon.match.has('url', sinon.match('/enrollments/users/169/organizations/1'))
+					.and(sinon.match.has('method', 'PUT')))
+				.returns(Promise.resolve({
+					ok: true,
+					json: function() { return Promise.resolve(enrollment); }
+				}));
 
 			widget._pinClickHandler(event);
 
@@ -346,12 +346,12 @@ describe('<d2l-course-tile>', function() {
 
 		it('should update the overflow menu button with the new pinned state', function(done) {
 			window.d2lfetch.fetch = sandbox.stub()
-			.withArgs(sinon.match.has('url', sinon.match('/enrollments/users/169/organizations/1'))
-				.and(sinon.match.has('method', 'PUT')))
-			.returns(Promise.resolve({
-				ok: true,
-				json: function() { return Promise.resolve(enrollment); }
-			}));
+				.withArgs(sinon.match.has('url', sinon.match('/enrollments/users/169/organizations/1'))
+					.and(sinon.match.has('method', 'PUT')))
+				.returns(Promise.resolve({
+					ok: true,
+					json: function() { return Promise.resolve(enrollment); }
+				}));
 
 			widget._showHoverMenu = true;
 
