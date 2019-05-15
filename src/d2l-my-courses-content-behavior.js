@@ -13,9 +13,8 @@ window.D2L = window.D2L || {};
 window.D2L.MyCourses = window.D2L.MyCourses || {};
 
 /*
-* Common behavior shared between d2l-my-courses-content and d2l-my-courses-content-animated.
-* This exists as a temporary behavior, to be removed when the -content-animated component is removed,
-* and the functionality can be merged back into d2l-my-courses-content.
+* TODO: This was a Common behavior shared between d2l-my-courses-content and d2l-my-courses-content-animated.
+* Now that the code path has been split, this can be merged back into d2l-my-courses-content.
 *
 * @polymerBehavior D2L.MyCourses.MyCoursesContentBehavior
 */

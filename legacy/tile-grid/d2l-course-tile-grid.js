@@ -2,7 +2,8 @@
 `d2l-course-tile-grid`
 Polymer-based web component for the course tile grid.
 
-This is used in `d2l-my-courses-content` (when the `us90524-my-courses-css-grid-layout` LD flag is off) and in `d2l-all-courses`.
+This is used in `d2l-my-courses-content-animated` and in `d2l-all-courses-segregated-content`
+(meaning the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is off)
 
 */
 /*
@@ -15,9 +16,9 @@ import '@polymer/polymer/polymer-legacy.js';
 import './d2l-course-tile.js';
 import './d2l-course-tile-responsive-grid-behavior.js';
 import './d2l-course-tile-sliding-grid-behavior.js';
-import '../localize-behavior.js';
+import '../localize-behavior-legacy.js';
 import './d2l-course-tile-grid-styles.js';
-import '../d2l-utility-behavior.js';
+import '../d2l-utility-behavior-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 const $_documentContainer = document.createElement('template');

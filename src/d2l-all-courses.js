@@ -2,14 +2,9 @@
 `d2l-all-courses`
 Polymer-based web component for all courses.
 
-If the `US90527-my-courses-updates` LD flag is on, the `updated-sort-logic` attribute is added and the `d2l-all-courses-unified-content` component is rendered.
-If it is off and the attribute is not added, the `d2l-all-courses-segregated-content` component is rendered.
+TODO: This component is only rendered if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is on, meaning `updated-sort-logic` is true.
+We can do a lot of cleanup here around `d2l-all-courses-segregated-content` (no longer needed).  Only the `d2l-all-courses-unified-content` component is rendered.
 
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
 */
 import '@polymer/polymer/polymer-legacy.js';
 
@@ -35,7 +30,7 @@ import './search-filter/d2l-filter-menu.js';
 import './search-filter/d2l-search-widget-custom.js';
 import './d2l-utility-behavior.js';
 import './localize-behavior.js';
-import '../legacy/tile-grid/d2l-all-courses-segregated-content.js';
+import '../legacy/tile-grid/d2l-all-courses-segregated-content.js'; // TODO: remove this dependency, since updated-sort-logic will always be true
 import './card-grid/d2l-all-courses-unified-content.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';

@@ -1,4 +1,4 @@
-describe('d2l-filter-list-item', function() {
+describe('d2l-filter-list-item-legacy', function() {
 	var sandbox,
 		listItem,
 		enrollment,

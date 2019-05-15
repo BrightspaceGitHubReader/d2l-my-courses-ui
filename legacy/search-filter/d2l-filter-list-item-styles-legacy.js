@@ -3,7 +3,7 @@ import 'd2l-menu/d2l-menu-item-selectable-styles.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-filter-list-item-styles">
+$_documentContainer.innerHTML = `<dom-module id="d2l-filter-list-item-styles-legacy">
 	<template strip-whitespace="">
 		<style include="d2l-menu-item-selectable-styles">
 			:host {

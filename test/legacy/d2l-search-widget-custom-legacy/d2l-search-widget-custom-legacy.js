@@ -1,4 +1,4 @@
-describe('<d2l-search-widget-custom>', function() {
+describe('<d2l-search-widget-custom-legacy>', function() {
 	var sandbox,
 		widget,
 		clock,

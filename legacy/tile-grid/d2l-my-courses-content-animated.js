@@ -2,14 +2,9 @@
 `d2l-my-courses-content-animated`
 Polymer-based web component for the my-courses content.
 
-This is only used if the `US90527-my-courses-updates` LD flag is OFF
+This is only used if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is off
 (meaning the `updated-sort-logic` attribute was not added to the `d2l-my-courses` component).
 
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
 */
 import '@polymer/polymer/polymer-legacy.js';
 
@@ -21,9 +16,9 @@ import 'd2l-loading-spinner/d2l-loading-spinner.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-image-selector/d2l-basic-image-selector.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import '../d2l-all-courses.js';
+import '../d2l-all-courses-legacy.js';
 import './d2l-course-tile-grid.js';
-import '../d2l-my-courses-content-behavior.js';
+import '../d2l-my-courses-content-behavior-legacy.js';
 import { Rels } from 'd2l-hypermedia-constants';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';

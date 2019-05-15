@@ -1,13 +1,15 @@
 import '@polymer/polymer/polymer-legacy.js';
 import { Rels } from 'd2l-hypermedia-constants';
 import { Actions } from 'd2l-hypermedia-constants';
-import './d2l-utility-behavior.js';
-import './localize-behavior.js';
+import './d2l-utility-behavior-legacy.js';
+import './localize-behavior-legacy.js';
 window.D2L = window.D2L || {};
 window.D2L.MyCourses = window.D2L.MyCourses || {};
 
 /*
-* Common properties between d2l-my-courses and d2l-my-courses-content-behavior-animated
+* TODO: This was a Common behavior shared between d2l-my-courses-container and d2l-my-courses-legacy.
+* Now that the code path has been split, this can be merged back into d2l-my-courses-legacy.
+*
 * @polymerBehavior D2L.MyCourses.MyCoursesBehaviorLegacy
 */
 D2L.MyCourses.MyCoursesBehaviorLegacyImpl = {

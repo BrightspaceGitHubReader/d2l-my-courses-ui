@@ -1,4 +1,4 @@
-describe('d2l-my-courses', () => {
+describe('d2l-my-courses-legacy', () => {
 	var component,
 		sandbox,
 		enrollmentsHref = '/enrollments/users/169',

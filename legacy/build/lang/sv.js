@@ -4,9 +4,9 @@ window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
 window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
 /**
  * This file is auto-generated. Do not modify.
- * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangSvBehavior
+ * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangSvBehaviorLegacy
  */
-D2L.PolymerBehaviors.MyCourses.LangSvBehavior = {
+D2L.PolymerBehaviors.MyCourses.LangSvBehaviorLegacy = {
 	'sv': {
 			"advancedSearch": "Avancerad sökning",
 			"allCourses": "Alla kurser",

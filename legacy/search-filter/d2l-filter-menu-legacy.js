@@ -14,10 +14,10 @@ import 'd2l-colors/d2l-colors.js';
 import { Actions } from 'd2l-hypermedia-constants';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import '@polymer/iron-pages/iron-pages.js';
-import '../d2l-utility-behavior.js';
-import '../localize-behavior.js';
-import './d2l-filter-menu-tab.js';
-import './d2l-filter-menu-tab-roles.js';
+import '../d2l-utility-behavior-legacy.js';
+import '../localize-behavior-legacy.js';
+import './d2l-filter-menu-tab-legacy.js';
+import './d2l-filter-menu-tab-roles-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 const $_documentContainer = document.createElement('template');
 
@@ -113,7 +113,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu-legacy">
 			</d2l-filter-menu-tab-roles-legacy>
 		</iron-pages>
 	</template>
-	
+
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);

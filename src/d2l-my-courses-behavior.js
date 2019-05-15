@@ -8,7 +8,9 @@ window.D2L = window.D2L || {};
 window.D2L.MyCourses = window.D2L.MyCourses || {};
 
 /*
-* Common properties between d2l-my-courses and d2l-my-courses-content-behavior-animated
+* TODO: This was a Common behavior shared between d2l-my-courses-container and d2l-my-courses-legacy.
+* Now that the code path has been split, this can be merged back into d2l-my-courses-container.
+*
 * @polymerBehavior D2L.MyCourses.MyCoursesBehavior
 */
 D2L.MyCourses.MyCoursesBehaviorImpl = {

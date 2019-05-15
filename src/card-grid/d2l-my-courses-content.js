@@ -2,7 +2,7 @@
 `d2l-my-courses-content`
 Polymer-based web component for the my-courses content.
 
-This is only used if the `US90527-my-courses-updates` LD flag is ON
+This is only used if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is on
 (meaning the `updated-sort-logic` attribute was added to the `d2l-my-courses` component).
 
 */
@@ -121,7 +121,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content">
 			</d2l-basic-image-selector>
 		</d2l-simple-overlay>
 	</template>
-	
+
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);

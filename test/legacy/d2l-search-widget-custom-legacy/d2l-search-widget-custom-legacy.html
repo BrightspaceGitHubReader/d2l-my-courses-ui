@@ -6,15 +6,19 @@
 		<script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 		<script src="../../../../wct-browser-legacy/browser.js"></script>
 
-		<script type="module" src="./consumer-element.js"></script>
+		<script type="module" src="../../../legacy/search-filter/d2l-search-widget-custom-legacy.js"></script>
 	</head>
 	<body>
-		<test-fixture id="default-fixture">
+		<test-fixture id="d2l-search-widget-custom-legacy-fixture">
 			<template>
-				<consumer-element></consumer-element>
+				<d2l-search-widget-custom-legacy
+					sort="OrgUnitName,OrgUnitId"
+					parent-organizations="[]"
+					cache-responses>
+				</d2l-search-widget-custom-legacy>
 			</template>
 		</test-fixture>
 
-		<script src="./localize-behavior.js"></script>
+		<script src="./d2l-search-widget-custom-legacy.js"></script>
 	</body>
 </html>
