@@ -2,15 +2,11 @@
 `d2l-all-courses-unified-content`
 Polymer-based web component for the all courses content.
 
-This is only used if the `US90527-my-courses-updates` LD flag is ON
+This is only used if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is on
 (meaning the `updated-sort-logic` attribute was added to the `d2l-my-courses` component).
 
 */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
+
 import '@polymer/polymer/polymer-legacy.js';
 
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
@@ -61,7 +57,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-unified-content
 			</template>
 		</div>
 	</template>
-	
+
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);

@@ -4,9 +4,9 @@ window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
 window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
 /**
  * This file is auto-generated. Do not modify.
- * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangFrBehavior
+ * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangFrBehaviorLegacy
  */
-D2L.PolymerBehaviors.MyCourses.LangFrBehavior = {
+D2L.PolymerBehaviors.MyCourses.LangFrBehaviorLegacy = {
 	'fr': {
 			"advancedSearch": "Recherche avancée",
 			"allCourses": "Tous les cours",

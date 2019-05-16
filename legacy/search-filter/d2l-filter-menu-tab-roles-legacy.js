@@ -13,8 +13,8 @@ import '@polymer/polymer/polymer-legacy.js';
 import { Actions } from 'd2l-hypermedia-constants';
 import 'd2l-menu/d2l-menu.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import '../d2l-utility-behavior.js';
-import './d2l-filter-list-item-role.js';
+import '../d2l-utility-behavior-legacy.js';
+import './d2l-filter-list-item-role-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 const $_documentContainer = document.createElement('template');
 
@@ -42,7 +42,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu-tab-roles-legac
 
 		<div class="no-items-text" hidden$="[[_showContent]]">[[noFiltersText]]</div>
 	</template>
-	
+
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);

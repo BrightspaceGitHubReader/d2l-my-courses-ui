@@ -4,9 +4,9 @@ window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
 window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
 /**
  * This file is auto-generated. Do not modify.
- * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangKoBehavior
+ * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangKoBehaviorLegacy
  */
-D2L.PolymerBehaviors.MyCourses.LangKoBehavior = {
+D2L.PolymerBehaviors.MyCourses.LangKoBehaviorLegacy = {
 	'ko': {
 			"advancedSearch": "고급 검색",
 			"allCourses": "모든 강의",

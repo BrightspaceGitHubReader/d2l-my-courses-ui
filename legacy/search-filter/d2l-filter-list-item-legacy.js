@@ -13,21 +13,21 @@ import '@polymer/polymer/polymer-legacy.js';
 import { Rels } from 'd2l-hypermedia-constants';
 import 'd2l-icons/d2l-icons.js';
 import 'd2l-menu/d2l-menu-item-selectable-behavior.js';
-import '../d2l-utility-behavior.js';
-import './d2l-filter-list-item-styles.js';
+import '../d2l-utility-behavior-legacy.js';
+import './d2l-filter-list-item-styles-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-filter-list-item-legacy">
 	<template strip-whitespace="">
-		<style include="d2l-filter-list-item-styles"></style>
+		<style include="d2l-filter-list-item-styles-legacy"></style>
 
 		<d2l-icon class="icon-checked" icon="d2l-tier2:check-box" aria-hidden="true"></d2l-icon>
 		<d2l-icon class="icon-unchecked" icon="d2l-tier2:check-box-unchecked" aria-hidden="true"></d2l-icon>
 
 		[[text]]
 	</template>
-	
+
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);

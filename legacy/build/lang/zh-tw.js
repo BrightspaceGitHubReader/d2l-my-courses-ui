@@ -4,9 +4,9 @@ window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
 window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
 /**
  * This file is auto-generated. Do not modify.
- * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangZhtwBehavior
+ * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangZhtwBehaviorLegacy
  */
-D2L.PolymerBehaviors.MyCourses.LangZhtwBehavior = {
+D2L.PolymerBehaviors.MyCourses.LangZhtwBehaviorLegacy = {
 	'zh-tw': {
 			"advancedSearch": "進階搜尋",
 			"allCourses": "所有課程",

@@ -3,19 +3,18 @@ import { Rels } from 'd2l-hypermedia-constants';
 import { Actions } from 'd2l-hypermedia-constants';
 import 'd2l-polymer-siren-behaviors/store/entity-behavior.js';
 import 'd2l-polymer-siren-behaviors/store/siren-action-behavior.js';
-import './d2l-all-courses.js';
+import './d2l-all-courses-legacy.js';
 import '../src/card-grid/d2l-card-grid-behavior.js';
-import './d2l-alert-behavior.js';
-import './d2l-utility-behavior.js';
+import './d2l-alert-behavior-legacy.js';
+import './d2l-utility-behavior-legacy.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import './localize-behavior.js';
+import './localize-behavior-legacy.js';
 window.D2L = window.D2L || {};
 window.D2L.MyCourses = window.D2L.MyCourses || {};
 
 /*
-* Common behavior shared between d2l-my-courses-content and d2l-my-courses-content-animated.
-* This exists as a temporary behavior, to be removed when the -content-animated component is removed,
-* and the functionality can be merged back into d2l-my-courses-content.
+* TODO: This was a Common behavior shared between d2l-my-courses-content and d2l-my-courses-content-animated.
+* Now that the code path has been split, this could be merged back into d2l-my-courses-content-animated.
 *
 * @polymerBehavior D2L.MyCourses.MyCoursesContentBehaviorLegacy
 */

@@ -18,9 +18,9 @@ import 'd2l-icons/d2l-icons.js';
 import 'd2l-search-widget/d2l-search-widget-behavior.js';
 import 'd2l-search-widget/d2l-search-widget-styles.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import './d2l-search-listbox.js';
-import '../d2l-utility-behavior.js';
-import '../localize-behavior.js';
+import './d2l-search-listbox-legacy.js';
+import '../d2l-utility-behavior-legacy.js';
+import '../localize-behavior-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 const $_documentContainer = document.createElement('template');
@@ -52,7 +52,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-search-widget-custom-legacy
 			<div class="search-bar d2l-dropdown-opener" id="opener">
 				<iron-input bind-value="{{_searchInput}}">
 					<input aria-autocomplete="list" role="combobox" placeholder="{{localize('courseSearchInputPlaceholder')}}" value="{{_searchInput}}" on-keydown="_onSearchInputKeyPressed" on-focus="_onSearchInputFocused">
-					
+
 				</iron-input>
 
 				<button type="button" aria-label$="{{localize('search.searchCourses')}}" on-tap="_onButtonClick">
@@ -84,7 +84,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-search-widget-custom-legacy
 			</d2l-dropdown-content>
 		</d2l-dropdown>
 	</template>
-	
+
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);

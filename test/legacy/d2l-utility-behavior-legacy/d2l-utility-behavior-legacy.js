@@ -1,6 +1,6 @@
 import { Actions } from 'd2l-hypermedia-constants';
 
-describe('d2l-utility-behavior', function() {
+describe('d2l-utility-behavior-legacy', function() {
 	var
 		component,
 		enrollment = {

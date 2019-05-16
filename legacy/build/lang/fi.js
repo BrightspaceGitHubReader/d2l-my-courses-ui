@@ -4,9 +4,9 @@ window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
 window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
 /**
  * This file is auto-generated. Do not modify.
- * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangFiBehavior
+ * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangFiBehaviorLegacy
  */
-D2L.PolymerBehaviors.MyCourses.LangFiBehavior = {
+D2L.PolymerBehaviors.MyCourses.LangFiBehaviorLegacy = {
 	'fi': {
 			"advancedSearch": "Lisähaku",
 			"viewAllCourses": "Näytä kaikki kurssit",

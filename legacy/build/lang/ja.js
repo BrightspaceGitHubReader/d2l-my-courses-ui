@@ -4,9 +4,9 @@ window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
 window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
 /**
  * This file is auto-generated. Do not modify.
- * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangJaBehavior
+ * @polymerBehavior D2L.PolymerBehaviors.MyCourses.LangJaBehaviorLegacy
  */
-D2L.PolymerBehaviors.MyCourses.LangJaBehavior = {
+D2L.PolymerBehaviors.MyCourses.LangJaBehaviorLegacy = {
 	'ja': {
 			"advancedSearch": "詳細検索",
 			"allCourses": "すべてのコース",

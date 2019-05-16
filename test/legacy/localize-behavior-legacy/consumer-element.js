@@ -1,4 +1,4 @@
-import '../../../legacy/localize-behavior.js';
+import '../../../legacy/localize-behavior-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 Polymer({
 	is: 'consumer-element',

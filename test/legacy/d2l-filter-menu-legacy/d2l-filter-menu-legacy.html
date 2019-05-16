@@ -5,20 +5,17 @@
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 		<script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 		<script src="../../../../wct-browser-legacy/browser.js"></script>
-
-		<script type="module" src="../../../legacy/search-filter/d2l-search-widget-custom.js"></script>
+		<script src="./d2l-filter-menu-legacy-mock.js"></script>
+		<script type="module" src="../../../../siren-parser/global.js"></script>
+		<script type="module" src="../../../legacy/search-filter/d2l-filter-menu-legacy.js"></script>
 	</head>
 	<body>
-		<test-fixture id="d2l-search-widget-custom-legacy-fixture">
+		<test-fixture id="d2l-filter-menu-legacy-fixture">
 			<template>
-				<d2l-search-widget-custom-legacy
-					sort="OrgUnitName,OrgUnitId"
-					parent-organizations="[]"
-					cache-responses>
-				</d2l-search-widget-custom-legacy>
+				<d2l-filter-menu-legacy></d2l-filter-menu-legacy>
 			</template>
 		</test-fixture>
 
-		<script src="./d2l-search-widget-custom.js"></script>
+		<script src="./d2l-filter-menu-legacy.js"></script>
 	</body>
 </html>

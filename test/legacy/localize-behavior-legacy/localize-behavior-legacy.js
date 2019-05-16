@@ -1,4 +1,4 @@
-describe('localize behavior', function() {
+describe('localize-behavior-legacy', function() {
 	var component;
 
 	beforeEach(function() {

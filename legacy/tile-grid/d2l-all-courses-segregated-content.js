@@ -2,24 +2,19 @@
 `d2l-all-courses-segregated-content`
 Polymer-based web component for the all courses content.
 
-This is only used if the `US90527-my-courses-updates` LD flag is OFF
+This is only used if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is off
 (meaning the `updated-sort-logic` attribute was not added to the `d2l-my-courses` component).
 
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
 */
 import '@polymer/polymer/polymer-legacy.js';
 
 import 'd2l-alert/d2l-alert.js';
-import '../d2l-alert-behavior.js';
-import '../d2l-all-courses-styles.js';
+import '../d2l-alert-behavior-legacy.js';
+import '../d2l-all-courses-styles-legacy.js';
 import './d2l-course-tile-grid.js';
 import './d2l-course-tile-responsive-grid-behavior.js';
-import '../localize-behavior.js';
-import '../d2l-utility-behavior.js';
+import '../localize-behavior-legacy.js';
+import '../d2l-utility-behavior-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 const $_documentContainer = document.createElement('template');
@@ -86,7 +81,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-segregated-cont
 			course-updates-config="[[courseUpdatesConfig]]">
 		</d2l-course-tile-grid>
 	</template>
-	
+
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);
