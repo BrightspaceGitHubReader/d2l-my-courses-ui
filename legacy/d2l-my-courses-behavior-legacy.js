@@ -1,19 +1,18 @@
 import '@polymer/polymer/polymer-legacy.js';
 import { Rels } from 'd2l-hypermedia-constants';
 import { Actions } from 'd2l-hypermedia-constants';
-import 'd2l-polymer-siren-behaviors/store/entity-behavior.js';
-import './d2l-utility-behavior.js';
-import './localize-behavior.js';
+import './d2l-utility-behavior-legacy.js';
+import './localize-behavior-legacy.js';
 window.D2L = window.D2L || {};
 window.D2L.MyCourses = window.D2L.MyCourses || {};
 
 /*
 * TODO: This was a Common behavior shared between d2l-my-courses-container and d2l-my-courses-legacy.
-* Now that the code path has been split, this can be merged back into d2l-my-courses-container.
+* Now that the code path has been split, this can be merged back into d2l-my-courses-legacy.
 *
-* @polymerBehavior D2L.MyCourses.MyCoursesBehavior
+* @polymerBehavior D2L.MyCourses.MyCoursesBehaviorLegacy
 */
-D2L.MyCourses.MyCoursesBehaviorImpl = {
+D2L.MyCourses.MyCoursesBehaviorLegacyImpl = {
 	properties: {
 		// URL that directs to the advanced search page
 		advancedSearchUrl: String,
@@ -74,12 +73,12 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		}
 
 		Promise.all([
-			this.sirenEntityStoreFetch(this.enrollmentsUrl),
-			this.sirenEntityStoreFetch(this.userSettingsUrl)
+			this.fetchSirenEntity(this.enrollmentsUrl),
+			this.fetchSirenEntity(this.userSettingsUrl)
 		])
 			.then(function(values) {
-				var enrollmentsRootEntity = values[0] && values[0].entity;
-				var userSettingsEntity = values[1] && values[1].entity;
+				var enrollmentsRootEntity = values[0];
+				var userSettingsEntity = values[1];
 
 				if (enrollmentsRootEntity.hasActionByName(Actions.enrollments.searchMyEnrollments)) {
 					this._enrollmentsSearchAction = enrollmentsRootEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
@@ -125,11 +124,10 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		}
 
 		if (!this.promotedSearches && this._enrollmentsSearchAction && this._pinnedTabAction) {
-			return this.sirenEntityStoreFetch(this.userSettingsUrl).then(function(value) {
-				var entity = value && value.entity;
-				var lastEnrollmentsSearchName = entity
-						&& entity.properties
-						&& entity.properties.MostRecentEnrollmentsSearchName;
+			return this.fetchSirenEntity(this.userSettingsUrl).then(function(value) {
+				var lastEnrollmentsSearchName = value
+						&& value.properties
+						&& value.properties.MostRecentEnrollmentsSearchName;
 
 				this._tabSearchActions = [{
 					name: this._enrollmentsSearchAction.name,
@@ -146,11 +144,11 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		}
 
 		return Promise.all([
-			this.sirenEntityStoreFetch(this.promotedSearches, this.token),
-			this.sirenEntityStoreFetch(this.userSettingsUrl, this.token)
+			this.fetchSirenEntity(this.promotedSearches, this.token),
+			this.fetchSirenEntity(this.userSettingsUrl, this.token)
 		]).then(function(values) {
-			var promotedSearchesEntity = values[0] && values[0].entity;
-			var userSettingsEntity = values[1] && values[1].entity;
+			var promotedSearchesEntity = values[0];
+			var userSettingsEntity = values[1];
 
 			this._tabSearchActions = [];
 
@@ -204,15 +202,14 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			this._tabSearchActions = actions.concat(this._tabSearchActions);
 
 		}.bind(this));
-	},
+	}
 };
 
 /*
-* @polymerBehavior D2L.MyCourses.MyCoursesBehavior
+* @polymerBehavior D2L.MyCourses.MyCoursesBehaviorLegacy
 */
-D2L.MyCourses.MyCoursesBehavior = [
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-	D2L.PolymerBehaviors.Siren.EntityBehavior,
-	D2L.MyCourses.UtilityBehavior,
-	D2L.MyCourses.MyCoursesBehaviorImpl
+D2L.MyCourses.MyCoursesBehaviorLegacy = [
+	D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
+	D2L.MyCourses.UtilityBehaviorLegacy,
+	D2L.MyCourses.MyCoursesBehaviorLegacyImpl
 ];

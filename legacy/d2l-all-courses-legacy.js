@@ -1,9 +1,9 @@
 /*
-`d2l-all-courses`
+`d2l-all-courses-legacy`
 Polymer-based web component for all courses.
 
-TODO: This component is only rendered if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is on, meaning `updated-sort-logic` is true.
-We can do a lot of cleanup here around `d2l-all-courses-segregated-content` (no longer needed).  Only the `d2l-all-courses-unified-content` component is rendered.
+TODO: This component is only rendered if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is off, meaning `updated-sort-logic` is false.
+We can do a lot of cleanup here around `d2l-all-courses-unified-content` (no longer needed).  Only the `d2l-all-courses-segregated-content` component is rendered.
 
 */
 import '@polymer/polymer/polymer-legacy.js';
@@ -24,21 +24,21 @@ import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import SirenParse from 'siren-parser';
 import 'd2l-tabs/d2l-tabs.js';
-import './d2l-alert-behavior.js';
-import './d2l-all-courses-styles.js';
-import './search-filter/d2l-filter-menu.js';
-import './search-filter/d2l-search-widget-custom.js';
-import './d2l-utility-behavior.js';
-import './localize-behavior.js';
-import '../legacy/tile-grid/d2l-all-courses-segregated-content.js'; // TODO: remove this dependency, since updated-sort-logic will always be true
-import './card-grid/d2l-all-courses-unified-content.js';
+import './d2l-alert-behavior-legacy.js';
+import './d2l-all-courses-styles-legacy.js';
+import './search-filter/d2l-filter-menu-legacy.js';
+import './search-filter/d2l-search-widget-custom-legacy.js';
+import './d2l-utility-behavior-legacy.js';
+import './localize-behavior-legacy.js';
+import './tile-grid/d2l-all-courses-segregated-content.js';
+import '../src/card-grid/d2l-all-courses-unified-content.js'; // TODO: remove this dependency, since updated-sort-logic will always be false
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
+$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
 	<template strip-whitespace="">
-		<style include="d2l-all-courses-styles"></style>
+		<style include="d2l-all-courses-styles-legacy"></style>
 
 		<d2l-simple-overlay
 			id="all-courses"
@@ -53,14 +53,14 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 
 				<div id="search-and-filter">
 					<div class="search-and-filter-row">
-						<d2l-search-widget-custom
+						<d2l-search-widget-custom-legacy
 							id="search-widget"
 							search-button-label="{{localize('search')}}"
 							clear-button-label="{{localize('search.clearSearch')}}"
 							org-unit-type-ids="[[orgUnitTypeIds]]"
 							search-action="[[_enrollmentsSearchAction]]"
 							search-url="[[_searchUrl]]">
-						</d2l-search-widget-custom>
+						</d2l-search-widget-custom-legacy>
 
 						<div id="filterAndSort">
 							<d2l-dropdown id="filterDropdown">
@@ -69,14 +69,14 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 									<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
 								</button>
 								<d2l-dropdown-content id="filterDropdownContent" no-padding="" min-width="350" render-content="">
-									<d2l-filter-menu
+									<d2l-filter-menu-legacy
 										id="filterMenu"
 										tab-search-type="[[tabSearchType]]"
 										org-unit-type-ids="[[orgUnitTypeIds]]"
 										my-enrollments-entity="[[myEnrollmentsEntity]]"
 										filter-standard-semester-name="[[filterStandardSemesterName]]"
 										filter-standard-department-name="[[filterStandardDepartmentName]]">
-									</d2l-filter-menu>
+									</d2l-filter-menu-legacy>
 								</d2l-dropdown-content>
 							</d2l-dropdown>
 
@@ -184,7 +184,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 
 document.head.appendChild($_documentContainer.content);
 Polymer({
-	is: 'd2l-all-courses',
+	is: 'd2l-all-courses-legacy',
 	properties: {
 		/*
 		* Public Polymer properties
@@ -347,9 +347,9 @@ Polymer({
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
-		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.AlertBehavior,
-		D2L.MyCourses.UtilityBehavior
+		D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
+		D2L.MyCourses.AlertBehaviorLegacy,
+		D2L.MyCourses.UtilityBehaviorLegacy
 	],
 	listeners: {
 		'd2l-simple-overlay-opening': '_onSimpleOverlayOpening',
@@ -451,12 +451,9 @@ Polymer({
 				this._enrollmentsSearchUrl = lastResponseEntity.getLinkByRel('next').href;
 				this.$.lazyLoadSpinner.scrollIntoView();
 
-				return this.sirenEntityStoreFetch(this._enrollmentsSearchUrl, this.token)
+				return this.fetchSirenEntity(this._enrollmentsSearchUrl)
 					.then(function(enrollmentsEntity) {
-						if (!enrollmentsEntity || !enrollmentsEntity.entity) {
-							return Promise.resolve();
-						}
-						this._updateFilteredEnrollments(enrollmentsEntity.entity, true);
+						this._updateFilteredEnrollments(enrollmentsEntity, true);
 					}.bind(this));
 			}
 		}
