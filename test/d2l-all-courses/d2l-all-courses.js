@@ -70,14 +70,14 @@ describe('d2l-all-courses', function() {
 			widget.advancedSearchUrl = null;
 
 			expect(widget._showAdvancedSearchLink).to.be.false;
-			expect(widget.$$('.advanced-search-link').hasAttribute('hidden')).to.be.true;
+			expect(widget.$$('.advanced-search-link'));
 		});
 
 		it('should render when advancedSearchUrl is set', function() {
 			widget.advancedSearchUrl = '/test/url';
 
 			expect(widget._showAdvancedSearchLink).to.be.true;
-			expect(widget.$$('.advanced-search-link').hasAttribute('hidden')).to.be.false;
+			expect(widget.$$('.advanced-search-link')).to.not.be.undefined;
 		});
 	});
 
