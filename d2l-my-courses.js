@@ -89,5 +89,17 @@ Polymer({
 			value: false
 		},
 		token: String
+	},
+
+	courseImageUploadCompleted: function(success) {
+		return this.updatedSortLogic
+			? document.querySelector( 'd2l-my-courses' ).$$('d2l-my-courses-container').courseImageUploadCompleted(success)
+			: document.querySelector( 'd2l-my-courses' ).$$('d2l-my-courses-legacy').courseImageUploadCompleted(success);
+	},
+	getLastOrgUnitId: function() {
+		return this.updatedSortLogic
+			? document.querySelector( 'd2l-my-courses' ).$$('d2l-my-courses-container').getLastOrgUnitId()
+			: document.querySelector( 'd2l-my-courses' ).$$('d2l-my-courses-legacy').getLastOrgUnitId();
 	}
+
 });
