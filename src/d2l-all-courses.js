@@ -101,9 +101,11 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses">
 							</d2l-dropdown>
 						</div>
 					</div>
-					<div class="search-and-filter-row advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]">
-						<d2l-link href$="[[advancedSearchUrl]]">{{localize('advancedSearch')}}</d2l-link>
-					</div>
+					<template is="dom-if" if="[[_showAdvancedSearchLink]]">
+						<div class="search-and-filter-row advanced-search-link">
+							<d2l-link href$="[[advancedSearchUrl]]">{{localize('advancedSearch')}}</d2l-link>
+						</div>
+					</template>
 				</div>
 
 				<template is="dom-repeat" items="[[_alertsView]]">
@@ -307,7 +309,6 @@ Polymer({
 		_searchUrl: String,
 		_showAdvancedSearchLink: {
 			type: Boolean,
-			value: false,
 			computed: '_computeShowAdvancedSearchLink(advancedSearchUrl)'
 		},
 		_showContent: {
