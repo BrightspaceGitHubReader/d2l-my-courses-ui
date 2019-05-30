@@ -55,7 +55,7 @@
     "d2l-colors": "BrightspaceUI/colors#semver:^4",
     "d2l-course-image": "Brightspace/course-image#semver:^3",
     "d2l-dropdown": "BrightspaceUI/dropdown#semver:^7",
-    "d2l-enrollments": "BrightspaceHypermediaComponents/enrollments#semver:^2",
+    "d2l-enrollments": "BrightspaceHypermediaComponents/enrollments#semver:^3",
     "d2l-fetch": "Brightspace/d2l-fetch.git#semver:^2",
     "d2l-hypermedia-constants": "^6",
     "d2l-icons": "BrightspaceUI/icons#semver:^6",
@@ -80,6 +80,7 @@
     "@polymer/iron-scroll-threshold": "^3.0.0",
     "@polymer/iron-pages": "^3.0.0",
     "@polymer/polymer": "^3.0.0",
-    "siren-parser": "^8.0.0"
+    "siren-parser": "^8.0.0",
+    "siren-sdk": "BrightspaceHypermediaComponents/siren-sdk#semver:^1"
   }
 }
