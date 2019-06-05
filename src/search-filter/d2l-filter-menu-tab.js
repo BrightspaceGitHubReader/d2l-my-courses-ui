@@ -28,6 +28,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu-tab">
 				flex-direction: column;
 			}
 			d2l-search-widget {
+				display: block;
 				margin: 10px 20px;
 			}
 			.no-items-text {
