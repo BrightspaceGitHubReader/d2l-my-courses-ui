@@ -25,7 +25,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-search-listbox">
 				width: 100%;
 			}
 
-			::slotted(*) {
+			::slotted(div) {
 				box-sizing: border-box;
 				border-top: 1px solid transparent;
 				border-bottom: 1px solid var(--d2l-color-gypsum);
