@@ -4,7 +4,6 @@ Polymer-based web component for the search widget, with added "Recent Searches" 
 Should be converted to a new input shared component.
 */
 import '@polymer/polymer/polymer-legacy.js';
-import '@polymer/iron-pages/iron-pages.js';
 import 'd2l-dropdown/d2l-dropdown.js';
 import 'd2l-dropdown/d2l-dropdown-content.js';
 import 'd2l-search-widget/d2l-search-widget.js';
@@ -43,18 +42,14 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-search-widget-custom-legacy
 			<d2l-dropdown-content id="dropdown" min-width="[[_dropdownWidth]]" max-width="[[_dropdownWidth]]" no-pointer no-auto-close no-auto-focus no-padding>
 
 				<div class="dropdown-content">
-					<iron-pages selectable=".search-results-listbox-page" attr-for-selected="data-page-name" selected="recent-searches-page">
-						<div class="search-results-listbox-page" data-page-name="recent-searches-page">
-							<d2l-search-listbox-legacy>
-								<div data-list-title disabled>[[localize('recentSearches')]]</div>
-								<template is="dom-repeat" items="[[_previousSearches]]">
-									<div class="d2l-search-widget-custom-item" selectable data-text$="[[item]]" role="option">
-										[[item]]
-									</div>
-								</template>
-							</d2l-search-listbox-legacy>
-						</div>
-					</iron-pages>
+					<d2l-search-listbox-legacy>
+						<div data-list-title disabled>[[localize('recentSearches')]]</div>
+						<template is="dom-repeat" items="[[_previousSearches]]">
+							<div class="d2l-search-widget-custom-item" selectable data-text$="[[item]]" role="option">
+								[[item]]
+							</div>
+						</template>
+					</d2l-search-listbox-legacy>
 				</div>
 			</d2l-dropdown-content>
 		</d2l-dropdown>
@@ -236,7 +231,7 @@ Polymer({
 	},
 	_onSearchInputBlur: function(e) {
 		var className = e.relatedTarget ? e.relatedTarget.className : '';
-		if (e.relatedTarget !== this._getListbox() && className !== 'd2l-search-widget-custom-item') {
+		if (e.relatedTarget !== this._getListbox() && className.indexOf('d2l-search-widget-custom-item') === -1) {
 			this.$.dropdown.close();
 		}
 	},
