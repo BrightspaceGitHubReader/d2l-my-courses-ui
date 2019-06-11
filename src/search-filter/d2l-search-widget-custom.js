@@ -87,12 +87,7 @@ Polymer({
 			}
 		},
 		// Calculated width of live search dropdown
-		_dropdownWidth: Number,
-		// Used to differentiate between a live search, or search + enter
-		_enterPressed: {
-			type: Boolean,
-			value: false
-		}
+		_dropdownWidth: Number
 	},
 	listeners: {
 		'iron-activate': '_onIronActivate'
@@ -127,12 +122,10 @@ Polymer({
 	},
 	clear: function() {
 		this._getSearchWidget().clear();
-		this.cancelDebouncer('liveSearchJob');
 	},
 	_keyCodes: {
 		DOWN: 40,
-		UP: 38,
-		ENTER: 13
+		UP: 38
 	},
 	_computeSearchQuery(orgUnitTypeIds) {
 		return {
@@ -149,28 +142,12 @@ Polymer({
 	},
 	_handleSearch(e) {
 		this._addSearchToHistory(e.detail.searchValue);
-
-		// If the search input has changed programmatically (e.g. via
-		// searchAction changing), the button won't be focused, and we
-		// don't want to move the focus back to the input
-		if (this.isComposedAncestor(this._getSearchWidget()._getSearchInput(), D2L.Dom.Focus.getComposedActiveElement())) {
-			if (!this._enterPressed && e.detail.searchValue !== '') {
-				requestAnimationFrame(function() {
-					this._getSearchWidget()._getSearchInput().focus();
-				}.bind(this));
-			} else {
-				this._enterPressed = false;
-			}
-		}
 	},
 	_handleSearchUrlChange(url) {
 		this._getSearchWidget()._searchUrl = url;
 	},
 	_onSearchInputKeyPressed: function(e) {
 		switch (e.keyCode) {
-			case this._keyCodes.ENTER:
-				this._enterPressed = true;
-				break;
 			case this._keyCodes.DOWN:
 				if (this._getListbox().hasItems()) {
 					this._getListbox().focus();
@@ -182,13 +159,6 @@ Polymer({
 					this._getListbox().focusLast();
 				}
 				e.preventDefault();
-				break;
-			default:
-				requestAnimationFrame(function() {
-					if (D2L.Dom.Focus.getComposedActiveElement() === this._getSearchWidget()._getSearchInput().shadowRoot.querySelector('input')) {
-						this.debounce('liveSearchJob', this._liveSearch, 750);
-					}
-				}.bind(this));
 				break;
 		}
 	},
@@ -241,15 +211,6 @@ Polymer({
 		} catch (e) {
 			// Local storage not available/full - oh well.
 		}
-	},
-	/*
-	* Live search functionality
-	*/
-	_liveSearch: function() {
-		if (this._getSearchWidget()._getSearchInput().value.trim().length > 0) {
-			this.$.dropdown.close();
-		}
-		this.search();
 	},
 	// Handles iron-activate events, which are fired when listbox items are selected
 	_onIronActivate: function(e) {
