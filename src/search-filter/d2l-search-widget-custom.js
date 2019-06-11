@@ -236,7 +236,7 @@ Polymer({
 	},
 	_onSearchInputBlur: function(e) {
 		var className = e.relatedTarget ? e.relatedTarget.className : '';
-		if (e.relatedTarget !== this._getListbox() && className !== 'd2l-search-widget-custom-item') {
+		if (e.relatedTarget !== this._getListbox() && className.indexOf('d2l-search-widget-custom-item') === -1) {
 			this.$.dropdown.close();
 		}
 	},
