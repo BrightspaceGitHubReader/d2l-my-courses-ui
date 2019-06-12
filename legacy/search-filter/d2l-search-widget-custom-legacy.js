@@ -37,7 +37,15 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-search-widget-custom-legacy
 
 		<d2l-dropdown no-auto-open>
 			<div class="search-bar d2l-dropdown-opener" id="opener">
-				<d2l-search-widget search-action="[[searchAction]]" search-query="[[_computeSearchQuery(orgUnitTypeIds)]]" search-label="[[localize('search.searchCourses')]]" placeholder-text="[[localize('courseSearchInputPlaceholder')]]" on-keydown="_onSearchInputKeyPressed" on-focus="_onSearchInputFocused" on-blur="_onSearchInputBlur"></d2l-search-widget>
+				<d2l-search-widget
+					search-action="[[searchAction]]"
+					search-query="[[_computeSearchQuery(orgUnitTypeIds)]]"
+					search-label="[[localize('search.searchCourses')]]"
+					placeholder-text="[[localize('courseSearchInputPlaceholder')]]"
+					on-keydown="_onSearchInputKeyPressed"
+					on-focus="_onSearchInputFocused"
+					on-blur="_onSearchInputBlur">
+				</d2l-search-widget>
 			</div>
 			<d2l-dropdown-content id="dropdown" min-width="[[_dropdownWidth]]" max-width="[[_dropdownWidth]]" no-pointer no-auto-close no-auto-focus no-padding>
 
