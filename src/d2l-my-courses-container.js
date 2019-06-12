@@ -33,7 +33,7 @@ class MyCoursesContainer extends mixinBehaviors([
 						<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
 						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 							<d2l-my-courses-content
-								href="[[presentationUrl]]"
+								presentation-url="[[presentationUrl]]"
 								token="[[token]]"
 								disable-entity-cache
 								advanced-search-url="[[advancedSearchUrl]]"
@@ -54,7 +54,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>
 			<template is="dom-if" if="[[!_showGroupByTabs]]">
 				<d2l-my-courses-content
-					href="[[presentationUrl]]"
+					presentation-url="[[presentationUrl]]"
 					token="[[token]]"
 					disable-entity-cache
 					advanced-search-url="[[advancedSearchUrl]]"

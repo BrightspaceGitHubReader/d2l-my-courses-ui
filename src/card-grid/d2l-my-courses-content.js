@@ -24,11 +24,24 @@ import 'd2l-typography/d2l-typography-shared-styles.js';
 import '../d2l-all-courses.js';
 import './d2l-card-grid-styles.js';
 import '../d2l-my-courses-content-behavior.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-const $_documentContainer = document.createElement('template');
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content">
-	<template strip-whitespace="">
+/**
+ * @customElement
+ * @polymer
+ */
+class MyCoursesContent extends mixinBehaviors([
+	D2L.MyCourses.MyCoursesContentBehavior,
+	D2L.MyCourses.CardGridBehavior
+], StatusMixin(PolymerElement)) {
+	constructor() {
+		super();
+	}
+
+	static get template() {
+		return html`
 		<style include="d2l-card-grid-styles">
 			:host {
 				display: block;
@@ -119,23 +132,12 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content">
 				organization="[[_setImageOrg]]"
 				course-image-upload-cb="[[courseImageUploadCb]]">
 			</d2l-basic-image-selector>
-		</d2l-simple-overlay>
-	</template>
+		</d2l-simple-overlay>`;
+	}
 
-</dom-module>`;
+	static get is() { return 'd2l-my-courses-content'; }
 
-document.head.appendChild($_documentContainer.content);
-Polymer({
-	is: 'd2l-my-courses-content',
-	properties: {
-		// Override for MyCoursesBehavior.updatedSortLogic
-		updatedSortLogic: {
-			type: Boolean,
-			value: true
-		}
-	},
-	behaviors: [
-		D2L.MyCourses.MyCoursesContentBehavior,
-		D2L.MyCourses.CardGridBehavior
-	]
-});
+}
+
+window.customElements.define(MyCoursesContent.is, MyCoursesContent);
+
