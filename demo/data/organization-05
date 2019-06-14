@@ -1,4 +1,8 @@
 {
+  "class":[
+     "active",
+     "course-offering"
+  ],
   "properties": {
     "name": "Course 05",
     "code":"MTE320",
@@ -6,6 +10,25 @@
     "endDate":"1969-01-02T10:00:00.000Z",
     "isActive":true
   },
+  "entities":[
+     {
+        "class":[
+           "course-image"
+        ],
+        "rel":[
+           "https://api.brightspace.com/rels/organization-image"
+        ],
+        "href":"../data/images/image"
+     },
+     {
+        "rel":[
+          "https://api.brightspace.com/rels/organization-homepage"
+        ],
+        "properties": {
+          "path": "http://example.com"
+        }
+     }
+  ],
   "links": [
     {
       "rel":[

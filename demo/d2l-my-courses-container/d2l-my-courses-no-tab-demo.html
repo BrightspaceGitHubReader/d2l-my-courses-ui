@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+		<title>d2l-my-courses demo</title>
+		<script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+		<script type="module" src="../../../@polymer/polymer/polymer-legacy.js"></script>
+		<script type="module" src="../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+		<script type="module" src="../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+		<script type="module" src="../../d2l-my-courses.js"></script>
+		<script type="module" src="../../src/d2l-my-courses-container.js"></script>
+
+		<script type="module">
+			const $_documentContainer = document.createElement('template');
+
+			$_documentContainer.innerHTML = `<style>
+				.demo {
+					max-width: 1000px;
+					margin-left: auto;
+					margin-right: auto;
+				}
+			</style>
+			<custom-style>
+				<style is="custom-style" include="demo-pages-shared-styles"></style>
+			</custom-style>
+			<custom-style include="d2l-typography">
+				<style is="custom-style" include="d2l-typography"></style>
+			</custom-style>`;
+
+			document.body.appendChild($_documentContainer.content);
+		</script>
+	</head>
+	<body class="d2l-typography">
+		<div class="vertical-section-container demo">
+			<h3>My Courses No Tabs Enabled Demo</h3>
+			<demo-snippet>
+				<template>
+					<d2l-my-courses href="../data/base/organization.json" token="whatever"
+						enrollments-url="../data/no-tabs/enrollments"
+						promoted-searches="../data/no-tabs/searches"
+						user-settings-url="../data/user-settings"
+						updated-sort-logic="true"
+						token="a1">
+					</d2l-my-courses>
+				</template>
+			</demo-snippet>
+		</div>
+	</body>
+</html>

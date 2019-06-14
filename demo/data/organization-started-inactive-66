@@ -5,6 +5,17 @@
     "startDate": 100,
     "endDate": null
   },
+  "entities":[
+     {
+        "class":[
+           "course-image"
+        ],
+        "rel":[
+           "https://api.brightspace.com/rels/organization-image"
+        ],
+        "href":"../data/images/image"
+     }
+  ],
   "links": [{
     "rel": ["self"],
     "href": "../data/organization-started-inactive-66"
