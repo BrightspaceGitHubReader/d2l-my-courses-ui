@@ -4,6 +4,25 @@
     "isActive": true,
     "endDate": 100
   },
+  "entities":[
+     {
+        "class":[
+           "course-image"
+        ],
+        "rel":[
+           "https://api.brightspace.com/rels/organization-image"
+        ],
+        "href":"../data/images/image"
+     },
+     {
+        "rel":[
+          "https://api.brightspace.com/rels/organization-homepage"
+        ],
+        "properties": {
+          "path": "http://example.com"
+        }
+     }
+  ],
   "links": [{
     "rel": ["self"],
     "href": "../data/organization-past-77"

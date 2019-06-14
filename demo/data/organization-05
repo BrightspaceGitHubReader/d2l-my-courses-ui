@@ -1,4 +1,8 @@
 {
+  "class":[
+     "active",
+     "course-offering"
+  ],
   "properties": {
     "name": "Course 05",
     "code":"MTE320",
@@ -15,6 +19,14 @@
            "https://api.brightspace.com/rels/organization-image"
         ],
         "href":"../data/images/image"
+     },
+     {
+        "rel":[
+          "https://api.brightspace.com/rels/organization-homepage"
+        ],
+        "properties": {
+          "path": "http://example.com"
+        }
      }
   ],
   "links": [
