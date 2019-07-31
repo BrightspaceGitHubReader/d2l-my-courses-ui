@@ -737,7 +737,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 	},
 	_populateEnrollments: function(entity) {
 		if (!entity || !entity._entity) {
-			return;
+			throw new Error('No entity');
 		}
 
 		var enrollmentCollectionEntity = entity;
