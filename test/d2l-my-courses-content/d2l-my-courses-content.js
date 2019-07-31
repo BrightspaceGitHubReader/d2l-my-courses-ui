@@ -330,9 +330,8 @@ describe('d2l-my-courses-content', () => {
 
 		it('should add the hide-past-attributes to the correct card grid in _populateEnrollments', () => {
 			var spy = sandbox.spy(component.$$('.course-card-grid'), 'setAttribute');
-			return component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity)).then(() => {
-				expect(spy).to.have.been.calledWith('hide-past-courses', '');
-			});
+			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity));
+			expect(spy).to.have.been.calledWith('hide-past-courses', '');
 		});
 
 	});
@@ -667,10 +666,8 @@ describe('d2l-my-courses-content', () => {
 		it('should hide the loading spinner if loading fails', () => {
 			fetchStub.restore();
 
-			component._enrollmentsRootResponse(new EnrollmentCollectionEntity()).catch(() => {
-				expect(component._showContent).to.be.true;
-			});
-
+			component._enrollmentsRootResponse(new EnrollmentCollectionEntity());
+			expect(component._showContent).to.be.true;
 		});
 
 		it('should hide the loading spinner if loading succeeds', done => {
@@ -686,11 +683,9 @@ describe('d2l-my-courses-content', () => {
 				}]
 			}));
 
-			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsRootEntity)).then(() => {
-				expect(component._showContent).to.be.true;
-				done();
-			});
-
+			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsRootEntity));
+			expect(component._showContent).to.be.true;
+			done();
 		});
 
 		it('should fetch enrollments using the constructed enrollmentsSearchUrl', done => {
@@ -791,10 +786,8 @@ describe('d2l-my-courses-content', () => {
 		it('should correctly evaluate whether it has enrollments', done => {
 
 			component._populateEnrollments(new EnrollmentCollectionEntity(oneEnrollmentSearchEntity))
-				.then(() => {
-					expect(component._numberOfEnrollments).not.to.equal(0);
-					done();
-				});
+			expect(component._numberOfEnrollments).not.to.equal(0);
+			done();
 		});
 
 		it('should add a setCourseImageFailure warning alert when a request to set the image fails', () => {
