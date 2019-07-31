@@ -405,7 +405,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		// Only want to move pinned/unpinned enrollment if it exists in the panel
 		var changedEnrollmentId = orgUnitId && this._orgUnitIdMap[orgUnitId];
 		if (!changedEnrollmentId) {
-			return this._refetchEnrollments();
+			this._refetchEnrollments();
 		}
 
 		this.dispatchEvent(new CustomEvent('d2l-course-enrollment-change', {
@@ -600,10 +600,10 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 	},
 	_fetchRoot: function() {
 		if (!this.enrollmentsSearchAction) {
-			return Promise.resolve;
+			return;
 		}
 		this.performanceMark('d2l.my-courses.root-enrollments.request');
-		return this._fetchEnrollments();
+		this._fetchEnrollments();
 	},
 	_fetchEnrollments: function() {
 		this.performanceMark('d2l.my-courses.root-enrollments.response');
@@ -616,7 +616,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		this._enrollmentsSearchUrl = this._createFetchEnrollmentsUrl();
 		this.performanceMark('d2l.my-courses.search-enrollments.request');
 
-		return this._onEnrollmentsRootEntityChange(this._enrollmentsSearchUrl);
+		this._onEnrollmentsRootEntityChange(this._enrollmentsSearchUrl);
 	},
 	_enrollmentsResponsePerfMeasures: function(enrollmentsEntity) {
 		this.performanceMark('d2l.my-courses.search-enrollments.response');
@@ -626,7 +626,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			'd2l.my-courses.search-enrollments.response'
 		);
 
-		return this._enrollmentsRootResponse(enrollmentsEntity);
+		this._enrollmentsRootResponse(enrollmentsEntity);
 	},
 	_getOrgUnitIdFromHref: function(organizationHref) {
 		var match = /[0-9]+$/.exec(organizationHref);
@@ -687,17 +687,17 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		e.stopPropagation();
 	},
 	_onEnrollmentsEntityChange: function(url) {
-		return entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
+		entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
 			this._populateEnrollments(entity);
 		});
 	},
 	_onEnrollmentsRootEntityChange: function(url) {
-		return entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
+		entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
 			this._enrollmentsResponsePerfMeasures(entity);
 		});
 	},
 	_onRefetchEnrollmentsEntityChange: function(url) {
-		return entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
+		entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
 			this._enrollmentRefetchResponse(entity);
 		});
 	},
@@ -706,12 +706,13 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			this._showContent = true;
 		}.bind(this);
 
-		return this._populateEnrollments(entity)
-			.then(function() {
-				window.dispatchEvent(new Event('resize'));
-				setTimeout(completeFetch, 1000);
-			}.bind(this))
-			.catch(completeFetch);
+		try {
+			this._populateEnrollments(entity);
+			window.dispatchEvent(new Event('resize'));
+			setTimeout(completeFetch, 1000);
+		} catch (e) {
+			completeFetch();
+		}
 	},
 	_enrollmentsRootResponse: function(entity) {
 		var showContent = function() {
@@ -720,23 +721,23 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 
 		var tabSelected = this._rootTabSelected;
 
-		return this._populateEnrollments(entity)
-			.then(function() {
-				// At worst, display content 1s after we fetch enrollments
-				// (Usually set to true before that, in _onCourseTileOrganization)
-				setTimeout(showContent, 1000);
-			}.bind(this))
-			.catch(showContent)
-			.then(function() {
-				if (!tabSelected) {
-					return;
-				}
-				window.dispatchEvent(new Event('resize'));
-			});
+		try {
+			this._populateEnrollments(entity);
+			// At worst, display content 1s after we fetch enrollments
+			// (Usually set to true before that, in _onCourseTileOrganization)
+			setTimeout(showContent, 1000);
+		} catch (e) {
+			showContent();
+		}
+
+		if (!tabSelected) {
+			return;
+		}
+		window.dispatchEvent(new Event('resize'));
 	},
 	_populateEnrollments: function(entity) {
 		if (!entity || !entity._entity) {
-			return Promise.reject();
+			throw new Error('No entity');
 		}
 
 		var enrollmentCollectionEntity = entity;
@@ -786,9 +787,8 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 
 		var lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
 		if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._nextEnrollmentEntityUrl) {
-			return this._onEnrollmentsEntityChange(this._nextEnrollmentEntityUrl);
+			this._onEnrollmentsEntityChange(this._nextEnrollmentEntityUrl);
 		}
-		return Promise.resolve();
 	},
 	_handleEnrollmentsRefetch: function() {
 		this._showContent = false;
@@ -799,7 +799,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 	},
 	_refetchEnrollments: function() {
 		this._enrollmentsSearchUrl = this._createFetchEnrollmentsUrl(true);
-		return this._onRefetchEnrollmentsEntityChange(this._enrollmentsSearchUrl);
+		this._onRefetchEnrollmentsEntityChange(this._enrollmentsSearchUrl);
 	},
 	_resetEnrollments: function() {
 		this._lastPinnedIndex = -1;
