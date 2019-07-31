@@ -784,8 +784,7 @@ describe('d2l-my-courses-content', () => {
 
 	describe('With enrollments', () => {
 		it('should correctly evaluate whether it has enrollments', done => {
-
-			component._populateEnrollments(new EnrollmentCollectionEntity(oneEnrollmentSearchEntity))
+			component._populateEnrollments(new EnrollmentCollectionEntity(oneEnrollmentSearchEntity));
 			expect(component._numberOfEnrollments).not.to.equal(0);
 			done();
 		});
