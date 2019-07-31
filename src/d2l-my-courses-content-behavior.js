@@ -701,20 +701,20 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 			this._enrollmentRefetchResponse(entity);
 		});
 	},
-	_enrollmentRefetchResponse: async function(entity) {
+	_enrollmentRefetchResponse: function(entity) {
 		var completeFetch = function() {
 			this._showContent = true;
 		}.bind(this);
 
 		try {
-			await this._populateEnrollments(entity);
+			this._populateEnrollments(entity);
 			window.dispatchEvent(new Event('resize'));
 			setTimeout(completeFetch, 1000);
 		} catch (e) {
 			completeFetch();
 		}
 	},
-	_enrollmentsRootResponse: async function(entity) {
+	_enrollmentsRootResponse: function(entity) {
 		var showContent = function() {
 			this._showContent = true;
 		}.bind(this);
@@ -722,7 +722,7 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		var tabSelected = this._rootTabSelected;
 
 		try {
-			await this._populateEnrollments(entity);
+			this._populateEnrollments(entity);
 			// At worst, display content 1s after we fetch enrollments
 			// (Usually set to true before that, in _onCourseTileOrganization)
 			setTimeout(showContent, 1000);
@@ -735,9 +735,9 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		}
 		window.dispatchEvent(new Event('resize'));
 	},
-	_populateEnrollments: async function(entity) {
+	_populateEnrollments: function(entity) {
 		if (!entity || !entity._entity) {
-			return Promise.reject();
+			return;
 		}
 
 		var enrollmentCollectionEntity = entity;
@@ -789,7 +789,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._nextEnrollmentEntityUrl) {
 			this._onEnrollmentsEntityChange(this._nextEnrollmentEntityUrl);
 		}
-		return Promise.resolve();
 	},
 	_handleEnrollmentsRefetch: function() {
 		this._showContent = false;
