@@ -13,7 +13,6 @@ import 'd2l-dropdown/d2l-dropdown-content.js';
 import 'd2l-dropdown/d2l-dropdown-menu.js';
 import { Classes } from 'd2l-hypermedia-constants';
 import { Actions } from 'd2l-hypermedia-constants';
-import { Rels } from 'd2l-hypermedia-constants';
 import 'd2l-icons/d2l-icons.js';
 import 'd2l-link/d2l-link.js';
 import 'd2l-loading-spinner/d2l-loading-spinner.js';
@@ -630,8 +629,8 @@ class AllCourses extends mixinBehaviors([
 			orgUnitId = e.detail.orgUnitId;
 		} else if (e.detail.organization) {
 			orgUnitId = this._getOrgUnitIdFromHref(this.getEntityIdentifier(this.parseEntity(e.detail.organization)));
-		} else if (e.detail.enrollment && e.detail.enrollment.hasLinkByRel(Rels.organization)) {
-			orgUnitId = this._getOrgUnitIdFromHref(e.detail.enrollment.getLinkByRel(Rels.organization).href);
+		} else if (e.detail.enrollment && e.detail.enrollment.organizationHref()) {
+			orgUnitId = this._getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
 		}
 
 		this.dispatchEvent(new CustomEvent('d2l-course-enrollment-change', {
