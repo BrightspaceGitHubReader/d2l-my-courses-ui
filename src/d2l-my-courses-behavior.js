@@ -48,7 +48,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		_pinnedTabAction: Object,
 		_showGroupByTabs: {
 			type: Boolean,
-			computed: '_computeShowGroupByTabs(_tabSearchActions)'
+			computed: '_computeShowGroupByTabs(promotedSearches, _enrollmentsSearchAction, _pinnedTabAction)'
 		},
 		_tabSearchActions: {
 			type: Array,
@@ -61,8 +61,8 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		_userSettingsEntity: Object,
 		_promotedSearch: Object
 	},
-	_computeShowGroupByTabs: function(groups) {
-		return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
+	_computeShowGroupByTabs: function(tabs, allTab, pinTab) {
+		return !!(tabs || (allTab && pinTab));
 	},
 	listeners: {
 		'd2l-course-enrollment-change': '_onCourseEnrollmentChange',
