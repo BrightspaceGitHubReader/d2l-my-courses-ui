@@ -223,7 +223,7 @@ describe('d2l-my-courses', () => {
 	describe('Public API', () => {
 		it('should call d2l-my-courses-content.courseImageUploadCompleted when not grouped by tab', done => {
 			component.updatedSortLogic = true;
-			component._showGroupByTabs = false;
+			component.promotedSearches = null;
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
@@ -234,7 +234,7 @@ describe('d2l-my-courses', () => {
 
 		it('should call d2l-my-courses-content.getLastOrgUnitId when not grouped by tab', done => {
 			component.updatedSortLogic = true;
-			component._showGroupByTabs = false;
+			component.promotedSearches = null;
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
@@ -244,9 +244,10 @@ describe('d2l-my-courses', () => {
 		});
 
 		it('should call d2l-my-courses-content.getLastOrgUnitId when grouped by tab', done => {
+			component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
+			component._onPromotedSearchEntityChange();
 			component.updatedSortLogic = true;
-			component._showGroupByTabs = true;
-			component.currentTabId = 'panel-1234';
+			component.currentTabId = '6607';
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
@@ -256,9 +257,10 @@ describe('d2l-my-courses', () => {
 		});
 
 		it('should call d2l-my-courses-content.courseImageUploadCompleted when grouped by tab', done => {
+			component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
+			component._onPromotedSearchEntityChange();
 			component.updatedSortLogic = true;
-			component._showGroupByTabs = true;
-			component.currentTabId = 'panel-1234';
+			component.currentTabId = '6607';
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
