@@ -27,8 +27,22 @@ class MyCoursesContainer extends mixinBehaviors([
 
 	static get template() {
 		return html`
+			<style>
+				.spinner-container {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+				d2l-tabs[hidden] {
+					display: none;
+				}
+			</style>
 			<template is="dom-if" if="[[_showGroupByTabs]]">
-				<d2l-tabs>
+				<div class="spinner-container">
+					<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
+					</d2l-loading-spinner>
+				</div>
+				<d2l-tabs hidden$="[[!_showContent]]">
 					<template items="[[_tabSearchActions]]" is="dom-repeat">
 						<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
 						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
