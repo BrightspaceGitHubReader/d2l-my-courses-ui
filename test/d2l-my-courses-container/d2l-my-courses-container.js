@@ -223,7 +223,7 @@ describe('d2l-my-courses', () => {
 	describe('Public API', () => {
 		it('should call d2l-my-courses-content.courseImageUploadCompleted when not grouped by tab', done => {
 			component.updatedSortLogic = true;
-			component._hasTabActions = false;
+			component._showGroupByTabs = false;
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
@@ -234,7 +234,7 @@ describe('d2l-my-courses', () => {
 
 		it('should call d2l-my-courses-content.getLastOrgUnitId when not grouped by tab', done => {
 			component.updatedSortLogic = true;
-			component._hasTabActions = false;
+			component._showGroupByTabs = false;
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
