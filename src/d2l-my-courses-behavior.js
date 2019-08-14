@@ -48,7 +48,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		_pinnedTabAction: Object,
 		_showGroupByTabs: {
 			type: Boolean,
-			computed: '_computeShowGroupByTabs(_hasTabActions, _enrollmentsSearchAction, _pinnedTabAction)'
+			value: false
 		},
 		_tabSearchActions: {
 			type: Array,
@@ -64,11 +64,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		_showContent: {
 			type: Boolean,
 			value: false
-		},
-		_hasTabActions: Boolean
-	},
-	_computeShowGroupByTabs: function(tabs, allTab, pinTab) {
-		return !!(tabs || (allTab && pinTab));
+		}
 	},
 	listeners: {
 		'd2l-course-enrollment-change': '_onCourseEnrollmentChange',
@@ -79,11 +75,9 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			return;
 		}
 
-		this._hasTabActions = !!this.promotedSearches;
 		this._setEnrollmentCollectionEntity(this.enrollmentsUrl);
 		this._setUserSettingsEntity(this.userSettingsUrl);
 	},
-
 	_onEnrollmentAndUserSettingsEntityChange: function() {
 		if (!this._enrollmentCollectionEntity || !this._userSettingsEntity) {
 			return;
@@ -105,6 +99,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 
 		this._updateUserSettingsAction = userSettingsEntity.userSettingsAction();
 
+		this._showGroupByTabs = !!(this.promotedSearches || (this._enrollmentsSearchAction && this._pinnedTabAction));
 		this._fetchTabSearchActions();
 	},
 	_onPromotedSearchEntityChange: function() {
@@ -117,7 +112,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		this._tabSearchActions = [];
 
 		if (!promotedSearchesEntity || !promotedSearchesEntity.actions()) {
-			this._hasTabActions = false;
+			this._showGroupByTabs = false;
 			return;
 		}
 
@@ -219,6 +214,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
 				enrollmentsSearchAction: this._pinnedTabAction
 			}];
+			this._showContent = true;
 			return;
 		}
 
