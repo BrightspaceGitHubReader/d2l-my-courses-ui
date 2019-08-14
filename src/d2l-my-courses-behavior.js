@@ -111,16 +111,19 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 
 		this._tabSearchActions = [];
 
-		if (!promotedSearchesEntity || !promotedSearchesEntity.actions()) {
-			this._showGroupByTabs = false;
+		this._showContent = true;
+		if (!promotedSearchesEntity.actions()) {
+			if ((this._enrollmentsSearchAction && this._pinnedTabAction)) {
+				this._tabSearchActions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
+			} else {
+				this._showGroupByTabs = false;
+			}
 			return;
 		}
 
 		if (promotedSearchesEntity.userEnrollmentsSearchType()) {
 			this._tabSearchType = promotedSearchesEntity.userEnrollmentsSearchType();
 		}
-
-		this._showContent = true;
 
 		var lastEnrollmentsSearchName = userSettingsEntity.mostRecentEnrollmentsSearchName();
 
@@ -139,22 +142,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			return;
 		}
 
-		var actions = [{
-			name: this._enrollmentsSearchAction.name,
-			title: this.localize('allTab'),
-			selected: this._enrollmentsSearchAction.name === lastEnrollmentsSearchName,
-			enrollmentsSearchAction: this._enrollmentsSearchAction
-		}];
-
-		if (this._pinnedTabAction) {
-			actions = actions.concat({
-				name: this._pinnedTabAction.name,
-				title: this.localize('pinnedCourses'),
-				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
-				enrollmentsSearchAction: this._pinnedTabAction
-			});
-		}
-
+		var actions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
 		this._tabSearchActions = actions.concat(this._tabSearchActions);
 	},
 	_setEnrollmentCollectionEntity: function(url) {
@@ -195,6 +183,29 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			? this.$$('d2l-my-courses-content')
 			: this.$$(`#${this.currentTabId} d2l-my-courses-content`);
 	},
+	_getPinTabAndAllTabActions: function(lastEnrollmentsSearchName) {
+		var actions = [];
+
+		if (this._enrollmentsSearchAction) {
+			actions.push({
+				name: this._enrollmentsSearchAction.name,
+				title: this.localize('allTab'),
+				selected: this._enrollmentsSearchAction.name === lastEnrollmentsSearchName,
+				enrollmentsSearchAction: this._enrollmentsSearchAction
+			});
+		}
+
+		if (this._pinnedTabAction) {
+			actions.push({
+				name: this._pinnedTabAction.name,
+				title: this.localize('pinnedCourses'),
+				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
+				enrollmentsSearchAction: this._pinnedTabAction
+			});
+		}
+
+		return actions;
+	},
 	_fetchTabSearchActions: function() {
 		if (!this.userSettingsUrl) {
 			return;
@@ -202,18 +213,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 
 		if (!this.promotedSearches && this._enrollmentsSearchAction && this._pinnedTabAction) {
 			var lastEnrollmentsSearchName = this._userSettingsEntity.mostRecentEnrollmentsSearchName();
-
-			this._tabSearchActions = [{
-				name: this._enrollmentsSearchAction.name,
-				title: this.localize('allTab'),
-				selected: this._enrollmentsSearchAction.name === lastEnrollmentsSearchName,
-				enrollmentsSearchAction: this._enrollmentsSearchAction
-			}, {
-				name: this._pinnedTabAction.name,
-				title: this.localize('pinnedCourses'),
-				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
-				enrollmentsSearchAction: this._pinnedTabAction
-			}];
+			this._tabSearchActions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
 			this._showContent = true;
 			return;
 		}
