@@ -48,7 +48,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		_pinnedTabAction: Object,
 		_showGroupByTabs: {
 			type: Boolean,
-			computed: '_computeShowGroupByTabs(_tabSearchActions)'
+			value: false
 		},
 		_tabSearchActions: {
 			type: Array,
@@ -59,10 +59,12 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		_updateUserSettingsAction: Object,
 		_enrollmentCollectionEntity: Object,
 		_userSettingsEntity: Object,
-		_promotedSearch: Object
-	},
-	_computeShowGroupByTabs: function(groups) {
-		return groups.length >= 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
+		_promotedSearch: Object,
+		// Hides loading spinner and shows tabs when true
+		_showContent: {
+			type: Boolean,
+			value: false
+		}
 	},
 	listeners: {
 		'd2l-course-enrollment-change': '_onCourseEnrollmentChange',
@@ -76,7 +78,6 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 		this._setEnrollmentCollectionEntity(this.enrollmentsUrl);
 		this._setUserSettingsEntity(this.userSettingsUrl);
 	},
-
 	_onEnrollmentAndUserSettingsEntityChange: function() {
 		if (!this._enrollmentCollectionEntity || !this._userSettingsEntity) {
 			return;
@@ -98,6 +99,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 
 		this._updateUserSettingsAction = userSettingsEntity.userSettingsAction();
 
+		this._showGroupByTabs = !!(this.promotedSearches || (this._enrollmentsSearchAction && this._pinnedTabAction));
 		this._fetchTabSearchActions();
 	},
 	_onPromotedSearchEntityChange: function() {
@@ -109,16 +111,18 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 
 		this._tabSearchActions = [];
 
-		if (!promotedSearchesEntity) {
+		this._showContent = true;
+		if (!promotedSearchesEntity.actions()) {
+			if ((this._enrollmentsSearchAction && this._pinnedTabAction)) {
+				this._tabSearchActions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
+			} else {
+				this._showGroupByTabs = false;
+			}
 			return;
 		}
 
 		if (promotedSearchesEntity.userEnrollmentsSearchType()) {
 			this._tabSearchType = promotedSearchesEntity.userEnrollmentsSearchType();
-		}
-
-		if (!promotedSearchesEntity.actions()) {
-			return;
 		}
 
 		var lastEnrollmentsSearchName = userSettingsEntity.mostRecentEnrollmentsSearchName();
@@ -138,22 +142,7 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			return;
 		}
 
-		var actions = [{
-			name: this._enrollmentsSearchAction.name,
-			title: this.localize('allTab'),
-			selected: this._enrollmentsSearchAction.name === lastEnrollmentsSearchName,
-			enrollmentsSearchAction: this._enrollmentsSearchAction
-		}];
-
-		if (this._pinnedTabAction) {
-			actions = actions.concat({
-				name: this._pinnedTabAction.name,
-				title: this.localize('pinnedCourses'),
-				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
-				enrollmentsSearchAction: this._pinnedTabAction
-			});
-		}
-
+		var actions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
 		this._tabSearchActions = actions.concat(this._tabSearchActions);
 	},
 	_setEnrollmentCollectionEntity: function(url) {
@@ -194,6 +183,29 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 			? this.$$('d2l-my-courses-content')
 			: this.$$(`#${this.currentTabId} d2l-my-courses-content`);
 	},
+	_getPinTabAndAllTabActions: function(lastEnrollmentsSearchName) {
+		var actions = [];
+
+		if (this._enrollmentsSearchAction) {
+			actions.push({
+				name: this._enrollmentsSearchAction.name,
+				title: this.localize('allTab'),
+				selected: this._enrollmentsSearchAction.name === lastEnrollmentsSearchName,
+				enrollmentsSearchAction: this._enrollmentsSearchAction
+			});
+		}
+
+		if (this._pinnedTabAction) {
+			actions.push({
+				name: this._pinnedTabAction.name,
+				title: this.localize('pinnedCourses'),
+				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
+				enrollmentsSearchAction: this._pinnedTabAction
+			});
+		}
+
+		return actions;
+	},
 	_fetchTabSearchActions: function() {
 		if (!this.userSettingsUrl) {
 			return;
@@ -201,18 +213,8 @@ D2L.MyCourses.MyCoursesBehaviorImpl = {
 
 		if (!this.promotedSearches && this._enrollmentsSearchAction && this._pinnedTabAction) {
 			var lastEnrollmentsSearchName = this._userSettingsEntity.mostRecentEnrollmentsSearchName();
-
-			this._tabSearchActions = [{
-				name: this._enrollmentsSearchAction.name,
-				title: this.localize('allTab'),
-				selected: this._enrollmentsSearchAction.name === lastEnrollmentsSearchName,
-				enrollmentsSearchAction: this._enrollmentsSearchAction
-			}, {
-				name: this._pinnedTabAction.name,
-				title: this.localize('pinnedCourses'),
-				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
-				enrollmentsSearchAction: this._pinnedTabAction
-			}];
+			this._tabSearchActions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
+			this._showContent = true;
 			return;
 		}
 
