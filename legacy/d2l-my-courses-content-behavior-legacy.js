@@ -153,7 +153,6 @@ D2L.MyCourses.MyCoursesContentBehaviorLegacyImpl = {
 		'course-tile-organization': '_onCourseTileOrganization',
 		'course-image-loaded': '_onCourseImageLoaded',
 		'initially-visible-course-tile': '_onInitiallyVisibleCourseTile',
-		'started-inactive': '_onStartedInactiveAlert',
 		'd2l-enrollment-card-fetched': '_onD2lEnrollmentCardFetched',
 		'd2l-enrollment-card-status': '_onD2lEnrollmentCardStatus',
 		'd2l-enrollment-new': '_onD2lEnrollmentNew'
@@ -441,6 +440,7 @@ D2L.MyCourses.MyCoursesContentBehaviorLegacyImpl = {
 
 		this._onResize();
 	},
+	//This event handler is removed from handling `started-inactive` event, not referenced anywhere
 	_onStartedInactiveAlert: function() {
 		if (this.$$('.course-card-grid d2l-enrollment-card[started-inactive]')) {
 			this._addAlert('warning', 'startedInactiveCourses', this.localize('startedInactiveAlert'));
@@ -492,8 +492,6 @@ D2L.MyCourses.MyCoursesContentBehaviorLegacyImpl = {
 	},
 	_onSimpleOverlayClosed: function() {
 		this._removeAlert('setCourseImageFailure');
-		// update the startedInactive alert in case the user changed the pinned states in the overlay
-		this._onStartedInactiveAlert();
 
 		if (this._isRefetchNeeded) {
 			this._handleEnrollmentsRefetch();
