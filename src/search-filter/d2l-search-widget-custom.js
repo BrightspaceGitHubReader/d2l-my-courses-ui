@@ -97,7 +97,8 @@ Polymer({
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.UtilityBehavior
+		D2L.MyCourses.UtilityBehavior,
+		D2L.Dom
 	],
 	ready: function() {
 		this._handleFocusBound = this._handleFocus.bind(this);
