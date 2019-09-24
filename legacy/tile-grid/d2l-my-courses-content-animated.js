@@ -166,7 +166,6 @@ Polymer({
 			} else {
 				this._removeFromPinnedEnrollments(enrollment);
 			}
-			setTimeout(this._onStartedInactiveAlert.bind(this), 50);
 		} else {
 			this._refetchEnrollments();
 		}
@@ -219,6 +218,7 @@ Polymer({
 		}
 	},
 	// Override for MyCoursesContentBehaviorLegacy._onStartedInactiveAlert
+	// This event handler is removed from handling `started-inactive` event, not referenced anywhere
 	_onStartedInactiveAlert: function(e) {
 		this._removeAlert('startedInactiveCourses');
 

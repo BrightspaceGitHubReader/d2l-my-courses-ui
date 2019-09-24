@@ -317,17 +317,6 @@ describe('d2l-my-courses-content', () => {
 			expect(spy).to.have.been.called;
 		});
 
-		it('should correctly determine whether there are started-inactive courses in _onStartedInactiveAlert', () => {
-			var spy = sandbox.spy(component, '_addAlert');
-
-			var firstCourseTile = component.$$('.course-card-grid d2l-enrollment-card');
-			firstCourseTile.setAttribute('started-inactive', '');
-
-			component._onStartedInactiveAlert();
-
-			expect(spy).to.have.been.called;
-		});
-
 		it('should add the hide-past-attributes to the correct card grid in _populateEnrollments', () => {
 			var spy = sandbox.spy(component.$$('.course-card-grid'), 'setAttribute');
 			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity));
