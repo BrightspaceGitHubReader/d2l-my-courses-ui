@@ -25,7 +25,7 @@ D2L.PolymerBehaviors.MyCourses.LangDadkBehavior = {
 			"filtering.departmentDefault": "Afdeling",
 			"filtering.filter": "Filtrér",
 			"filtering.filterBy": "Filtrér efter",
-			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 			"filtering.filterMultiple": "Filtrér: {num} filtre",
 			"filtering.filterSingle": "Filtrér: 1 filter",
 			"filtering.loadMore": "Indlæs flere",

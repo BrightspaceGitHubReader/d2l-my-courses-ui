@@ -16,7 +16,7 @@
    "filtering.departmentDefault" : "学部",
    "filtering.filter" : "フィルタ",
    "filtering.filterBy" : "フィルタの条件",
-   "filtering.filterLabel" : "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+   "filtering.filterLabel" : "{filterLabel}{num, plural, =0{} other{ ({num})}}",
    "filtering.filterMultiple" : "フィルタ数: {num}",
    "filtering.filterSingle" : "フィルタ数: 1",
    "filtering.loadMore" : "さらに読み込む",

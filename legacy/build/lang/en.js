@@ -63,7 +63,7 @@ D2L.PolymerBehaviors.MyCourses.LangEnBehaviorLegacy = {
 			"filtering.searchDepartments": "Search Departments",
 			"filtering.searchSemesters": "Search Semesters",
 			"filtering.searchBy": "Search by {filter}",
-			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 			"filtering.noDepartments": "You do not have any {department} filters.",
 			"filtering.noSemesters": "You do not have any {semester} filters.",
 			"filtering.noRoles": "You do not have any Role filters.",

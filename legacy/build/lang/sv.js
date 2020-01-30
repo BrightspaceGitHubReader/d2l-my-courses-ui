@@ -25,7 +25,7 @@ D2L.PolymerBehaviors.MyCourses.LangSvBehaviorLegacy = {
 			"filtering.departmentDefault": "Institution",
 			"filtering.filter": "Filter",
 			"filtering.filterBy": "Filtrera efter",
-			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 			"filtering.filterMultiple": "Filter: {num} filter",
 			"filtering.filterSingle": "Filter: 1 filter",
 			"filtering.loadMore": "Ladda mer",

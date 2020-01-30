@@ -25,7 +25,7 @@ D2L.PolymerBehaviors.MyCourses.LangPtBehaviorLegacy = {
 			"filtering.departmentDefault": "Departamento",
 			"filtering.filter": "Filtro",
 			"filtering.filterBy": "Filtrar por",
-			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 			"filtering.filterMultiple": "Filtrar: {num} filtros",
 			"filtering.filterSingle": "Filtrar: 1 Filtro",
 			"filtering.loadMore": "Carregar mais",

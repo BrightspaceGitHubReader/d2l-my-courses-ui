@@ -25,7 +25,7 @@ D2L.PolymerBehaviors.MyCourses.LangKoBehaviorLegacy = {
 			"filtering.departmentDefault": "학과",
 			"filtering.filter": "필터",
 			"filtering.filterBy": "필터링 기준",
-			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 			"filtering.filterMultiple": "필터: {num}개 필터",
 			"filtering.filterSingle": "필터: 1개 필터",
 			"filtering.loadMore": "더 많이 로드",

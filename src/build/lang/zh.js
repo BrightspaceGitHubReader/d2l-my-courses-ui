@@ -25,7 +25,7 @@ D2L.PolymerBehaviors.MyCourses.LangZhBehavior = {
 			"filtering.departmentDefault": "学科",
 			"filtering.filter": "筛选",
 			"filtering.filterBy": "筛选条件",
-			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 			"filtering.filterMultiple": "筛选：{num} 个筛选条件",
 			"filtering.filterSingle": "筛选：1 个筛选条件",
 			"filtering.loadMore": "加载更多",

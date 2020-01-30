@@ -16,7 +16,7 @@
    "filtering.departmentDefault" : "القسم",
    "filtering.filter" : "التصفية",
    "filtering.filterBy" : "تصفية بحسب",
-   "filtering.filterLabel" : "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+   "filtering.filterLabel" : "{filterLabel}{num, plural, =0{} other{ ({num})}}",
    "filtering.filterMultiple" : "Filter: {num} Filters",
    "filtering.filterSingle" : "التصفية: عامل تصفية واحد",
    "filtering.loadMore" : "تحميل المزيد",
