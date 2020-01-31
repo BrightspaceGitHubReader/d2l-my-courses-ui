@@ -1,35 +1,9 @@
 describe('d2l-all-courses', function() {
 	var widget,
-		pinnedEnrollmentEntity,
-		unpinnedEnrollmentEntity,
 		clock,
 		sandbox;
 
 	beforeEach(function(done) {
-
-		pinnedEnrollmentEntity = window.D2L.Hypermedia.Siren.Parse({
-			class: ['pinned', 'enrollment'],
-			rel: ['https://api.brightspace.com/rels/user-enrollment'],
-			links: [{
-				rel: ['self'],
-				href: '/enrollments/users/169/organizations/1'
-			}, {
-				rel: ['https://api.brightspace.com/rels/organization'],
-				href: '/organizations/123'
-			}]
-		});
-		unpinnedEnrollmentEntity = window.D2L.Hypermedia.Siren.Parse({
-			class: ['unpinned', 'enrollment'],
-			rel: ['https://api.brightspace.com/rels/user-enrollment'],
-			links: [{
-				rel: ['self'],
-				href: '/enrollments/users/169/organizations/1'
-			}, {
-				rel: ['https://api.brightspace.com/rels/organization'],
-				href: '/organizations/123'
-			}]
-		});
-
 		sandbox = sinon.sandbox.create();
 
 		widget = fixture('d2l-all-courses-fixture');
@@ -78,32 +52,6 @@ describe('d2l-all-courses', function() {
 
 			expect(widget._showAdvancedSearchLink).to.be.true;
 			expect(widget.$$('.advanced-search-link').hasAttribute('hidden')).to.be.false;
-		});
-	});
-
-	describe('getCourseTileItemCount', function() {
-		it('should return the correct value from getCourseTileItemCount (should be maximum of pinned or unpinned course count)', function() {
-			widget._filteredPinnedEnrollments = [pinnedEnrollmentEntity];
-			widget._filteredUnpinnedEnrollments = [unpinnedEnrollmentEntity];
-
-			expect(widget.$$('d2l-all-courses-segregated-content').getCourseTileItemCount()).to.equal(1);
-		});
-
-		it('should set getCourseTileItemCount on its child course-tile-grids', function() {
-			widget._filteredPinnedEnrollments = [pinnedEnrollmentEntity];
-			widget._filteredUnpinnedEnrollments = [unpinnedEnrollmentEntity];
-			var courseTileGrids;
-			var segregatedContent = widget.$$('d2l-all-courses-segregated-content');
-			if (segregatedContent.shadowRoot) {
-				courseTileGrids = segregatedContent.shadowRoot.querySelectorAll('d2l-course-tile-grid');
-			} else {
-				courseTileGrids = segregatedContent.querySelectorAll('d2l-course-tile-grid');
-			}
-			expect(courseTileGrids.length).to.equal(2);
-
-			for (var i = 0; i < courseTileGrids.length; i++) {
-				expect(courseTileGrids[i].getCourseTileItemCount()).to.equal(1);
-			}
 		});
 	});
 
@@ -278,7 +226,7 @@ describe('d2l-all-courses', function() {
 
 			widget.load();
 			widget.$$('d2l-dropdown-menu').fire('d2l-menu-item-change', event);
-			expect(widget._searchUrl).to.contain('-PinDate,OrgUnitCode,OrgUnitId');
+			expect(widget._searchUrl).to.contain('OrgUnitCode,OrgUnitId');
 
 			widget.$$('d2l-simple-overlay')._renderOpened();
 			expect(spy.called).to.be.true;
