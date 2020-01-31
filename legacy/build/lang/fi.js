@@ -63,7 +63,7 @@ D2L.PolymerBehaviors.MyCourses.LangFiBehaviorLegacy = {
 			"filtering.searchDepartments": "Hae laitoksia",
 			"filtering.searchSemesters": "Hae lukukausia",
 			"filtering.searchBy": "Hakuperuste {filter}",
-			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{\\u0020({num})}}",
+			"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 			"filtering.noDepartments": "Sinulla ei ole suodattimia ({department}).",
 			"filtering.noSemesters": "Sinulla ei ole suodattimia ({semester}).",
 			"filtering.noRoles": "Sinulla ei ole roolisuodattimia.",
