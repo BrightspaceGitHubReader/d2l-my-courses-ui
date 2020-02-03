@@ -63,7 +63,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content-animated
 		<div hidden$="[[!_showContent]]" class="my-courses-content">
 			<template is="dom-repeat" items="[[_alertsView]]">
 				<d2l-alert type="[[item.alertType]]">
-					{{item.alertMessage}}
+					[[item.alertMessage]]
 				</d2l-alert>
 			</template>
 			<d2l-course-tile-grid
@@ -82,7 +82,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-my-courses-content-animated
 		<div id="allCoursesPlaceholder">
 		</div>
 
-		<d2l-simple-overlay id="basic-image-selector-overlay" title-name="{{localize('changeImage')}}" close-simple-overlay-alt-text="{{localize('closeSimpleOverlayAltText')}}" with-backdrop="">
+		<d2l-simple-overlay id="basic-image-selector-overlay" title-name="[[localize('changeImage')]]" close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]" with-backdrop="">
 			<iron-scroll-threshold id="image-selector-threshold" on-lower-threshold="_onChangeImageLowerThreshold">
 			</iron-scroll-threshold>
 			<d2l-basic-image-selector

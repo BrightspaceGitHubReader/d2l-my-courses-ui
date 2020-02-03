@@ -56,8 +56,8 @@ class AllCourses extends mixinBehaviors([
 
 			<d2l-simple-overlay
 				id="all-courses"
-				title-name="{{localize('allCourses')}}"
-				close-simple-overlay-alt-text="{{localize('closeSimpleOverlayAltText')}}"
+				title-name="[[localize('allCourses')]]"
+				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
 				with-backdrop=""
 				restore-focus-on-close="">
 
@@ -94,27 +94,27 @@ class AllCourses extends mixinBehaviors([
 
 								<d2l-dropdown id="sortDropdown">
 									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="sortText">
-										<span id="sortText" class="dropdown-opener-text">{{localize('sorting.sortDefault')}}</span>
+										<span id="sortText" class="dropdown-opener-text">[[localize('sorting.sortDefault')]]</span>
 										<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
 									</button>
 									<d2l-dropdown-menu no-padding="" min-width="350">
-										<d2l-menu id="sortDropdownMenu" label="{{localize('sorting.sortBy')}}">
+										<d2l-menu id="sortDropdownMenu" label="[[localize('sorting.sortBy')]]">
 											<div class="dropdown-content-header">
-												<span>{{localize('sorting.sortBy')}}</span>
+												<span>[[localize('sorting.sortBy')]]</span>
 											</div>
-											<d2l-menu-item-radio class="dropdown-content-gradient" value="Default" text="{{localize('sorting.sortDefault')}}"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="OrgUnitName" text="{{localize('sorting.sortCourseName')}}"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="OrgUnitCode" text="{{localize('sorting.sortCourseCode')}}"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="PinDate" text="{{localize('sorting.sortDatePinned')}}"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="LastAccessed" text="{{localize('sorting.sortLastAccessed')}}"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="EnrollmentDate" text="{{localize('sorting.sortEnrollmentDate')}}"></d2l-menu-item-radio>
+											<d2l-menu-item-radio class="dropdown-content-gradient" value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="OrgUnitName" text="[[localize('sorting.sortCourseName')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="OrgUnitCode" text="[[localize('sorting.sortCourseCode')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="PinDate" text="[[localize('sorting.sortDatePinned')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="LastAccessed" text="[[localize('sorting.sortLastAccessed')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="EnrollmentDate" text="[[localize('sorting.sortEnrollmentDate')]]"></d2l-menu-item-radio>
 										</d2l-menu>
 									</d2l-dropdown-menu>
 								</d2l-dropdown>
 							</div>
 						</div>
 						<div class="search-and-filter-row advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]">
-							<d2l-link href$="[[advancedSearchUrl]]">{{localize('advancedSearch')}}</d2l-link>
+							<d2l-link href$="[[advancedSearchUrl]]">[[localize('advancedSearch')]]</d2l-link>
 						</div>
 					</div>
 
