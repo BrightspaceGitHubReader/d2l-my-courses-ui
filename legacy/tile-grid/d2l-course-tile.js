@@ -80,9 +80,9 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
 						</div>
 						<div class="notification-overlay">
 							<div class="overlay-date-container">
-								<div class="overlay-text">{{_notificationTitle}}</div>
-								<div class="overlay-date">{{_notificationDate}}</div>
-								<div class="overlay-inactive">{{_notificationInactive}}</div>
+								<div class="overlay-text">[[_notificationTitle]]</div>
+								<div class="overlay-date">[[_notificationDate]]</div>
+								<div class="overlay-inactive">[[_notificationInactive]]</div>
 							</div>
 						</div>
 						<d2l-course-image image="[[_image]]" sizes="[[tileSizes]]" type="tile"></d2l-course-image>
@@ -102,8 +102,8 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
 						<d2l-offscreen id="courseNotificationLabel" aria-hidden="true">[[_courseNotificationLabel]]</d2l-offscreen>
 					</div>
 					<div id="courseUpdates" hidden$="[[!_hasCourseUpdates]]" aria-hidden="true">
-						<d2l-offscreen>{{localize('courseTile.updates')}}</d2l-offscreen>
-						<span class="update-text-box">{{_courseUpdates}}</span>
+						<d2l-offscreen>[[localize('courseTile.updates')]]</d2l-offscreen>
+						<span class="update-text-box">[[_courseUpdates]]</span>
 					</div>
 				</div>
 			</a>
@@ -117,12 +117,12 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile">
 						<template is="dom-if" if="[[_showHoverMenu]]">
 							<d2l-dropdown-menu id="overflow-dropdown">
 								<d2l-menu label$="[[_courseSettingsLabel]]">
-									<template is="dom-if" if="{{_courseInfoUrl}}" restamp="true">
-										<d2l-menu-item-link id="see-course-info-link" text="{{localize('courseOfferingInformation')}}" href="{{_courseInfoUrl}}">
+									<template is="dom-if" if="[[_courseInfoUrl]]" restamp="true">
+										<d2l-menu-item-link id="see-course-info-link" text="[[localize('courseOfferingInformation')]]" href="[[_courseInfoUrl]]">
 										</d2l-menu-item-link>
 									</template>
-									<template is="dom-if" if="{{_canChangeCourseImage}}" restamp="true">
-										<d2l-menu-item id="change-image-button" text="{{localize('changeImage')}}" on-d2l-menu-item-select="_launchCourseTileImageSelector">
+									<template is="dom-if" if="[[_canChangeCourseImage]]" restamp="true">
+										<d2l-menu-item id="change-image-button" text="[[localize('changeImage')]]" on-d2l-menu-item-select="_launchCourseTileImageSelector">
 										</d2l-menu-item>
 									</template>
 									<d2l-menu-item id="pin-button" text$="[[_pinLabel]]" on-d2l-menu-item-select="_pinClickHandler" on-focus="_hoverPinMenuItem" on-blur="_unhoverPinMenuItem" on-mouseover="_hoverPinMenuItem" on-mouseout="_unhoverPinMenuItem">
