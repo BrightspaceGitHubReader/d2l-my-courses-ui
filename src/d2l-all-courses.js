@@ -690,7 +690,7 @@ class AllCourses extends mixinBehaviors([
 	_resetSortDropdown() {
 		this._selectSortOption(this.defaultSortValue);
 
-		var content = this.$.sortDropdown.queryEffectiveChildren('[d2l-dropdown-content]');
+		var content = this.$.sortDropdown.__getContentElement();
 		if (content) {
 			content.close();
 		}
