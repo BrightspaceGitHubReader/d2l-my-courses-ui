@@ -16,7 +16,7 @@
    "filtering.departmentDefault" : "학과",
    "filtering.filter" : "필터",
    "filtering.filterBy" : "필터링 기준",
-   "filtering.filterLabel" : "{filterLabel}{num, plural, =0{} other{ ({num})}}",
+   "filtering.filterLabel" : "{filterLabel}{num, plural, =0{} 기타{ ({num})}}",
    "filtering.filterMultiple" : "필터: {num}개 필터",
    "filtering.filterSingle" : "필터: 1개 필터",
    "filtering.loadMore" : "더 많이 로드",
