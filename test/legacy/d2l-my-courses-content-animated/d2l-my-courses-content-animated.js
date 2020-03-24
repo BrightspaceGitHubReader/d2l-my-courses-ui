@@ -215,17 +215,21 @@ describe('d2l-my-courses-content-animated', function() {
 			enrollmentsSearchEntity
 		));
 
-		setTimeout(() => {
+		requestAnimationFrame(() => {
 			done();
 		});
 	});
 
-	afterEach(function() {
+	afterEach(function(done) {
 		if (clock) {
 			clock.restore();
 		}
 
 		sandbox.restore();
+
+		requestAnimationFrame(() => {
+			done();
+		});
 	});
 
 	it('should load', function() {

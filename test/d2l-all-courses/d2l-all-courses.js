@@ -3,6 +3,16 @@ describe('d2l-all-courses', function() {
 		clock,
 		sandbox;
 
+	function fireEvent(component, eventName, detail) {
+		component.dispatchEvent(
+			new CustomEvent(eventName, {
+				bubbles: true,
+				composed: true,
+				detail: detail
+			})
+		);
+	}
+
 	beforeEach(function(done) {
 		sandbox = sinon.sandbox.create();
 
@@ -118,7 +128,7 @@ describe('d2l-all-courses', function() {
 
 	describe('d2l-filter-menu-change event', function() {
 		it('should set the _searchUrl with one query string and filterCounts', function() {
-			widget.$.filterMenu.fire('d2l-filter-menu-change', {
+			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				url: 'http://example.com',
 				filterCounts: {
 					departments: 12,
@@ -132,7 +142,7 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should set the _searchUrl with multiple query strings and filterCounts', function() {
-			widget.$.filterMenu.fire('d2l-filter-menu-change', {
+			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				url: 'http://example.com?search=&pageSize=20',
 				filterCounts: {
 					departments: 15,
@@ -148,7 +158,7 @@ describe('d2l-all-courses', function() {
 
 	describe('d2l-menu-item-change event', function() {
 		it('should set the _searchUrl', function() {
-			widget.$.sortDropdown.fire('d2l-menu-item-change', {
+			fireEvent(widget.$.sortDropdown, 'd2l-menu-item-change', {
 				value: 'LastAccessed'
 			});
 
@@ -159,7 +169,7 @@ describe('d2l-all-courses', function() {
 
 	describe('Filter text', function() {
 		function fireEvents(filterCount) {
-			widget.$.filterMenu.fire('d2l-filter-menu-change', {
+			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				url: 'http://example.com',
 				filterCounts: {
 					departments: filterCount,
@@ -167,7 +177,7 @@ describe('d2l-all-courses', function() {
 					roles: 0
 				}
 			});
-			widget.$.filterDropdownContent.fire('d2l-dropdown-close', {});
+			fireEvent(widget.$.filterDropdownContent, 'd2l-dropdown-close');
 		}
 
 		it('should read "Filter" when no filters are selected', function() {
@@ -201,14 +211,14 @@ describe('d2l-all-courses', function() {
 		it('should clear filters', function() {
 			var spy = sandbox.spy(widget.$.filterMenu, 'clearFilters');
 
-			widget.$.filterMenu.fire('d2l-filter-menu-change', {
+			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				filterCounts: {
 					departments: 1,
 					semesters: 0,
 					roles: 0
 				}
 			});
-			widget.$.filterDropdownContent.fire('d2l-dropdown-close', {});
+			fireEvent(widget.$.filterDropdownContent, 'd2l-dropdown-close', {});
 
 			expect(widget._filterText).to.equal('Filter: 1 Filter');
 			widget.$$('d2l-simple-overlay')._renderOpened();
@@ -225,7 +235,7 @@ describe('d2l-all-courses', function() {
 			};
 
 			widget.load();
-			widget.$$('d2l-dropdown-menu').fire('d2l-menu-item-change', event);
+			fireEvent(widget.$$('d2l-dropdown-menu'), 'd2l-menu-item-change', event);
 			expect(widget._searchUrl).to.contain('OrgUnitCode,OrgUnitId');
 
 			widget.$$('d2l-simple-overlay')._renderOpened();

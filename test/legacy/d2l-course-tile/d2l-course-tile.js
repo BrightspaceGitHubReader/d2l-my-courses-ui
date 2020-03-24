@@ -121,7 +121,7 @@ describe('<d2l-course-tile>', function() {
 		semesterOrganizationEntity = window.D2L.Hypermedia.Siren.Parse(semesterOrganization);
 	});
 
-	beforeEach(function() {
+	beforeEach(function(done) {
 		sandbox = sinon.sandbox.create();
 		server = sinon.fakeServer.create();
 		server.respondImmediately = true;
@@ -133,6 +133,10 @@ describe('<d2l-course-tile>', function() {
 				ok: true,
 				json: function() { return Promise.resolve(organization); }
 			}));
+
+		requestAnimationFrame(function() {
+			done();
+		})
 	});
 
 	afterEach(function() {
@@ -637,7 +641,6 @@ describe('<d2l-course-tile>', function() {
 		});
 
 		it('should unpin the course when pressed', function(done) {
-			widget = fixture('d2l-course-tile-fixture');
 			widget._pinClickHandler = sinon.stub();
 			widget.pinned = true;
 			flush(() => {
