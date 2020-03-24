@@ -63,7 +63,7 @@ describe('d2l-filter-menu-tab', function() {
 				expect(component._hasSearchResults).to.be.true;
 				expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.not.be.null;
 				done();
-			})
+			});
 
 		});
 	});

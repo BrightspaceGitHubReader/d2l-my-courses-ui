@@ -136,7 +136,7 @@ describe('<d2l-course-tile>', function() {
 
 		requestAnimationFrame(function() {
 			done();
-		})
+		});
 	});
 
 	afterEach(function() {

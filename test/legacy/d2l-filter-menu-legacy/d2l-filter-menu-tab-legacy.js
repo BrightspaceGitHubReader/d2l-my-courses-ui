@@ -43,7 +43,7 @@ describe('d2l-filter-menu-tab-legacy', function() {
 						entities: []
 					}
 				});
-	
+
 				expect(component._allFilters.length).to.equal(0);
 				expect(component._hasSearchResults).to.be.false;
 				expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.be.null;
@@ -58,7 +58,7 @@ describe('d2l-filter-menu-tab-legacy', function() {
 						entities: [organization]
 					}
 				});
-	
+
 				expect(component._allFilters.length).to.equal(1);
 				expect(component._hasSearchResults).to.be.true;
 				expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.not.be.null;
