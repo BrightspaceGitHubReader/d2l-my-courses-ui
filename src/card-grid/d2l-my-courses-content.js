@@ -31,9 +31,8 @@ class MyCoursesContent extends mixinBehaviors([
 	D2L.MyCourses.MyCoursesContentBehavior,
 	D2L.MyCourses.CardGridBehavior
 ], StatusMixin(PolymerElement)) {
-	constructor() {
-		super();
-	}
+
+	static get is() { return 'd2l-my-courses-content'; }
 
 	static get template() {
 		return html`
@@ -130,7 +129,9 @@ class MyCoursesContent extends mixinBehaviors([
 		</d2l-simple-overlay>`;
 	}
 
-	static get is() { return 'd2l-my-courses-content'; }
+	constructor() {
+		super();
+	}
 
 }
 

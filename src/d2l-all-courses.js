@@ -45,138 +45,7 @@ class AllCourses extends mixinBehaviors([
 	D2L.MyCourses.UtilityBehavior
 ], EntityMixin(PolymerElement)) {
 
-	constructor() {
-		super();
-		this._setEntityType(EnrollmentCollectionEntity);
-	}
-
-	static get template() {
-		return html`
-			<style include="d2l-all-courses-styles"></style>
-
-			<d2l-simple-overlay
-				id="all-courses"
-				title-name="[[localize('allCourses')]]"
-				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
-				with-backdrop=""
-				restore-focus-on-close="">
-
-				<div hidden$="[[!_showContent]]">
-					<iron-scroll-threshold id="all-courses-scroll-threshold" on-lower-threshold="_onAllCoursesLowerThreshold">
-					</iron-scroll-threshold>
-
-					<div id="search-and-filter">
-						<div class="search-and-filter-row">
-							<d2l-search-widget-custom
-								id="search-widget"
-								org-unit-type-ids="[[orgUnitTypeIds]]"
-								search-action="[[_enrollmentsSearchAction]]"
-								search-url="[[_searchUrl]]">
-							</d2l-search-widget-custom>
-
-							<div id="filterAndSort">
-								<d2l-dropdown id="filterDropdown">
-									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="filterText">
-										<span id="filterText" class="dropdown-opener-text">[[_filterText]]</span>
-										<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
-									</button>
-									<d2l-dropdown-content id="filterDropdownContent" no-padding="" min-width="350" render-content="">
-										<d2l-filter-menu
-											id="filterMenu"
-											tab-search-type="[[tabSearchType]]"
-											org-unit-type-ids="[[orgUnitTypeIds]]"
-											my-enrollments-entity="[[myEnrollmentsEntity]]"
-											filter-standard-semester-name="[[filterStandardSemesterName]]"
-											filter-standard-department-name="[[filterStandardDepartmentName]]">
-										</d2l-filter-menu>
-									</d2l-dropdown-content>
-								</d2l-dropdown>
-
-								<d2l-dropdown id="sortDropdown">
-									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="sortText">
-										<span id="sortText" class="dropdown-opener-text">[[localize('sorting.sortDefault')]]</span>
-										<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
-									</button>
-									<d2l-dropdown-menu no-padding="" min-width="350">
-										<d2l-menu id="sortDropdownMenu" label="[[localize('sorting.sortBy')]]">
-											<div class="dropdown-content-header">
-												<span>[[localize('sorting.sortBy')]]</span>
-											</div>
-											<d2l-menu-item-radio class="dropdown-content-gradient" value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="OrgUnitName" text="[[localize('sorting.sortCourseName')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="OrgUnitCode" text="[[localize('sorting.sortCourseCode')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="PinDate" text="[[localize('sorting.sortDatePinned')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="LastAccessed" text="[[localize('sorting.sortLastAccessed')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="EnrollmentDate" text="[[localize('sorting.sortEnrollmentDate')]]"></d2l-menu-item-radio>
-										</d2l-menu>
-									</d2l-dropdown-menu>
-								</d2l-dropdown>
-							</div>
-						</div>
-						<div class="search-and-filter-row advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]">
-							<d2l-link href$="[[advancedSearchUrl]]">[[localize('advancedSearch')]]</d2l-link>
-						</div>
-					</div>
-
-					<template is="dom-repeat" items="[[_alertsView]]">
-						<d2l-alert type="[[item.alertType]]">
-							[[item.alertMessage]]
-						</d2l-alert>
-					</template>
-
-					<template is="dom-if" if="[[_showGroupByTabs]]">
-						<d2l-tabs>
-							<template items="[[tabSearchActions]]" is="dom-repeat">
-								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
-									<div hidden$="[[!_showTabContent]]">
-										<d2l-all-courses-unified-content
-											total-filter-count="[[_totalFilterCount]]"
-											filter-counts="[[_filterCounts]]"
-											is-searched="[[_isSearched]]"
-											token="[[token]]"
-											org-unit-type-ids="[[orgUnitTypeIds]]"
-											show-organization-code="[[showOrganizationCode]]"
-											show-semester-name="[[showSemesterName]]"
-											show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
-											show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
-											show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
-											show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
-											show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
-											hide-course-start-date="[[hideCourseStartDate]]"
-											hide-course-end-date="[[hideCourseEndDate]]">
-										</d2l-all-courses-unified-content>
-									</div>
-									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
-									</d2l-loading-spinner>
-								</d2l-tab-panel>
-							</template>
-						</d2l-tabs>
-					</template>
-					<template is="dom-if" if="[[!_showGroupByTabs]]">
-						<d2l-all-courses-unified-content
-							total-filter-count="[[_totalFilterCount]]"
-							filter-counts="[[_filterCounts]]"
-							is-searched="[[_isSearched]]"
-							token="[[token]]"
-							org-unit-type-ids="[[orgUnitTypeIds]]"
-							show-organization-code="[[showOrganizationCode]]"
-							show-semester-name="[[showSemesterName]]"
-							show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
-							show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
-							show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
-							show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
-							show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
-							hide-course-start-date="[[hideCourseStartDate]]"
-							hide-course-end-date="[[hideCourseEndDate]]">
-						</d2l-all-courses-unified-content>
-					</template>
-					<d2l-loading-spinner id="lazyLoadSpinner" hidden$="[[!_hasMoreEnrollments]]" size="100">
-					</d2l-loading-spinner>
-				</div>
-				<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
-				</d2l-loading-spinner>
-			</d2l-simple-overlay>`;
-	}
+	static get is() { return 'd2l-all-courses'; }
 
 	static get properties() {
 		return {
@@ -314,11 +183,137 @@ class AllCourses extends mixinBehaviors([
 		];
 	}
 
-	static get is() { return 'd2l-all-courses'; }
+	static get template() {
+		return html`
+			<style include="d2l-all-courses-styles"></style>
 
-	static get ready() {
-		this._filterText = this.localize('filtering.filter');
-		this._bustCacheToken = Math.random();
+			<d2l-simple-overlay
+				id="all-courses"
+				title-name="[[localize('allCourses')]]"
+				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
+				with-backdrop=""
+				restore-focus-on-close="">
+
+				<div hidden$="[[!_showContent]]">
+					<iron-scroll-threshold id="all-courses-scroll-threshold" on-lower-threshold="_onAllCoursesLowerThreshold">
+					</iron-scroll-threshold>
+
+					<div id="search-and-filter">
+						<div class="search-and-filter-row">
+							<d2l-search-widget-custom
+								id="search-widget"
+								org-unit-type-ids="[[orgUnitTypeIds]]"
+								search-action="[[_enrollmentsSearchAction]]"
+								search-url="[[_searchUrl]]">
+							</d2l-search-widget-custom>
+
+							<div id="filterAndSort">
+								<d2l-dropdown id="filterDropdown">
+									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="filterText">
+										<span id="filterText" class="dropdown-opener-text">[[_filterText]]</span>
+										<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
+									</button>
+									<d2l-dropdown-content id="filterDropdownContent" no-padding="" min-width="350" render-content="">
+										<d2l-filter-menu
+											id="filterMenu"
+											tab-search-type="[[tabSearchType]]"
+											org-unit-type-ids="[[orgUnitTypeIds]]"
+											my-enrollments-entity="[[myEnrollmentsEntity]]"
+											filter-standard-semester-name="[[filterStandardSemesterName]]"
+											filter-standard-department-name="[[filterStandardDepartmentName]]">
+										</d2l-filter-menu>
+									</d2l-dropdown-content>
+								</d2l-dropdown>
+
+								<d2l-dropdown id="sortDropdown">
+									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="sortText">
+										<span id="sortText" class="dropdown-opener-text">[[localize('sorting.sortDefault')]]</span>
+										<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
+									</button>
+									<d2l-dropdown-menu no-padding="" min-width="350">
+										<d2l-menu id="sortDropdownMenu" label="[[localize('sorting.sortBy')]]">
+											<div class="dropdown-content-header">
+												<span>[[localize('sorting.sortBy')]]</span>
+											</div>
+											<d2l-menu-item-radio class="dropdown-content-gradient" value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="OrgUnitName" text="[[localize('sorting.sortCourseName')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="OrgUnitCode" text="[[localize('sorting.sortCourseCode')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="PinDate" text="[[localize('sorting.sortDatePinned')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="LastAccessed" text="[[localize('sorting.sortLastAccessed')]]"></d2l-menu-item-radio>
+											<d2l-menu-item-radio value="EnrollmentDate" text="[[localize('sorting.sortEnrollmentDate')]]"></d2l-menu-item-radio>
+										</d2l-menu>
+									</d2l-dropdown-menu>
+								</d2l-dropdown>
+							</div>
+						</div>
+						<div class="search-and-filter-row advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]">
+							<d2l-link href$="[[advancedSearchUrl]]">[[localize('advancedSearch')]]</d2l-link>
+						</div>
+					</div>
+
+					<template is="dom-repeat" items="[[_alertsView]]">
+						<d2l-alert type="[[item.alertType]]">
+							[[item.alertMessage]]
+						</d2l-alert>
+					</template>
+
+					<template is="dom-if" if="[[_showGroupByTabs]]">
+						<d2l-tabs>
+							<template items="[[tabSearchActions]]" is="dom-repeat">
+								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
+									<div hidden$="[[!_showTabContent]]">
+										<d2l-all-courses-unified-content
+											total-filter-count="[[_totalFilterCount]]"
+											filter-counts="[[_filterCounts]]"
+											is-searched="[[_isSearched]]"
+											token="[[token]]"
+											org-unit-type-ids="[[orgUnitTypeIds]]"
+											show-organization-code="[[showOrganizationCode]]"
+											show-semester-name="[[showSemesterName]]"
+											show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
+											show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
+											show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
+											show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
+											show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
+											hide-course-start-date="[[hideCourseStartDate]]"
+											hide-course-end-date="[[hideCourseEndDate]]">
+										</d2l-all-courses-unified-content>
+									</div>
+									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
+									</d2l-loading-spinner>
+								</d2l-tab-panel>
+							</template>
+						</d2l-tabs>
+					</template>
+					<template is="dom-if" if="[[!_showGroupByTabs]]">
+						<d2l-all-courses-unified-content
+							total-filter-count="[[_totalFilterCount]]"
+							filter-counts="[[_filterCounts]]"
+							is-searched="[[_isSearched]]"
+							token="[[token]]"
+							org-unit-type-ids="[[orgUnitTypeIds]]"
+							show-organization-code="[[showOrganizationCode]]"
+							show-semester-name="[[showSemesterName]]"
+							show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
+							show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
+							show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
+							show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
+							show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
+							hide-course-start-date="[[hideCourseStartDate]]"
+							hide-course-end-date="[[hideCourseEndDate]]">
+						</d2l-all-courses-unified-content>
+					</template>
+					<d2l-loading-spinner id="lazyLoadSpinner" hidden$="[[!_hasMoreEnrollments]]" size="100">
+					</d2l-loading-spinner>
+				</div>
+				<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
+				</d2l-loading-spinner>
+			</d2l-simple-overlay>`;
+	}
+
+	constructor() {
+		super();
+		this._setEntityType(EnrollmentCollectionEntity);
 	}
 
 	attached() {
