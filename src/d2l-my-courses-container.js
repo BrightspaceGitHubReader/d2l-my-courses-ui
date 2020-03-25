@@ -21,9 +21,7 @@ class MyCoursesContainer extends mixinBehaviors([
 	D2L.MyCourses.MyCoursesBehavior
 ], EntityMixin(PolymerElement)) {
 
-	constructor() {
-		super();
-	}
+	static get is() { return 'd2l-my-courses-container'; }
 
 	static get template() {
 		return html`
@@ -82,7 +80,9 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>`;
 	}
 
-	static get is() { return 'd2l-my-courses-container'; }
+	constructor() {
+		super();
+	}
 }
 
 window.customElements.define(MyCoursesContainer.is, MyCoursesContainer);

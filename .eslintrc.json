@@ -2,5 +2,8 @@
   "extends": "brightspace/polymer-3-config",
   "globals": {
     "Promise": false
+  },
+  "rules": {
+    "no-prototype-builtins": 0
   }
 }
