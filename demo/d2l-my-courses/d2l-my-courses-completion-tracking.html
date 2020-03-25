@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="../../node_modules/@brightspace-ui/core/components/demo/styles.css" type="text/css">
+		<script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+		<script type="module">
+			import '@brightspace-ui/core/components/demo/demo-page.js';
+			import '../../d2l-my-courses.js';
+		</script>
+		<title>d2l-my-courses - Completion Tracking Demo</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<d2l-demo-page page-title="d2l-my-courses - Completion Tracking">
+			<h2>My Courses - Completion Tracking</h2>
+			<d2l-demo-snippet>
+				<d2l-my-courses
+					token="whatever"
+					enrollments-url="../data/completion-tracking/enrollments-completion-tracking"
+					promoted-searches="../data/completion-tracking/searches-completion-tracking"
+					user-settings-url="../data/user-settings"
+					updated-sort-logic>
+			</d2l-my-courses>
+			</d2l-demo-snippet>
+		</d2l-demo-page>
+	</body>
+</html>
