@@ -46,10 +46,13 @@ describe('<d2l-search-widget-custom-legacy>', function() {
 		clock.restore();
 	});
 
-	it('should perform a search when the searchUrl changes', function() {
-		var spy = sandbox.spy(widget, '_handleSearchUrlChange');
-		widget.searchUrl = '/organizations/1234';
-		clock.tick(501);
-		expect(spy.called).to.be.true;
+	it('should perform a search when the searchUrl changes', function(done) {
+		requestAnimationFrame(function() {
+			var spy = sandbox.spy(widget, '_handleSearchUrlChange');
+			widget.searchUrl = '/organizations/1234';
+			clock.tick(501);
+			expect(spy.called).to.be.true;
+			done();
+		});
 	});
 });

@@ -36,28 +36,35 @@ describe('d2l-filter-menu-tab', function() {
 			});
 		});
 
-		it('should show the No Results message when there are no search results', function() {
-			component.fire('d2l-search-widget-results-changed', {
-				searchResponse: {
-					entities: []
-				}
-			});
+		it('should show the No Results message when there are no search results', function(done) {
+			requestAnimationFrame(function() {
+				component.fire('d2l-search-widget-results-changed', {
+					searchResponse: {
+						entities: []
+					}
+				});
 
-			expect(component._allFilters.length).to.equal(0);
-			expect(component._hasSearchResults).to.be.false;
-			expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.be.null;
+				expect(component._allFilters.length).to.equal(0);
+				expect(component._hasSearchResults).to.be.false;
+				expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.be.null;
+				done();
+			});
 		});
 
-		it('should not show the No Results message when there are search results', function() {
-			component.fire('d2l-search-widget-results-changed', {
-				searchResponse: {
-					entities: [organization]
-				}
+		it('should not show the No Results message when there are search results', function(done) {
+			requestAnimationFrame(function() {
+				component.fire('d2l-search-widget-results-changed', {
+					searchResponse: {
+						entities: [organization]
+					}
+				});
+
+				expect(component._allFilters.length).to.equal(1);
+				expect(component._hasSearchResults).to.be.true;
+				expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.not.be.null;
+				done();
 			});
 
-			expect(component._allFilters.length).to.equal(1);
-			expect(component._hasSearchResults).to.be.true;
-			expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.not.be.null;
 		});
 	});
 

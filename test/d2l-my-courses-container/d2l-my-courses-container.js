@@ -209,7 +209,7 @@ describe('d2l-my-courses', () => {
 		});
 	});
 
-	it('should have updated currentTabId proprety based on thge event', () => {
+	it('should have updated currentTabId property based on the event', () => {
 		component.currentTabId = null;
 		var event = {
 			detail: {
