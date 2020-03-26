@@ -1,10 +1,6 @@
 /*
-`d2l-all-courses-unified-content`
+`d2l-all-courses-content`
 Polymer-based web component for the all courses content.
-
-This is only used if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is on
-(meaning the `updated-sort-logic` attribute was added to the `d2l-my-courses` component).
-
 */
 
 import '@polymer/polymer/polymer-legacy.js';
@@ -12,16 +8,21 @@ import '@polymer/polymer/polymer-legacy.js';
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import './d2l-card-grid-behavior.js';
 import './d2l-card-grid-styles.js';
-import '../d2l-all-courses-styles.js';
 import '../localize-behavior.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-unified-content">
+$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-content">
 	<template strip-whitespace="">
-		<style include="d2l-all-courses-styles"></style>
-		<style include="d2l-card-grid-styles"></style>
+		<style include="d2l-card-grid-styles">
+			:host {
+				display: block;
+			}
+			.bottom-pad {
+				padding-bottom: 20px;
+			}
+		</style>
 
 		<span class="bottom-pad" hidden$="[[!_noCoursesInSearch]]">
 			[[localize('noCoursesInSearch')]]
@@ -62,7 +63,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-unified-content
 
 document.head.appendChild($_documentContainer.content);
 Polymer({
-	is: 'd2l-all-courses-unified-content',
+	is: 'd2l-all-courses-content',
 	properties: {
 		totalFilterCount: Number,
 		filterCounts: Object,

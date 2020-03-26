@@ -1,9 +1,6 @@
 /*
 `d2l-all-courses`
-Polymer-based web component for all courses.
-
-This is only used if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is on
-(meaning the `updated-sort-logic` attribute was added to the `d2l-my-courses` component).
+Polymer-based web component for the all courses overlay.
 
 */
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
@@ -21,12 +18,11 @@ import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import SirenParse from 'siren-parser';
 import 'd2l-tabs/d2l-tabs.js';
 import './d2l-alert-behavior.js';
-import './d2l-all-courses-styles.js';
 import './search-filter/d2l-filter-menu.js';
 import './search-filter/d2l-search-widget-custom.js';
 import './d2l-utility-behavior.js';
 import './localize-behavior.js';
-import './card-grid/d2l-all-courses-unified-content.js';
+import './card-grid/d2l-all-courses-content.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -185,7 +181,98 @@ class AllCourses extends mixinBehaviors([
 
 	static get template() {
 		return html`
-			<style include="d2l-all-courses-styles"></style>
+			<style>
+				:host {
+					display: block;
+				}
+				d2l-alert {
+					margin-bottom: 20px;
+				}
+				d2l-icon {
+					--d2l-icon-height: 15px;
+					--d2l-icon-width: 15px;
+					margin-top: -0.35rem;
+				}
+				d2l-loading-spinner {
+					margin-bottom: 30px;
+					padding-bottom: 30px;
+					margin: auto;
+					width: 100%;
+				}
+				#search-and-filter {
+					margin-bottom: 50px;
+				}
+				.search-and-filter-row {
+					display: flex;
+					justify-content: space-between;
+				}
+				.advanced-search-link {
+					font-size: 0.8rem;
+					margin-top: 3px;
+					flex: 1;
+				}
+				.advanced-search-link[hidden] {
+					display: none;
+				}
+				d2l-search-widget-custom {
+					flex: 1;
+				}
+				#filterAndSort {
+					flex: 1.4;
+					display: flex;
+					justify-content: flex-end;
+					align-items: center;
+				}
+				@media screen and (max-width: 767px) {
+					#filterAndSort {
+						display: none;
+					}
+					.advanced-search-link {
+						text-align: right;
+						margin-top: 5px;
+					}
+				}
+				.dropdown-opener-text {
+					font-size: 0.95rem;
+					font-family: Lato;
+					cursor: pointer;
+					padding: 0;
+					margin-left: 1rem;
+				}
+				.dropdown-button {
+					background: none;
+					border: none;
+					cursor: pointer;
+					padding: 0;
+					color: var(--d2l-color-ferrite);
+				}
+				.dropdown-button > d2l-icon {
+					margin-left: 4px;
+				}
+				.dropdown-content-header {
+					box-sizing: border-box;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					border-bottom: 1px solid var(--d2l-color-titanius);
+					width: 100%;
+					padding: 20px;
+				}
+				.dropdown-content-gradient {
+					background: linear-gradient(to top, white, var(--d2l-color-regolith));
+				}
+				button[aria-pressed="true"] {
+					color: var(--d2l-color-celestine);
+				}
+				button:focus > d2l-icon,
+				button:hover > d2l-icon,
+				button:focus > span,
+				button:hover > span,
+				.focus {
+					text-decoration: underline;
+					color: var(--d2l-color-celestine);
+				}
+			</style>
 
 			<d2l-simple-overlay
 				id="all-courses"
@@ -262,7 +349,7 @@ class AllCourses extends mixinBehaviors([
 							<template items="[[tabSearchActions]]" is="dom-repeat">
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
-										<d2l-all-courses-unified-content
+										<d2l-all-courses-content
 											total-filter-count="[[_totalFilterCount]]"
 											filter-counts="[[_filterCounts]]"
 											is-searched="[[_isSearched]]"
@@ -277,7 +364,7 @@ class AllCourses extends mixinBehaviors([
 											show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
 											hide-course-start-date="[[hideCourseStartDate]]"
 											hide-course-end-date="[[hideCourseEndDate]]">
-										</d2l-all-courses-unified-content>
+										</d2l-all-courses-content>
 									</div>
 									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
 									</d2l-loading-spinner>
@@ -286,7 +373,7 @@ class AllCourses extends mixinBehaviors([
 						</d2l-tabs>
 					</template>
 					<template is="dom-if" if="[[!_showGroupByTabs]]">
-						<d2l-all-courses-unified-content
+						<d2l-all-courses-content
 							total-filter-count="[[_totalFilterCount]]"
 							filter-counts="[[_filterCounts]]"
 							is-searched="[[_isSearched]]"
@@ -301,7 +388,7 @@ class AllCourses extends mixinBehaviors([
 							show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
 							hide-course-start-date="[[hideCourseStartDate]]"
 							hide-course-end-date="[[hideCourseEndDate]]">
-						</d2l-all-courses-unified-content>
+						</d2l-all-courses-content>
 					</template>
 					<d2l-loading-spinner id="lazyLoadSpinner" hidden$="[[!_hasMoreEnrollments]]" size="100">
 					</d2l-loading-spinner>
@@ -701,30 +788,30 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_updateFilteredEnrollments(enrollments, append) {
-		var gridEntities, unifiedContent;
+		var gridEntities, content;
 		if (!enrollments._entity) {
 			var enrollmentEntities = enrollments.getSubEntitiesByClass(Classes.enrollments.enrollment);
 			gridEntities = enrollmentEntities.map(function(value) {
 				return value.href;
 			}.bind(this));
-			unifiedContent = this._showGroupByTabs
-				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-unified-content')
-				: this.$$('d2l-all-courses-unified-content');
+			content = this._showGroupByTabs
+				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-content')
+				: this.$$('d2l-all-courses-content');
 			if (append) {
-				unifiedContent.filteredEnrollments = unifiedContent.filteredEnrollments.concat(gridEntities);
+				content.filteredEnrollments = content.filteredEnrollments.concat(gridEntities);
 			} else {
-				unifiedContent.filteredEnrollments = gridEntities;
+				content.filteredEnrollments = gridEntities;
 			}
 		}
 		else {
 			gridEntities = enrollments.enrollmentsHref();
-			unifiedContent = this._showGroupByTabs
-				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-unified-content')
-				: this.$$('d2l-all-courses-unified-content');
+			content = this._showGroupByTabs
+				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-content')
+				: this.$$('d2l-all-courses-content');
 			if (append) {
-				unifiedContent.filteredEnrollments = unifiedContent.filteredEnrollments.concat(gridEntities);
+				content.filteredEnrollments = content.filteredEnrollments.concat(gridEntities);
 			} else {
-				unifiedContent.filteredEnrollments = gridEntities;
+				content.filteredEnrollments = gridEntities;
 			}
 		}
 

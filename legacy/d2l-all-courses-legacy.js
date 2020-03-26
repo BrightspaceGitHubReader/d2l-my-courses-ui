@@ -3,7 +3,7 @@
 Polymer-based web component for all courses.
 
 TODO: This component is only rendered if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is off, meaning `updated-sort-logic` is false.
-We can do a lot of cleanup here around `d2l-all-courses-unified-content` (no longer needed).  Only the `d2l-all-courses-segregated-content` component is rendered.
+We can do a lot of cleanup here around `d2l-all-courses-content` (no longer needed).  Only the `d2l-all-courses-segregated-content` component is rendered.
 
 */
 import '@polymer/polymer/polymer-legacy.js';
@@ -31,7 +31,7 @@ import './search-filter/d2l-search-widget-custom-legacy.js';
 import './d2l-utility-behavior-legacy.js';
 import './localize-behavior-legacy.js';
 import './tile-grid/d2l-all-courses-segregated-content.js';
-import '../src/card-grid/d2l-all-courses-unified-content.js'; // TODO: remove this dependency, since updated-sort-logic will always be false
+import '../src/card-grid/d2l-all-courses-content.js'; // TODO: remove this dependency, since updated-sort-logic will always be false
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 const $_documentContainer = document.createElement('template');
@@ -116,7 +116,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
 							<template items="[[tabSearchActions]]" is="dom-repeat">
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
-										<d2l-all-courses-unified-content
+										<d2l-all-courses-content
 											total-filter-count="[[_totalFilterCount]]"
 											filter-counts="[[_filterCounts]]"
 											is-searched="[[_isSearched]]"
@@ -131,7 +131,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
 											show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
 											hide-course-start-date="[[hideCourseStartDate]]"
 											hide-course-end-date="[[hideCourseEndDate]]">
-										</d2l-all-courses-unified-content>
+										</d2l-all-courses-content>
 									</div>
 									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
 									</d2l-loading-spinner>
@@ -140,7 +140,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
 						</d2l-tabs>
 					</template>
 					<template is="dom-if" if="[[!_showGroupByTabs]]">
-						<d2l-all-courses-unified-content
+						<d2l-all-courses-content
 							total-filter-count="[[_totalFilterCount]]"
 							filter-counts="[[_filterCounts]]"
 							is-searched="[[_isSearched]]"
@@ -155,7 +155,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
 							show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
 							hide-course-start-date="[[hideCourseStartDate]]"
 							hide-course-end-date="[[hideCourseEndDate]]">
-						</d2l-all-courses-unified-content>
+						</d2l-all-courses-content>
 					</template>
 				</template>
 				<template is="dom-if" if="[[!updatedSortLogic]]">
@@ -759,8 +759,8 @@ Polymer({
 				return value.href;
 			}.bind(this));
 			var unifiedContent = this._showGroupByTabs
-				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-unified-content')
-				: this.$$('d2l-all-courses-unified-content');
+				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-content')
+				: this.$$('d2l-all-courses-content');
 			if (append) {
 				unifiedContent.filteredEnrollments = unifiedContent.filteredEnrollments.concat(gridEntities);
 			} else {

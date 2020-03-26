@@ -1,9 +1,9 @@
-describe('d2l-all-courses-unified-content', function() {
+describe('d2l-all-courses-content', function() {
 	var widget, sandbox;
 
 	beforeEach(function(done) {
 		sandbox = sinon.sandbox.create();
-		widget = fixture('d2l-all-courses-unified-content-fixture');
+		widget = fixture('d2l-all-courses-content-fixture');
 
 		setTimeout(function() {
 			done();
