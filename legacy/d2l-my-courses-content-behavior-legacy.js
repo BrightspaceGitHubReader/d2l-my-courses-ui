@@ -29,45 +29,6 @@ D2L.MyCourses.MyCoursesContentBehaviorLegacyImpl = {
 		tabSearchType: String,
 		updateUserSettingsAction: Object,
 		changedCourseEnrollment: Object,
-		/*
-		* Presentation Attributes
-		*/
-		_showOrganizationCode: {
-			type: Boolean,
-			value: false
-		},
-		_showSemesterName: {
-			type: Boolean,
-			value: false
-		},
-		_hideCourseStartDate: {
-			type: Boolean,
-			value: false
-		},
-		_hideCourseEndDate: {
-			type: Boolean,
-			value: false
-		},
-		_showDropboxUnreadFeedback: {
-			type: Boolean,
-			value: false
-		},
-		_showUnattemptedQuizzes: {
-			type: Boolean,
-			value: false
-		},
-		_showUngradedQuizAttempts: {
-			type: Boolean,
-			value: false
-		},
-		_showUnreadDiscussionMessages: {
-			type: Boolean,
-			value: false
-		},
-		_showUnreadDropboxSubmissions: {
-			type: Boolean,
-			value: false
-		},
 
 		// Alerts to display in widget, above course tiles
 		_alertsView: {
@@ -634,38 +595,6 @@ D2L.MyCourses.MyCoursesContentBehaviorLegacyImpl = {
 		}
 
 		return enrollmentsLength > 0 ? viewAllCourses + ' (' + count + ')' : viewAllCourses;
-	},
-	_openAllCoursesView: function(e) {
-		this._createAllCourses();
-
-		var allCourses = this.$$('d2l-all-courses-legacy');
-
-		allCourses.enrollmentsSearchAction = this.enrollmentsSearchAction;
-		allCourses.tabSearchActions = this.tabSearchActions;
-		allCourses.tabSearchType = this.tabSearchType;
-		allCourses.locale = this.locale;
-		allCourses.advancedSearchUrl = this.advancedSearchUrl;
-		allCourses.filterStandardSemesterName = this.standardSemesterName;
-		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
-		allCourses.orgUnitTypeIds = this.orgUnitTypeIds;
-		allCourses.updatedSortLogic = true;
-		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
-
-		allCourses.token = this.token;
-		allCourses.hideCourseStartDate = this._hideCourseStartDate;
-		allCourses.hideCourseEndDate = this._hideCourseEndDate;
-		allCourses.showOrganizationCode = this._showOrganizationCode;
-		allCourses.showSemesterName = this._showSemesterName;
-		allCourses.showDropboxUnreadFeedback = this._showDropboxUnreadFeedback;
-		allCourses.showUnattemptedQuizzes = this._showUnattemptedQuizzes;
-		allCourses.showUngradedQuizAttempts = this._showUngradedQuizAttempts;
-		allCourses.showUnreadDiscussionMessages = this._showUnreadDiscussionMessages;
-		allCourses.showUnreadDropboxSubmissions = this._showUnreadDropboxSubmissions;
-
-		allCourses.open();
-
-		e.preventDefault();
-		e.stopPropagation();
 	},
 	_populateEnrollments: function(enrollmentsEntity) {
 		enrollmentsEntity = enrollmentsEntity && enrollmentsEntity.entity;
