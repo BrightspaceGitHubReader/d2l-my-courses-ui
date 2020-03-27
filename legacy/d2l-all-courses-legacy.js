@@ -30,7 +30,6 @@ import './d2l-utility-behavior-legacy.js';
 import './localize-behavior-legacy.js';
 import './tile-grid/d2l-all-courses-segregated-content.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
