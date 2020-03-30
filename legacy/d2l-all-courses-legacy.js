@@ -2,9 +2,8 @@
 `d2l-all-courses-legacy`
 Polymer-based web component for all courses.
 
-TODO: This component is only rendered if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is off, meaning `updated-sort-logic` is false.
-We can do a lot of cleanup here around `d2l-all-courses-content` (no longer needed).  Only the `d2l-all-courses-segregated-content` component is rendered.
-
+This component is only rendered if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config variable is off, meaning `updated-sort-logic` is false.
+TODO: There is still lots of cleanup here to remove UpdatedSortLogic ON logic from this file, but plan is to remove this whole legacy code path instead.
 */
 import '@polymer/polymer/polymer-legacy.js';
 
@@ -23,7 +22,6 @@ import 'd2l-menu/d2l-menu-item-radio.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import SirenParse from 'siren-parser';
-import 'd2l-tabs/d2l-tabs.js';
 import './d2l-alert-behavior-legacy.js';
 import './d2l-all-courses-styles-legacy.js';
 import './search-filter/d2l-filter-menu-legacy.js';
@@ -31,9 +29,7 @@ import './search-filter/d2l-search-widget-custom-legacy.js';
 import './d2l-utility-behavior-legacy.js';
 import './localize-behavior-legacy.js';
 import './tile-grid/d2l-all-courses-segregated-content.js';
-import '../src/card-grid/d2l-all-courses-content.js'; // TODO: remove this dependency, since updated-sort-logic will always be false
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
@@ -109,67 +105,16 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-legacy">
 						[[item.alertMessage]]
 					</d2l-alert>
 				</template>
-
-				<template is="dom-if" if="[[updatedSortLogic]]">
-					<template is="dom-if" if="[[_showGroupByTabs]]">
-						<d2l-tabs>
-							<template items="[[tabSearchActions]]" is="dom-repeat">
-								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
-									<div hidden$="[[!_showTabContent]]">
-										<d2l-all-courses-content
-											total-filter-count="[[_totalFilterCount]]"
-											filter-counts="[[_filterCounts]]"
-											is-searched="[[_isSearched]]"
-											token="[[token]]"
-											org-unit-type-ids="[[orgUnitTypeIds]]"
-											show-organization-code="[[showOrganizationCode]]"
-											show-semester-name="[[showSemesterName]]"
-											show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
-											show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
-											show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
-											show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
-											show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
-											hide-course-start-date="[[hideCourseStartDate]]"
-											hide-course-end-date="[[hideCourseEndDate]]">
-										</d2l-all-courses-content>
-									</div>
-									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
-									</d2l-loading-spinner>
-								</d2l-tab-panel>
-							</template>
-						</d2l-tabs>
-					</template>
-					<template is="dom-if" if="[[!_showGroupByTabs]]">
-						<d2l-all-courses-content
-							total-filter-count="[[_totalFilterCount]]"
-							filter-counts="[[_filterCounts]]"
-							is-searched="[[_isSearched]]"
-							token="[[token]]"
-							org-unit-type-ids="[[orgUnitTypeIds]]"
-							show-organization-code="[[showOrganizationCode]]"
-							show-semester-name="[[showSemesterName]]"
-							show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
-							show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
-							show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
-							show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
-							show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
-							hide-course-start-date="[[hideCourseStartDate]]"
-							hide-course-end-date="[[hideCourseEndDate]]">
-						</d2l-all-courses-content>
-					</template>
-				</template>
-				<template is="dom-if" if="[[!updatedSortLogic]]">
-					<d2l-all-courses-segregated-content
-						show-course-code="[[showCourseCode]]"
-						show-semester="[[showSemester]]"
-						course-updates-config="[[courseUpdatesConfig]]"
-						total-filter-count="[[_totalFilterCount]]"
-						filter-counts="[[_filterCounts]]"
-						is-searched="[[_isSearched]]"
-						filtered-pinned-enrollments="[[_filteredPinnedEnrollments]]"
-						filtered-unpinned-enrollments="[[_filteredUnpinnedEnrollments]]">
-					</d2l-all-courses-segregated-content>
-				</template>
+				<d2l-all-courses-segregated-content
+					show-course-code="[[showCourseCode]]"
+					show-semester="[[showSemester]]"
+					course-updates-config="[[courseUpdatesConfig]]"
+					total-filter-count="[[_totalFilterCount]]"
+					filter-counts="[[_filterCounts]]"
+					is-searched="[[_isSearched]]"
+					filtered-pinned-enrollments="[[_filteredPinnedEnrollments]]"
+					filtered-unpinned-enrollments="[[_filteredUnpinnedEnrollments]]">
+				</d2l-all-courses-segregated-content>
 				<d2l-loading-spinner id="lazyLoadSpinner" hidden$="[[!_hasMoreEnrollments]]" size="100">
 				</d2l-loading-spinner>
 			</div>
@@ -184,45 +129,6 @@ document.head.appendChild($_documentContainer.content);
 Polymer({
 	is: 'd2l-all-courses-legacy',
 	properties: {
-		/*
-		* Public Polymer properties
-		*/
-		showOrganizationCode: {
-			type: Boolean,
-			value: false
-		},
-		showSemesterName: {
-			type: Boolean,
-			value: false
-		},
-		hideCourseStartDate: {
-			type: Boolean,
-			value: false
-		},
-		hideCourseEndDate: {
-			type: Boolean,
-			value: false
-		},
-		showDropboxUnreadFeedback: {
-			type: Boolean,
-			value: false
-		},
-		showUnattemptedQuizzes: {
-			type: Boolean,
-			value: false
-		},
-		showUngradedQuizAttempts: {
-			type: Boolean,
-			value: false
-		},
-		showUnreadDiscussionMessages: {
-			type: Boolean,
-			value: false
-		},
-		showUnreadDropboxSubmissions: {
-			type: Boolean,
-			value: false
-		},
 		// URL that directs to the advanced search page
 		advancedSearchUrl: String,
 		// Types of notifications to include in update count in course tile
@@ -351,7 +257,6 @@ Polymer({
 	],
 	listeners: {
 		'd2l-simple-overlay-opening': '_onSimpleOverlayOpening',
-		'd2l-tab-panel-selected': '_onTabSelected',
 		'd2l-course-pinned-change': '_onEnrollmentPinned'
 	},
 	observers: [
@@ -555,41 +460,6 @@ Polymer({
 			this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
 		}
 	},
-	_onTabSelected: function(e) {
-		this._selectedTabId = dom(e).rootTarget.id;
-		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
-		var tabAction;
-		for (var i = 0; i < this.tabSearchActions.length; i++) {
-			if (this.tabSearchActions[i].name === actionName) {
-				tabAction = this.tabSearchActions[i];
-				break;
-			}
-		}
-		var search = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('search') ?
-			this._enrollmentsSearchAction.getFieldByName('search').value : '';
-		if (!tabAction) {
-			return;
-		}
-
-		this._showTabContent = false;
-		var params = {
-			search: search,
-			orgUnitTypeId: this.orgUnitTypeIds,
-			autoPinCourses: false,
-			sort: this._sortParameter || (this.updatedSortLogic ? 'Current' : '-PinDate,OrgUnitName,OrgUnitId'),
-			embedDepth: 0
-		};
-		if ((this._filterCounts.departments > 0 || this._filterCounts.semesters > 0) && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('parentOrganizations')) {
-			params.parentOrganizations =  this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value;
-		}
-		if (this._filterCounts.roles > 0 && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('roles')) {
-			params.roles =  this._enrollmentsSearchAction.getFieldByName('roles').value;
-		}
-
-		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			this.createActionUrl(tabAction.enrollmentsSearchAction, params)
-		);
-	},
 	_onEnrollmentPinned: function(e) {
 		if (this._showGroupByTabs) {
 			this._bustCacheToken = Math.random();
@@ -754,44 +624,30 @@ Polymer({
 	_updateFilteredEnrollments: function(enrollments, append) {
 		var enrollmentEntities = enrollments.getSubEntitiesByClass(Classes.enrollments.enrollment);
 
-		if (this.updatedSortLogic) {
-			var gridEntities = enrollmentEntities.map(function(value) {
-				return value.href;
-			}.bind(this));
-			var unifiedContent = this._showGroupByTabs
-				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-content')
-				: this.$$('d2l-all-courses-content');
-			if (append) {
-				unifiedContent.filteredEnrollments = unifiedContent.filteredEnrollments.concat(gridEntities);
-			} else {
-				unifiedContent.filteredEnrollments = gridEntities;
-			}
-		} else {
-			var newPinnedEnrollments = [];
-			var newUnpinnedEnrollments = [];
-			enrollmentEntities.forEach(function(enrollment) {
-				var enrollmentId = this.getEntityIdentifier(enrollment);
+		var newPinnedEnrollments = [];
+		var newUnpinnedEnrollments = [];
+		enrollmentEntities.forEach(function(enrollment) {
+			var enrollmentId = this.getEntityIdentifier(enrollment);
 
-				if (enrollment.hasClass(Classes.enrollments.pinned)) {
-					if (!this._pinnedCoursesMap.hasOwnProperty(enrollmentId)) {
-						newPinnedEnrollments.push(enrollment);
-						this._pinnedCoursesMap[enrollmentId] = true;
-					}
-				} else {
-					if (!this._unpinnedCoursesMap.hasOwnProperty(enrollmentId)) {
-						newUnpinnedEnrollments.push(enrollment);
-						this._unpinnedCoursesMap[enrollmentId] = true;
-					}
+			if (enrollment.hasClass(Classes.enrollments.pinned)) {
+				if (!this._pinnedCoursesMap.hasOwnProperty(enrollmentId)) {
+					newPinnedEnrollments.push(enrollment);
+					this._pinnedCoursesMap[enrollmentId] = true;
 				}
-			}, this);
-
-			if (append) {
-				this._filteredPinnedEnrollments = this._filteredPinnedEnrollments.concat(newPinnedEnrollments);
-				this._filteredUnpinnedEnrollments = this._filteredUnpinnedEnrollments.concat(newUnpinnedEnrollments);
 			} else {
-				this._filteredPinnedEnrollments = newPinnedEnrollments;
-				this._filteredUnpinnedEnrollments = newUnpinnedEnrollments;
+				if (!this._unpinnedCoursesMap.hasOwnProperty(enrollmentId)) {
+					newUnpinnedEnrollments.push(enrollment);
+					this._unpinnedCoursesMap[enrollmentId] = true;
+				}
 			}
+		}, this);
+
+		if (append) {
+			this._filteredPinnedEnrollments = this._filteredPinnedEnrollments.concat(newPinnedEnrollments);
+			this._filteredUnpinnedEnrollments = this._filteredUnpinnedEnrollments.concat(newUnpinnedEnrollments);
+		} else {
+			this._filteredPinnedEnrollments = newPinnedEnrollments;
+			this._filteredUnpinnedEnrollments = newUnpinnedEnrollments;
 		}
 
 		this.lastEnrollmentsSearchResponse = enrollments;

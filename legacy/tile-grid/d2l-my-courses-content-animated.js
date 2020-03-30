@@ -228,7 +228,6 @@ Polymer({
 		}
 	},
 
-	// Override for MyCoursesContentBehaviorLegacy._openAllCoursesView
 	_openAllCoursesView: function(e) {
 		this._createAllCourses();
 
