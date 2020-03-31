@@ -20,11 +20,8 @@ import { PromotedSearchEntity } from 'siren-sdk/src/promotedSearch/PromotedSearc
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 
-import 'd2l-polymer-siren-behaviors/store/entity-behavior.js'; // do we still need this????
-
 class MyCoursesContainer extends mixinBehaviors([
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-	D2L.PolymerBehaviors.Siren.EntityBehavior, // do we still need this????
 	D2L.MyCourses.UtilityBehavior
 ], EntityMixin(PolymerElement)) {
 
