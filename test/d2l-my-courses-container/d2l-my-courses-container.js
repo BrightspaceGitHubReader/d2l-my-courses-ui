@@ -184,15 +184,15 @@ describe('d2l-my-courses', () => {
 		});
 	});
 
-	it('should have updated currentTabId property based on the event', () => {
-		component.currentTabId = null;
+	it('should have updated _currentTabId property based on the event', () => {
+		component._currentTabId = null;
 		var event = {
 			detail: {
 				tabId: 1254
 			}
 		};
 		component._tabSelectedChanged(event);
-		expect(component.currentTabId).to.equal(`panel-${event.detail.tabId}`);
+		expect(component._currentTabId).to.equal(`panel-${event.detail.tabId}`);
 	});
 
 	describe('Public API', () => {
@@ -222,7 +222,7 @@ describe('d2l-my-courses', () => {
 			component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
 			component._onPromotedSearchEntityChange();
 			component.updatedSortLogic = true;
-			component.currentTabId = '6607';
+			component._currentTabId = '6607';
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
@@ -235,7 +235,7 @@ describe('d2l-my-courses', () => {
 			component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
 			component._onPromotedSearchEntityChange();
 			component.updatedSortLogic = true;
-			component.currentTabId = '6607';
+			component._currentTabId = '6607';
 			flush(() => {
 				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
