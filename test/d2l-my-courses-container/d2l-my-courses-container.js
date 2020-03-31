@@ -123,11 +123,6 @@ describe('d2l-my-courses', () => {
 		sandbox.restore();
 	});
 
-	it('should properly implement the d2l-my-courses-behavior', () => {
-		expect(component.courseImageUploadCompleted).to.be.a('function');
-		expect(component.getLastOrgUnitId).to.be.a('function');
-	});
-
 	it('should hide the only saved search action', () => {
 		component._onPromotedSearchEntityChange();
 		expect(component._tabSearchActions.length).to.equal(0);
@@ -168,26 +163,6 @@ describe('d2l-my-courses', () => {
 		component._onPromotedSearchEntityChange();
 		expect(component._tabSearchActions.length).to.equal(4);
 		expect(component._tabSearchActions[2].selected).to.be.true;
-	});
-
-	describe('Listener setup', () => {
-		[
-			{ eventName: 'd2l-course-enrollment-change', handler: '_onCourseEnrollmentChange' },
-			{ eventName: 'd2l-tab-changed', handler: '_tabSelectedChanged' },
-		].forEach(testCase => {
-
-			it('should listen for ' + testCase.eventName + ' events', done => {
-				var stub = sandbox.stub(component, testCase.handler);
-
-				var event = new CustomEvent(testCase.eventName);
-				component.dispatchEvent(event);
-
-				setTimeout(() => {
-					expect(stub).to.have.been.called;
-					done();
-				});
-			});
-		});
 	});
 
 	it('should have updated _changedCourseEnrollment property based on the event', () => {

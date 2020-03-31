@@ -189,10 +189,6 @@ describe('d2l-my-courses-content', () => {
 		sandbox.restore();
 	});
 
-	it('should properly implement d2l-my-courses-behavior', () => {
-		expect(component.getLastOrgUnitId).to.be.a('function');
-	});
-
 	it('should properly implement d2l-my-courses-content-behavior', () => {
 		expect(component).to.exist;
 		expect(component._alertsView).to.be.an.instanceof(Array);
@@ -201,6 +197,7 @@ describe('d2l-my-courses-content', () => {
 		expect(component._orgUnitIdMap).to.be.an('object');
 		expect(component._setImageOrg).to.be.an('object');
 		expect(component._showContent).to.exist;
+		expect(component.getLastOrgUnitId).to.be.a('function');
 	});
 
 	it('should reset enrollments related properties', () => {
