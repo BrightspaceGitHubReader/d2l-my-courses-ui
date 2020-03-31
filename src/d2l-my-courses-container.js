@@ -66,7 +66,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			_updateUserSettingsAction: Object,
 			_enrollmentCollectionEntity: Object,
 			_userSettingsEntity: Object,
-			_promotedSearch: Object,
+			_promotedSearchEntity: Object,
 			// Hides loading spinner and shows tabs when true
 			_showContent: {
 				type: Boolean,
