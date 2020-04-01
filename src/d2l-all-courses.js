@@ -24,9 +24,8 @@ import './d2l-utility-behavior.js';
 import './localize-behavior.js';
 import './card-grid/d2l-all-courses-content.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { EntityMixin } from 'siren-sdk/src/mixin/entity-mixin.js';
+import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 
 /**
@@ -39,7 +38,7 @@ class AllCourses extends mixinBehaviors([
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 	D2L.MyCourses.AlertBehavior,
 	D2L.MyCourses.UtilityBehavior
-], EntityMixin(PolymerElement)) {
+], PolymerElement) {
 
 	static get is() { return 'd2l-all-courses'; }
 
@@ -122,8 +121,6 @@ class AllCourses extends mixinBehaviors([
 
 			// search-my-enrollments Action
 			_enrollmentsSearchAction: Object,
-			// URL constructed to fetch a user's enrollments with the enrollments search Action
-			_enrollmentsSearchUrl: String,
 			// Filter dropdown opener text
 			_filterText: String,
 			// True when there are any filtered enrollments (pinned or unpinned)
@@ -171,12 +168,6 @@ class AllCourses extends mixinBehaviors([
 			_bustCacheToken: Number,
 			_selectedTabId: String
 		};
-	}
-
-	static get observers() {
-		return [
-			'_onEnrollmentCollectionEntityChange(_entity)'
-		];
 	}
 
 	static get template() {
@@ -398,11 +389,6 @@ class AllCourses extends mixinBehaviors([
 			</d2l-simple-overlay>`;
 	}
 
-	constructor() {
-		super();
-		this._setEntityType(EnrollmentCollectionEntity);
-	}
-
 	attached() {
 		this.addEventListener('d2l-simple-overlay-opening', this._onSimpleOverlayOpening);
 		this.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
@@ -480,16 +466,24 @@ class AllCourses extends mixinBehaviors([
 			var lastResponseEntity = this.lastEnrollmentsSearchResponse;
 			if (!lastResponseEntity._entity) {
 				if (lastResponseEntity && lastResponseEntity.hasLinkByRel('next')) {
-					this._enrollmentsSearchUrl = lastResponseEntity.getLinkByRel('next').href;
+					const url = lastResponseEntity.getLinkByRel('next').href;
 					this.$.lazyLoadSpinner.scrollIntoView();
-					this.href = this._enrollmentsSearchUrl;
+					entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
+						if (entity) {
+							this._updateFilteredEnrollments(entity, true);
+						}
+					});
 				}
 			}
 			else {
 				if (lastResponseEntity && lastResponseEntity._entity.hasLinkByRel('next')) {
-					this._enrollmentsSearchUrl = lastResponseEntity._entity.getLinkByRel('next').href;
+					const url = lastResponseEntity._entity.getLinkByRel('next').href;
 					this.$.lazyLoadSpinner.scrollIntoView();
-					this.href = this._enrollmentsSearchUrl;
+					entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
+						if (entity) {
+							this._updateFilteredEnrollments(entity, true);
+						}
+					});
 				}
 			}
 		}
@@ -597,7 +591,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onTabSelected(e) {
-		this._selectedTabId = dom(e).rootTarget.id;
+		this._selectedTabId = e.composedPath()[0].id;
 		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
 		var tabAction;
 		for (var i = 0; i < this.tabSearchActions.length; i++) {
@@ -663,13 +657,6 @@ class AllCourses extends mixinBehaviors([
 	/*
 	* Observers
 	*/
-
-	_onEnrollmentCollectionEntityChange(entity) {
-		if (!entity) {
-			return Promise.resolve();
-		}
-		return this._updateFilteredEnrollments(entity, true);
-	}
 
 	_myEnrollmentsEntityChanged(entity) {
 		var myEnrollmentsEntity = SirenParse(entity);
