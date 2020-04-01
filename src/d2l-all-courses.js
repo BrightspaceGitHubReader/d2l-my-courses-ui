@@ -109,6 +109,10 @@ class AllCourses extends mixinBehaviors([
 				type: Boolean,
 				value: false
 			},
+			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
+			token: String,
+			// Initial search action, should combine with _enrollmentsSearchAction
+			enrollmentsSearchAction: Object,
 
 			/*
 			* Private Polymer properties
