@@ -131,7 +131,8 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>`;
 	}
 
-	attached() {
+	connectedCallback() {
+		super.connectedCallback();
 		afterNextRender(this, () => {
 			this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
 			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
