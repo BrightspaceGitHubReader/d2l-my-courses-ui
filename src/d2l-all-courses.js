@@ -1,8 +1,8 @@
 /*
 `d2l-all-courses`
 Polymer-based web component for the all courses overlay.
-
 */
+
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import 'd2l-alert/d2l-alert.js';
 import 'd2l-dropdown/d2l-dropdown.js';
@@ -27,11 +27,6 @@ import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/Enrollment
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
-
-/**
- * @customElement
- * @polymer
- */
 
 class AllCourses extends mixinBehaviors([
 	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -86,7 +81,7 @@ class AllCourses extends mixinBehaviors([
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
 			// Default option in Sort menu
-			defaultSortValue: {
+			_defaultSortValue: {
 				type: String,
 				value: 'Default'
 			},
@@ -95,9 +90,9 @@ class AllCourses extends mixinBehaviors([
 			// Standard Semester OU Type name to be displayed in the filter dropdown
 			filterStandardSemesterName: String,
 			// Object containing the last response from an enrollments search request
-			lastEnrollmentsSearchResponse: Object,
+			_lastEnrollmentsSearchResponse: Object,
 			// Entity returned from my-enrollments Link from the enrollments root
-			myEnrollmentsEntity: {
+			_myEnrollmentsEntity: {
 				type: Object,
 				value: function() { return {}; },
 				observer: '_myEnrollmentsEntityChanged'
@@ -123,12 +118,10 @@ class AllCourses extends mixinBehaviors([
 			_enrollmentsSearchAction: Object,
 			// Filter dropdown opener text
 			_filterText: String,
-			// True when there are any filtered enrollments (pinned or unpinned)
-			_hasFilteredEnrollments: Boolean,
 			// True when there are more enrollments to fetch (i.e. current page of enrollments has a `next` link)
 			_hasMoreEnrollments: {
 				type: Boolean,
-				computed: '_computeHasMoreEnrollments(lastEnrollmentsSearchResponse, _showTabContent)'
+				computed: '_computeHasMoreEnrollments(_lastEnrollmentsSearchResponse, _showTabContent)'
 			},
 			// URL passed to search widget, called for searching
 			_searchUrl: String,
@@ -296,7 +289,7 @@ class AllCourses extends mixinBehaviors([
 											id="filterMenu"
 											tab-search-type="[[tabSearchType]]"
 											org-unit-type-ids="[[orgUnitTypeIds]]"
-											my-enrollments-entity="[[myEnrollmentsEntity]]"
+											my-enrollments-entity="[[_myEnrollmentsEntity]]"
 											filter-standard-semester-name="[[filterStandardSemesterName]]"
 											filter-standard-department-name="[[filterStandardDepartmentName]]">
 										</d2l-filter-menu>
@@ -462,8 +455,8 @@ class AllCourses extends mixinBehaviors([
 	*/
 
 	_onAllCoursesLowerThreshold() {
-		if (this.$['all-courses'].opened && this.lastEnrollmentsSearchResponse) {
-			var lastResponseEntity = this.lastEnrollmentsSearchResponse;
+		if (this.$['all-courses'].opened && this._lastEnrollmentsSearchResponse) {
+			var lastResponseEntity = this._lastEnrollmentsSearchResponse;
 			if (!lastResponseEntity._entity) {
 				if (lastResponseEntity && lastResponseEntity.hasLinkByRel('next')) {
 					const url = lastResponseEntity.getLinkByRel('next').href;
@@ -566,7 +559,7 @@ class AllCourses extends mixinBehaviors([
 	_onSearchResultsChanged(e) {
 		this._isSearched = !!e.detail.searchValue;
 		this._updateFilteredEnrollments(e.detail.searchResponse, false);
-		this.myEnrollmentsEntity = e.detail.searchResponse;
+		this._myEnrollmentsEntity = e.detail.searchResponse;
 		this.fire('recalculate-columns');
 
 		this._showContent = true;
@@ -707,7 +700,7 @@ class AllCourses extends mixinBehaviors([
 				this._sortParameter = sortParameter;
 			} else {
 				this.$.sortText.textContent = this.localize('sorting.sortDefault');
-				this._selectSortOption(this.defaultSortValue);
+				this._selectSortOption(this._defaultSortValue);
 			}
 		}
 	}
@@ -757,7 +750,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_resetSortDropdown() {
-		this._selectSortOption(this.defaultSortValue);
+		this._selectSortOption(this._defaultSortValue);
 
 		var content = this.$.sortDropdown.__getContentElement();
 		if (content) {
@@ -802,7 +795,7 @@ class AllCourses extends mixinBehaviors([
 			}
 		}
 
-		this.lastEnrollmentsSearchResponse = enrollments;
+		this._lastEnrollmentsSearchResponse = enrollments;
 		requestAnimationFrame(function() {
 			window.dispatchEvent(new Event('resize')); // doing this so ie11 and older edge browser will get ms-grid style assigned
 			this.$['all-courses-scroll-threshold'].clearTriggers();
