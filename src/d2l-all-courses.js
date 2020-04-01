@@ -27,6 +27,7 @@ import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/Enrollment
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 class AllCourses extends mixinBehaviors([
 	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -386,26 +387,37 @@ class AllCourses extends mixinBehaviors([
 			</d2l-simple-overlay>`;
 	}
 
-	attached() {
-		this.addEventListener('d2l-simple-overlay-opening', this._onSimpleOverlayOpening);
-		this.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
-		this.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinned);
-		this.listen(this.$.sortDropdown, 'd2l-menu-item-change', '_onSortOrderChanged');
-		this.listen(this.$.filterDropdownContent, 'd2l-dropdown-open', '_onFilterDropdownOpen');
-		this.listen(this.$.filterDropdownContent, 'd2l-dropdown-close', '_onFilterDropdownClose');
-		this.listen(this.$.filterMenu, 'd2l-filter-menu-change', '_onFilterChanged');
-		this.listen(this.$['search-widget'], 'd2l-search-widget-results-changed', '_onSearchResultsChanged');
-		document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
+	ready() {
+		super.ready();
+		this._onSortOrderChanged = this._onSortOrderChanged.bind(this);
+		this._onFilterDropdownOpen = this._onFilterDropdownOpen.bind(this);
+		this._onFilterDropdownClose = this._onFilterDropdownClose.bind(this);
+		this._onFilterChanged = this._onFilterChanged.bind(this);
+		this._onSearchResultsChanged = this._onSearchResultsChanged.bind(this);
 	}
 
-	detached() {
-		this.unlisten(this.$.sortDropdown, 'd2l-menu-item-change', '_onSortOrderChanged');
-		this.unlisten(this.$.filterDropdownContent, 'd2l-dropdown-open', '_onFilterDropdownOpen');
-		this.unlisten(this.$.filterDropdownContent, 'd2l-dropdown-close', '_onFilterDropdownClose');
-		this.unlisten(this.$.filterMenu, 'd2l-filter-menu-change', '_onFilterChanged');
-		this.unlisten(this.$['search-widget'], 'd2l-search-widget-results-changed', '_onSearchResultsChanged');
+	connectedCallback() {
+		super.connectedCallback();
+		afterNextRender(this, () => {
+			this.addEventListener('d2l-simple-overlay-opening', this._onSimpleOverlayOpening);
+			this.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
+			this.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinned);
+
+			this.shadowRoot.querySelector('#sortDropdown').addEventListener('d2l-menu-item-change', this._onSortOrderChanged);
+			this.shadowRoot.querySelector('#filterDropdownContent').addEventListener('d2l-dropdown-open', this._onFilterDropdownOpen);
+			this.shadowRoot.querySelector('#filterDropdownContent').addEventListener('d2l-dropdown-close', this._onFilterDropdownClose);
+			this.shadowRoot.querySelector('#filterMenu').addEventListener('d2l-filter-menu-change', this._onFilterChanged);
+			this.shadowRoot.querySelector('#search-widget').addEventListener('d2l-search-widget-results-changed', this._onSearchResultsChanged);
+
+			document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
+		});
+	}
+
+	disconnectedCallback() {
+		super.disconnectedCallback();
 		document.body.removeEventListener('set-course-image', this._onSetCourseImage.bind(this));
 	}
+
 	/*
 	* Public API methods
 	*/

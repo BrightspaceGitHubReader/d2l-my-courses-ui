@@ -16,6 +16,7 @@ import { UserSettingsEntity } from 'siren-sdk/src/userSettings/UserSettingsEntit
 import { PromotedSearchEntity } from 'siren-sdk/src/promotedSearch/PromotedSearchEntity.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 class MyCoursesContainer extends mixinBehaviors([
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
@@ -130,13 +131,12 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>`;
 	}
 
-	constructor() {
-		super();
-		this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
-		this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
-	}
-
 	attached() {
+		afterNextRender(this, () => {
+			this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
+			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
+		});
+
 		if (!this.enrollmentsUrl || !this.userSettingsUrl) {
 			return;
 		}
