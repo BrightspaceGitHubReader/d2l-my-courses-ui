@@ -394,6 +394,7 @@ class AllCourses extends mixinBehaviors([
 		this._onFilterDropdownClose = this._onFilterDropdownClose.bind(this);
 		this._onFilterChanged = this._onFilterChanged.bind(this);
 		this._onSearchResultsChanged = this._onSearchResultsChanged.bind(this);
+		this._onSetCourseImage = this._onSetCourseImage.bind(this);
 	}
 
 	connectedCallback() {
@@ -409,13 +410,13 @@ class AllCourses extends mixinBehaviors([
 			this.shadowRoot.querySelector('#filterMenu').addEventListener('d2l-filter-menu-change', this._onFilterChanged);
 			this.shadowRoot.querySelector('#search-widget').addEventListener('d2l-search-widget-results-changed', this._onSearchResultsChanged);
 
-			document.body.addEventListener('set-course-image', this._onSetCourseImage.bind(this));
+			document.body.addEventListener('set-course-image', this._onSetCourseImage);
 		});
 	}
 
 	disconnectedCallback() {
 		super.disconnectedCallback();
-		document.body.removeEventListener('set-course-image', this._onSetCourseImage.bind(this));
+		document.body.removeEventListener('set-course-image', this._onSetCourseImage);
 	}
 
 	/*
