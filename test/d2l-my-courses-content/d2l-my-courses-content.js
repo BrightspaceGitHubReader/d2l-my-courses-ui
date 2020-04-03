@@ -322,31 +322,6 @@ describe('d2l-my-courses-content', () => {
 
 	});
 
-	describe('Listener setup', () => {
-		[
-			{ eventName: 'open-change-image-view', handler: '_onOpenChangeImageView' },
-			{ eventName: 'clear-image-scroll-threshold', handler: '_onClearImageScrollThreshold' },
-			{ eventName: 'd2l-simple-overlay-closed', handler: '_onSimpleOverlayClosed' },
-			{ eventName: 'course-tile-organization', handler: '_onCourseTileOrganization' },
-			{ eventName: 'course-image-loaded', handler: '_onCourseImageLoaded' },
-			{ eventName: 'initially-visible-course-tile', handler: '_onInitiallyVisibleCourseTile' },
-		].forEach(testCase => {
-
-			it('should listen for ' + testCase.eventName + ' events', done => {
-				var stub = sandbox.stub(component, testCase.handler);
-
-				var event = new CustomEvent(testCase.eventName);
-				component.dispatchEvent(event);
-
-				setTimeout(() => {
-					expect(stub).to.have.been.called;
-					done();
-				});
-			});
-
-		});
-	});
-
 	describe('Public API', () => {
 
 		it('should implement courseImageUploadCompleted', () => {
@@ -376,7 +351,7 @@ describe('d2l-my-courses-content', () => {
 				component.enrollmentsSearchAction = searchAction;
 				component._numberOfEnrollments = 1;
 				component.tabSearchActions = [];
-				sandbox.stub(component, 'performSirenAction');
+				sandbox.stub(component, '_setLastSearchName');
 			});
 
 			[true, false].forEach(hasEnrollments => {
@@ -505,6 +480,20 @@ describe('d2l-my-courses-content', () => {
 
 		});
 
+		describe('clear-image-scroll-threshold', () => {
+
+			it('should clear triggers on the image-selector-threshold', () => {
+				var threshold = component.shadowRoot.querySelector('#image-selector-threshold');
+				var spy = sandbox.spy(threshold, 'clearTriggers');
+
+				var event = new CustomEvent('clear-image-scroll-threshold');
+				component.dispatchEvent(event);
+
+				expect(spy).to.have.been.calledOnce;
+			});
+
+		});
+
 		describe('d2l-course-pinned-change', () => {
 
 			it('should refetch enrollments if the new pinned enrollment has not previously been fetched', () => {
@@ -545,6 +534,18 @@ describe('d2l-my-courses-content', () => {
 					expect(spy).to.have.been.calledWith('setCourseImageFailure');
 					done();
 				});
+			});
+
+		});
+
+		describe('course-tile-organization', () => {
+
+			it('should increase _courseTileOrganizationEventCount count', () => {
+				var event = new CustomEvent('course-tile-organization');
+				component.dispatchEvent(event);
+
+				expect(component._courseTileOrganizationEventCount).to.equal(1);
+
 			});
 
 		});
