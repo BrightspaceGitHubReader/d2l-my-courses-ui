@@ -6,24 +6,22 @@ Component for when the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config varia
 
 */
 
-import '@polymer/polymer/polymer-legacy.js';
-
 import 'd2l-tabs/d2l-tabs.js';
 import './card-grid/d2l-my-courses-content.js';
 import './d2l-utility-behavior.js';
 import './localize-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { EntityMixin } from 'siren-sdk/src/mixin/entity-mixin.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { UserSettingsEntity } from 'siren-sdk/src/userSettings/UserSettingsEntity';
 import { PromotedSearchEntity } from 'siren-sdk/src/promotedSearch/PromotedSearchEntity.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 class MyCoursesContainer extends mixinBehaviors([
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 	D2L.MyCourses.UtilityBehavior
-], EntityMixin(PolymerElement)) {
+], PolymerElement) {
 
 	static get is() { return 'd2l-my-courses-container'; }
 
@@ -47,9 +45,11 @@ class MyCoursesContainer extends mixinBehaviors([
 			promotedSearches: String,
 			// URL to fetch a user's settings (e.g. default tab to select)
 			userSettingsUrl: String,
+			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
+			token: String,
 			// URL to fetch widget settings
-			presentationUrl: String,
-			currentTabId: String,
+			_presentationUrl: String,
+			_currentTabId: String,
 			_enrollmentsSearchAction: Object,
 			_pinnedTabAction: Object,
 			_showGroupByTabs: {
@@ -65,7 +65,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			_updateUserSettingsAction: Object,
 			_enrollmentCollectionEntity: Object,
 			_userSettingsEntity: Object,
-			_promotedSearch: Object,
+			_promotedSearchEntity: Object,
 			// Hides loading spinner and shows tabs when true
 			_showContent: {
 				type: Boolean,
@@ -96,7 +96,7 @@ class MyCoursesContainer extends mixinBehaviors([
 						<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
 						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 							<d2l-my-courses-content
-								presentation-url="[[presentationUrl]]"
+								presentation-url="[[_presentationUrl]]"
 								token="[[token]]"
 								disable-entity-cache
 								advanced-search-url="[[advancedSearchUrl]]"
@@ -117,7 +117,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>
 			<template is="dom-if" if="[[!_showGroupByTabs]]">
 				<d2l-my-courses-content
-					presentation-url="[[presentationUrl]]"
+					presentation-url="[[_presentationUrl]]"
 					token="[[token]]"
 					disable-entity-cache
 					advanced-search-url="[[advancedSearchUrl]]"
@@ -131,13 +131,13 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>`;
 	}
 
-	constructor() {
-		super();
-		this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
-		this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
-	}
+	connectedCallback() {
+		super.connectedCallback();
+		afterNextRender(this, () => {
+			this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
+			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
+		});
 
-	attached() {
 		if (!this.enrollmentsUrl || !this.userSettingsUrl) {
 			return;
 		}
@@ -162,7 +162,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		}
 
 		if (userSettingsEntity.userSettingsHref()) {
-			this.presentationUrl = userSettingsEntity.userSettingsHref();
+			this._presentationUrl = userSettingsEntity.userSettingsHref();
 		}
 
 		this._updateUserSettingsAction = userSettingsEntity.userSettingsAction();
@@ -238,7 +238,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		};
 	}
 	_tabSelectedChanged(e) {
-		this.currentTabId = `panel-${e.detail.tabId}`;
+		this._currentTabId = `panel-${e.detail.tabId}`;
 	}
 	courseImageUploadCompleted(success) {
 		return this._fetchContentComponent().courseImageUploadCompleted(success);
@@ -247,9 +247,9 @@ class MyCoursesContainer extends mixinBehaviors([
 		return this._fetchContentComponent().getLastOrgUnitId();
 	}
 	_fetchContentComponent() {
-		return this._showGroupByTabs === false || !this.currentTabId
+		return this._showGroupByTabs === false || !this._currentTabId
 			? this.$$('d2l-my-courses-content')
-			: this.$$(`#${this.currentTabId} d2l-my-courses-content`);
+			: this.$$(`#${this._currentTabId} d2l-my-courses-content`);
 	}
 	_getPinTabAndAllTabActions(lastEnrollmentsSearchName) {
 		var actions = [];

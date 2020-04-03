@@ -660,7 +660,6 @@ D2L.MyCourses.MyCoursesContentBehaviorImpl = {
 		allCourses.enrollmentsSearchAction = this.enrollmentsSearchAction;
 		allCourses.tabSearchActions = this.tabSearchActions;
 		allCourses.tabSearchType = this.tabSearchType;
-		allCourses.locale = this.locale;
 		allCourses.advancedSearchUrl = this.advancedSearchUrl;
 		allCourses.filterStandardSemesterName = this.standardSemesterName;
 		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
