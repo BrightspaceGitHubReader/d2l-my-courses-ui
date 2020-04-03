@@ -8,6 +8,7 @@ import 'd2l-alert/d2l-alert.js';
 import 'd2l-dropdown/d2l-dropdown.js';
 import 'd2l-dropdown/d2l-dropdown-content.js';
 import 'd2l-dropdown/d2l-dropdown-menu.js';
+import '@brightspace-ui/core/components/colors/colors.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
 import 'd2l-icons/d2l-icons.js';
 import 'd2l-link/d2l-link.js';
@@ -243,7 +244,7 @@ class AllCourses extends mixinBehaviors([
 					display: flex;
 					align-items: center;
 					justify-content: space-between;
-					border-bottom: 1px solid var(--d2l-color-titanius);
+					border-bottom: 1px solid var(--d2l-color-mica);
 					width: 100%;
 					padding: 20px;
 				}
