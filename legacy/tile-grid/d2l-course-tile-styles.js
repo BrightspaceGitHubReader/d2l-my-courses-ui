@@ -1,4 +1,4 @@
-import 'd2l-colors/d2l-colors.js';
+import '@brightspace-ui/core/components/colors/colors.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 const $_documentContainer = document.createElement('template');
 
@@ -58,7 +58,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-course-tile-styles">
 				bottom: 0;
 				border-top-left-radius: 10px;
 				border-top-right-radius: 10px;
-				background: var(--d2l-color-pressicus);
+				background: var(--d2l-color-corundum);
 				overflow: hidden;
 				z-index: 0;
 			}

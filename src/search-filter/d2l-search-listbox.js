@@ -10,6 +10,7 @@ Polymer-based web component for the search listbox.
 */
 import '@polymer/polymer/polymer-legacy.js';
 
+import '@brightspace-ui/core/components/colors/colors.js';
 import '@polymer/iron-a11y-keys/iron-a11y-keys.js';
 import { IronMenuBehavior } from '@polymer/iron-menu-behavior/iron-menu-behavior.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
@@ -53,7 +54,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-search-listbox">
 				padding-bottom: 1rem;
 				margin: 0 !important;
 				cursor: default;
-				border-bottom-color: var(--d2l-color-titanius);
+				border-bottom-color: var(--d2l-color-mica);
 			}
 
 			::slotted([data-list-title]+div) {

@@ -1,3 +1,4 @@
+import '@brightspace-ui/core/components/colors/colors.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 const $_documentContainer = document.createElement('template');
 
@@ -80,7 +81,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-styles-legacy">
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				border-bottom: 1px solid var(--d2l-color-titanius);
+				border-bottom: 1px solid var(--d2l-color-mica);
 				width: 100%;
 				padding: 20px;
 			}

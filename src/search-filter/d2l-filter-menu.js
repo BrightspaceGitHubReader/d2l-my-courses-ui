@@ -10,7 +10,7 @@ Polymer-based web component for the filter menu.
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import 'd2l-colors/d2l-colors.js';
+import '@brightspace-ui/core/components/colors/colors.js';
 import { Actions } from 'd2l-hypermedia-constants';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import '@polymer/iron-pages/iron-pages.js';
@@ -37,7 +37,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu">
 				box-sizing: border-box;
 				display: flex;
 				justify-content: space-between;
-				border-bottom: 1px solid var(--d2l-color-titanius);
+				border-bottom: 1px solid var(--d2l-color-mica);
 				width: 100%;
 				padding: 20px;
 			}
