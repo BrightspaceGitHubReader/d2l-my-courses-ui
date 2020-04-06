@@ -6,8 +6,8 @@ Polymer-based web component for the my-courses content.
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import 'd2l-alert/d2l-alert.js';
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
-import 'd2l-loading-spinner/d2l-loading-spinner.js';
 import '@brightspace-ui/core/components/link/link.js';
+import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-image-selector/d2l-basic-image-selector.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
