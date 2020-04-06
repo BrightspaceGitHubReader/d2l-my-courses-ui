@@ -26,7 +26,7 @@ import 'd2l-icons/d2l-icons.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-menu/d2l-menu-item-link.js';
 import 'd2l-menu/d2l-menu-item.js';
-import 'd2l-offscreen/d2l-offscreen.js';
+import '@brightspace-ui/core/components/offscreen/offscreen.js';
 import { isComposedAncestor } from '@brightspace-ui/core/helpers/dom.js';
 import { IronA11yAnnouncer } from '@polymer/iron-a11y-announcer/iron-a11y-announcer.js';
 import 'intersection-observer/intersection-observer.js';
