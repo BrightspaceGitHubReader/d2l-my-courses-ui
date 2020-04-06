@@ -340,6 +340,12 @@ describe('d2l-my-courses-content', () => {
 
 	describe('Events', () => {
 
+		beforeEach((done) => {
+			requestAnimationFrame(() => {
+				done();
+			});
+		});
+
 		describe('d2l-tab-panel-selected', () => {
 			var parentComponent;
 
@@ -437,8 +443,10 @@ describe('d2l-my-courses-content', () => {
 				var spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'open');
 
 				component.addEventListener('open-change-image-view', function() {
-					expect(spy).to.have.been.called;
-					done();
+					requestAnimationFrame(() => {
+						expect(spy).to.have.been.called;
+						done();
+					});
 				});
 
 				component.dispatchEvent(event);
@@ -465,12 +473,13 @@ describe('d2l-my-courses-content', () => {
 			it('should return correct org unit id if course tile used', done => {
 
 				component.addEventListener('open-change-image-view', function() {
-					expect(component.getLastOrgUnitId()).to.equal('1');
-					done();
+					requestAnimationFrame(() => {
+						expect(component.getLastOrgUnitId()).to.equal('1');
+						done();
+					});
 				});
 
 				component.dispatchEvent(event);
-
 			});
 
 			it('should return correct org unit id from various href', () => {
@@ -482,14 +491,16 @@ describe('d2l-my-courses-content', () => {
 
 		describe('clear-image-scroll-threshold', () => {
 
-			it('should clear triggers on the image-selector-threshold', () => {
+			it('should clear triggers on the image-selector-threshold', (done) => {
 				var threshold = component.shadowRoot.querySelector('#image-selector-threshold');
 				var spy = sandbox.spy(threshold, 'clearTriggers');
 
 				var event = new CustomEvent('clear-image-scroll-threshold');
 				component.dispatchEvent(event);
-
-				expect(spy).to.have.been.calledOnce;
+				requestAnimationFrame(() => {
+					expect(spy).to.have.been.calledOnce;
+					done();
+				});
 			});
 
 		});
@@ -558,7 +569,7 @@ describe('d2l-my-courses-content', () => {
 				var event = new CustomEvent('course-image-loaded');
 				component.dispatchEvent(event);
 
-				setTimeout(() => {
+				requestAnimationFrame(() => {
 					expect(component._courseImagesLoadedEventCount).to.equal(1);
 					done();
 				});
@@ -574,7 +585,7 @@ describe('d2l-my-courses-content', () => {
 				var event = new CustomEvent('initially-visible-course-tile');
 				component.dispatchEvent(event);
 
-				setTimeout(() => {
+				requestAnimationFrame(() => {
 					expect(component._initiallyVisibleCourseTileCount).to.equal(1);
 					done();
 				});
@@ -606,21 +617,21 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should measure d2l.my-courses when all visible course tile images have loaded', done => {
-			var listener = () => {
-				component.removeEventListener('initially-visible-course-tile', listener);
-				component.dispatchEvent(new CustomEvent('course-image-loaded'));
-			};
-			component.addEventListener('initially-visible-course-tile', listener);
-
-			component.dispatchEvent(new CustomEvent('initially-visible-course-tile'));
-
-			setTimeout(() => {
+			component.addEventListener('course-image-loaded', () => {
 				expect(stub).to.have.been.calledWith(
 					'd2l.my-courses',
 					'd2l.my-courses.attached',
 					'd2l.my-courses.visible-images-complete'
 				);
 				done();
+			});
+			component.addEventListener('initially-visible-course-tile', () => {
+				requestAnimationFrame(() => {
+					component.dispatchEvent(new CustomEvent('course-image-loaded'));
+				});
+			});
+			requestAnimationFrame(() => {
+				component.dispatchEvent(new CustomEvent('initially-visible-course-tile'));
 			});
 		});
 
