@@ -7,7 +7,7 @@ Component for when the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config varia
 */
 
 import 'd2l-tabs/d2l-tabs.js';
-import './card-grid/d2l-my-courses-content.js';
+import './d2l-my-courses-content.js';
 import './d2l-utility-behavior.js';
 import './localize-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -98,7 +98,6 @@ class MyCoursesContainer extends mixinBehaviors([
 							<d2l-my-courses-content
 								presentation-url="[[_presentationUrl]]"
 								token="[[token]]"
-								disable-entity-cache
 								advanced-search-url="[[advancedSearchUrl]]"
 								course-image-upload-cb="[[courseImageUploadCb]]"
 								enrollments-search-action="[[item.enrollmentsSearchAction]]"
@@ -119,7 +118,6 @@ class MyCoursesContainer extends mixinBehaviors([
 				<d2l-my-courses-content
 					presentation-url="[[_presentationUrl]]"
 					token="[[token]]"
-					disable-entity-cache
 					advanced-search-url="[[advancedSearchUrl]]"
 					org-unit-type-ids="[[orgUnitTypeIds]]"
 					course-image-upload-cb="[[courseImageUploadCb]]"
