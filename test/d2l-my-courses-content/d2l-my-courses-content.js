@@ -616,24 +616,25 @@ describe('d2l-my-courses-content', () => {
 
 		beforeEach(() => {
 			stub = sandbox.stub(component, 'performanceMeasure');
+			flush();
 		});
 
 		it('should measure d2l.my-courses when all visible course tile images have loaded', done => {
-			var listener = () => {
-				component.removeEventListener('initially-visible-course-tile', listener);
-				component.dispatchEvent(new CustomEvent('course-image-loaded'));
-			};
-			component.addEventListener('initially-visible-course-tile', listener);
-
-			component.dispatchEvent(new CustomEvent('initially-visible-course-tile'));
-
-			setTimeout(() => {
+			component.addEventListener('course-image-loaded', () => {
 				expect(stub).to.have.been.calledWith(
 					'd2l.my-courses',
 					'd2l.my-courses.attached',
 					'd2l.my-courses.visible-images-complete'
 				);
 				done();
+			});
+			component.addEventListener('initially-visible-course-tile', () => {
+				requestAnimationFrame(() => {
+					component.dispatchEvent(new CustomEvent('course-image-loaded'));
+				});
+			});
+			requestAnimationFrame(() => {
+				component.dispatchEvent(new CustomEvent('initially-visible-course-tile'));
 			});
 		});
 
