@@ -20,17 +20,6 @@ independently. If there is a need, these components could be broken out into
 their own repositories/release schedule, but for now they are all contained
 within this repo.
 
-- `<d2l-all-courses>` displays both pinned and unpinned courses
-- `<d2l-course-tile-grid>` is the wrapper that contains several `<d2l-course-tile>` elements
-- `<d2l-course-tile>` is a clickable, interactable tile that represents a course
-- `<d2l-my-courses>` is the main component for My Courses widget
-- `<d2l-touch-menu>` is a menu intended for use with mobile interfaces
-- `<d2l-touch-menu-item>` is the element that populates a `d2l-touch-menu`
-
-There are other components as well, but they are mostly intended to be used
-within this widget (i.e. not very likely candidates for being broken out into
-their own repos).
-
 ## Local Testing
 
 Testing from within LMS:
