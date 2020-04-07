@@ -56,7 +56,6 @@
     "d2l-enrollments": "BrightspaceHypermediaComponents/enrollments#semver:^4",
     "d2l-fetch": "Brightspace/d2l-fetch.git#semver:^2",
     "d2l-hypermedia-constants": "^6",
-    "d2l-icons": "BrightspaceUI/icons#semver:^6",
     "d2l-image-selector": "Brightspace/image-selector#semver:^4",
     "intersection-observer": "^0.5.1",
     "d2l-localize-behavior": "BrightspaceUI/localize-behavior#semver:^2",
