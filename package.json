@@ -66,7 +66,6 @@
     "d2l-offscreen": "BrightspaceUI/offscreen#semver:^4",
     "d2l-organization-hm-behavior": "Brightspace/organization-hm-behavior#semver:^3",
     "d2l-polymer-siren-behaviors": "Brightspace/polymer-siren-behaviors#semver:^1",
-    "d2l-polymer-behaviors": "Brightspace/d2l-polymer-behaviors-ui#semver:^2",
     "d2l-search-widget": "Brightspace/d2l-search-widget-ui#semver:^5",
     "d2l-simple-overlay": "Brightspace/simple-overlay.git#semver:^3",
     "d2l-tabs": "BrightspaceUI/tabs#semver:^1",

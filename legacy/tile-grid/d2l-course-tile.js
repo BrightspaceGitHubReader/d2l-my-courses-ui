@@ -27,7 +27,7 @@ import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-menu/d2l-menu-item-link.js';
 import 'd2l-menu/d2l-menu-item.js';
 import 'd2l-offscreen/d2l-offscreen.js';
-import 'd2l-polymer-behaviors/d2l-dom.js';
+import { isComposedAncestor } from '@brightspace-ui/core/helpers/dom.js';
 import { IronA11yAnnouncer } from '@polymer/iron-a11y-announcer/iron-a11y-announcer.js';
 import 'intersection-observer/intersection-observer.js';
 import './d2l-course-tile-styles.js';
@@ -752,7 +752,7 @@ Polymer({
 				return;
 			}
 			var activeElement = dom(document.activeElement).node;
-			if (!D2L.Dom.isComposedAncestor(this, activeElement)) {
+			if (!isComposedAncestor(this, activeElement)) {
 				this._unhoverCourseTile();
 			}
 		}.bind(this), 0);

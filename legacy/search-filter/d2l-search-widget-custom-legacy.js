@@ -14,7 +14,7 @@ import '../localize-behavior-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
-import 'd2l-polymer-behaviors/d2l-dom.js';
+import { isComposedAncestor } from '@brightspace-ui/core/helpers/dom.js';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-search-widget-custom-legacy">
@@ -98,8 +98,7 @@ Polymer({
 	},
 	behaviors: [
 		D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorLegacy,
-		D2L.MyCourses.UtilityBehaviorLegacy,
-		D2L.Dom
+		D2L.MyCourses.UtilityBehaviorLegacy
 	],
 	ready: function() {
 		this._handleFocusBound = this._handleFocus.bind(this);
@@ -251,7 +250,7 @@ Polymer({
 		this._checkFocusLost(dom(e).rootTarget);
 	},
 	_checkFocusLost: function(focusedElement) {
-		if (this.$.dropdown.opened && !this.isComposedAncestor(this, focusedElement)) {
+		if (this.$.dropdown.opened && !isComposedAncestor(this, focusedElement)) {
 			this.$.dropdown.close();
 		}
 	}
