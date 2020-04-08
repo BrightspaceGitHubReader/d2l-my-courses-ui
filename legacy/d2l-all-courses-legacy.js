@@ -9,9 +9,9 @@ import '@polymer/polymer/polymer-legacy.js';
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import 'd2l-alert/d2l-alert.js';
-import 'd2l-dropdown/d2l-dropdown.js';
-import 'd2l-dropdown/d2l-dropdown-content.js';
-import 'd2l-dropdown/d2l-dropdown-menu.js';
+import '@brightspace-ui/core/components/dropdown/dropdown.js';
+import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
+import '@brightspace-ui/core/components/dropdown/dropdown-menu.js';
 import { Classes } from 'd2l-hypermedia-constants';
 import { Actions } from 'd2l-hypermedia-constants';
 import { Rels } from 'd2l-hypermedia-constants';

@@ -16,8 +16,8 @@ the user has in that organization - student, teacher, TA, etc.
 import '@polymer/polymer/polymer-legacy.js';
 
 import 'd2l-course-image/d2l-course-image.js';
-import 'd2l-dropdown/d2l-dropdown.js';
-import 'd2l-dropdown/d2l-dropdown-menu.js';
+import '@brightspace-ui/core/components/dropdown/dropdown.js';
+import '@brightspace-ui/core/components/dropdown/dropdown-menu.js';
 import { Classes } from 'd2l-hypermedia-constants';
 import { Rels } from 'd2l-hypermedia-constants';
 import { Actions } from 'd2l-hypermedia-constants';

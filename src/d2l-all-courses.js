@@ -5,10 +5,10 @@ Polymer-based web component for the all courses overlay.
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import 'd2l-alert/d2l-alert.js';
-import 'd2l-dropdown/d2l-dropdown.js';
-import 'd2l-dropdown/d2l-dropdown-content.js';
-import 'd2l-dropdown/d2l-dropdown-menu.js';
 import '@brightspace-ui/core/components/colors/colors.js';
+import '@brightspace-ui/core/components/dropdown/dropdown.js';
+import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
+import '@brightspace-ui/core/components/dropdown/dropdown-menu.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
 import 'd2l-menu/d2l-menu-item-radio.js';
 import '@brightspace-ui/core/components/icons/icon.js';
