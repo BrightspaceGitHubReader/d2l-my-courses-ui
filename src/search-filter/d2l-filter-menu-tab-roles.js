@@ -11,7 +11,7 @@ Polymer-based web component for the filter menu tab roles.
 import '@polymer/polymer/polymer-legacy.js';
 
 import { Actions } from 'd2l-hypermedia-constants';
-import 'd2l-menu/d2l-menu.js';
+import '@brightspace-ui/core/components/menu/menu.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import '../d2l-utility-behavior.js';
 import './d2l-filter-list-item-role.js';
