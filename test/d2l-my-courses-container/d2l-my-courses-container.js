@@ -1,19 +1,20 @@
-import { UserSettingsEntity } from 'siren-sdk/src/userSettings/UserSettingsEntity';
-import { PromotedSearchEntity } from 'siren-sdk/src/promotedSearch/PromotedSearchEntity.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
+import { PromotedSearchEntity } from 'siren-sdk/src/promotedSearch/PromotedSearchEntity.js';
+import { UserSettingsEntity } from 'siren-sdk/src/userSettings/UserSettingsEntity';
 
 describe('d2l-my-courses', () => {
-	var component,
+	let component,
 		sandbox,
-		enrollmentsHref = '/enrollments/users/169',
-		promotedSearchHref = '/promoted-search-url',
-		lastSearchHref = 'homepages/components/1/user-settings/169',
 		searchAction,
 		searchPinnedEnrollmentsAction,
 		enrollmentsSearchResponse,
 		promotedSearchResponse,
 		promotedSearchMultipleResponse,
 		lastSearchResponse;
+
+	const enrollmentsHref = '/enrollments/users/169',
+		promotedSearchHref = '/promoted-search-url',
+		lastSearchHref = 'homepages/components/1/user-settings/169';
 
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
@@ -170,7 +171,7 @@ describe('d2l-my-courses', () => {
 			{ orgUnitId: 111, isPinned: true },
 			{ orgUnitId: 222, isPinned: false },
 		].forEach(testCase => {
-			var event = {
+			const event = {
 				detail: {
 					orgUnitId: testCase.orgUnitId,
 					isPinned: testCase.isPinned
@@ -186,7 +187,7 @@ describe('d2l-my-courses', () => {
 
 	it('should have updated _currentTabId property based on the event', () => {
 		component._currentTabId = null;
-		var event = {
+		const event = {
 			detail: {
 				tabId: 1254
 			}
@@ -200,7 +201,7 @@ describe('d2l-my-courses', () => {
 			component.updatedSortLogic = true;
 			component._showGroupByTabs = false;
 			flush(() => {
-				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
+				const stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
 				expect(stub).to.have.been.called;
 				done();
@@ -211,7 +212,7 @@ describe('d2l-my-courses', () => {
 			component.updatedSortLogic = true;
 			component._showGroupByTabs = false;
 			flush(() => {
-				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
+				const stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
 				expect(stub).to.have.been.called;
 				done();
@@ -224,7 +225,7 @@ describe('d2l-my-courses', () => {
 			component.updatedSortLogic = true;
 			component._currentTabId = '6607';
 			flush(() => {
-				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
+				const stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
 				expect(stub).to.have.been.called;
 				done();
@@ -237,7 +238,7 @@ describe('d2l-my-courses', () => {
 			component.updatedSortLogic = true;
 			component._currentTabId = '6607';
 			flush(() => {
-				var stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
+				const stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
 				expect(stub).to.have.been.called;
 				done();

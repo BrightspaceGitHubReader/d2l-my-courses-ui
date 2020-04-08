@@ -1,8 +1,7 @@
-'use strict';
 (function() {
 
 	function createEntity() {
-		var baseEntity = {
+		const baseEntity = {
 			'actions': [{
 				'name': 'search-my-semesters',
 				'href': '/enrollments'
@@ -25,7 +24,7 @@
 	}
 
 	window.d2lfetch = window.d2lfetch || { fetch: function() {} };
-	var stub = sinon.stub(window.d2lfetch, 'fetch');
+	const stub = sinon.stub(window.d2lfetch, 'fetch');
 
 	stub.withArgs(sinon.match.has('url', sinon.match(/enrollments$/)))
 		.returns(Promise.resolve({

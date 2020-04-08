@@ -1,5 +1,5 @@
 describe('d2l-filter-menu-tab', function() {
-	var sandbox,
+	let sandbox,
 		component,
 		organization;
 
@@ -70,7 +70,7 @@ describe('d2l-filter-menu-tab', function() {
 
 	describe('selectedFilters', function() {
 		it('should generate an event when selectedFilters is changed', function(done) {
-			var listener = function() {
+			const listener = function() {
 				component.removeEventListener('selected-filters-changed', listener);
 				done();
 			};
@@ -85,7 +85,7 @@ describe('d2l-filter-menu-tab', function() {
 			component._allFilters = [organization];
 			component.selectedFilters = [];
 
-			var listener = function() {
+			const listener = function() {
 				component.removeEventListener('d2l-menu-item-change', listener);
 				expect(component.selectedFilters.length).to.equal(1);
 
@@ -103,7 +103,7 @@ describe('d2l-filter-menu-tab', function() {
 			component._allFilters = [organization];
 			component.selectedFilters = [organization];
 
-			var listener = function() {
+			const listener = function() {
 				component.removeEventListener('d2l-menu-item-change', listener);
 				expect(component.selectedFilters.length).to.equal(0);
 
@@ -118,7 +118,7 @@ describe('d2l-filter-menu-tab', function() {
 		});
 
 		it('should fire a selected-filters-changed event', function(done) {
-			var listener = function() {
+			const listener = function() {
 				component.removeEventListener('selected-filters-changed', listener);
 				done();
 			};

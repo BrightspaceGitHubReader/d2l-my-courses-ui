@@ -1,5 +1,5 @@
 describe('d2l-filter-list-item', function() {
-	var sandbox,
+	let sandbox,
 		listItem,
 		enrollment,
 		organization;

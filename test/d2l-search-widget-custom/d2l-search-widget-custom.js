@@ -1,8 +1,9 @@
 describe('<d2l-search-widget-custom>', function() {
-	var sandbox,
+	let sandbox,
 		widget,
-		clock,
-		searchAction = {
+		clock;
+
+	const searchAction = {
 			name: 'search-my-enrollments',
 			method: 'GET',
 			href: '/enrollments/users/169',
@@ -48,7 +49,7 @@ describe('<d2l-search-widget-custom>', function() {
 
 	it('should perform a search when the searchUrl changes', function(done) {
 		requestAnimationFrame(function() {
-			var spy = sandbox.spy(widget, '_handleSearchUrlChange');
+			const spy = sandbox.spy(widget, '_handleSearchUrlChange');
 			widget.searchUrl = '/organizations/1234';
 			clock.tick(501);
 			expect(spy.called).to.be.true;
