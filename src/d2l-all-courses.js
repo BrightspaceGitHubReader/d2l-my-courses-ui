@@ -10,10 +10,10 @@ import 'd2l-dropdown/d2l-dropdown-content.js';
 import 'd2l-dropdown/d2l-dropdown-menu.js';
 import '@brightspace-ui/core/components/colors/colors.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
-import 'd2l-icons/d2l-icons.js';
-import 'd2l-link/d2l-link.js';
-import 'd2l-loading-spinner/d2l-loading-spinner.js';
 import 'd2l-menu/d2l-menu-item-radio.js';
+import '@brightspace-ui/core/components/icons/icon.js';
+import '@brightspace-ui/core/components/link/link.js';
+import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import SirenParse from 'siren-parser';
@@ -288,7 +288,7 @@ class AllCourses extends mixinBehaviors([
 								<d2l-dropdown id="filterDropdown">
 									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="filterText">
 										<span id="filterText" class="dropdown-opener-text">[[_filterText]]</span>
-										<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
+										<d2l-icon icon="tier1:chevron-down" aria-hidden="true"></d2l-icon>
 									</button>
 									<d2l-dropdown-content id="filterDropdownContent" no-padding="" min-width="350" render-content="">
 										<d2l-filter-menu
@@ -305,7 +305,7 @@ class AllCourses extends mixinBehaviors([
 								<d2l-dropdown id="sortDropdown">
 									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="sortText">
 										<span id="sortText" class="dropdown-opener-text">[[localize('sorting.sortDefault')]]</span>
-										<d2l-icon icon="d2l-tier1:chevron-down" aria-hidden="true"></d2l-icon>
+										<d2l-icon icon="tier1:chevron-down" aria-hidden="true"></d2l-icon>
 									</button>
 									<d2l-dropdown-menu no-padding="" min-width="350">
 										<d2l-menu id="sortDropdownMenu" label="[[localize('sorting.sortBy')]]">

@@ -10,7 +10,7 @@ Polymer-based web component for the filter list item role.
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import 'd2l-icons/d2l-icons.js';
+import '@brightspace-ui/core/components/icons/icon.js';
 import 'd2l-menu/d2l-menu-item-selectable-behavior.js';
 import './d2l-filter-list-item-styles-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';

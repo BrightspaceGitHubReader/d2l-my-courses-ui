@@ -11,7 +11,7 @@ Polymer-based web component for the filter list item.
 import '@polymer/polymer/polymer-legacy.js';
 
 import { Rels } from 'd2l-hypermedia-constants';
-import 'd2l-icons/d2l-icons.js';
+import '@brightspace-ui/core/components/icons/icon.js';
 import 'd2l-menu/d2l-menu-item-selectable-behavior.js';
 import '../d2l-utility-behavior-legacy.js';
 import './d2l-filter-list-item-styles-legacy.js';

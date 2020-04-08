@@ -6,6 +6,7 @@ Component for when the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config varia
 
 */
 
+import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-tabs/d2l-tabs.js';
 import './d2l-my-courses-content.js';
 import './d2l-utility-behavior.js';
