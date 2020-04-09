@@ -1,3 +1,5 @@
+import { flush } from '@polymer/polymer/lib/utils/render-status.js';
+
 describe('d2l-all-courses', function() {
 	let widget,
 		clock,
@@ -32,8 +34,10 @@ describe('d2l-all-courses', function() {
 
 		widget.updatedSortLogic = false;
 
-		flush(() => { done(); });
-
+		flush();
+		requestAnimationFrame(() => {
+			done();
+		});
 	});
 
 	afterEach(function() {
@@ -127,7 +131,13 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('d2l-filter-menu-change event', function() {
-		it('should set the _searchUrl with one query string and filterCounts', function() {
+		beforeEach(done => {
+			flush();
+			requestAnimationFrame(() => {
+				done();
+			});
+		});
+		it('should set the _searchUrl with one query string and filterCounts', function(done) {
 			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				url: 'http://example.com',
 				filterCounts: {
@@ -136,12 +146,14 @@ describe('d2l-all-courses', function() {
 					roles: 0
 				}
 			});
-
-			expect(widget._searchUrl.indexOf('http://example.com?bustCache') !== -1).to.be.true;
-			expect(widget._totalFilterCount).to.equal(12);
+			requestAnimationFrame(() => {
+				expect(widget._searchUrl.indexOf('http://example.com?bustCache') !== -1).to.be.true;
+				expect(widget._totalFilterCount).to.equal(12);
+				done();
+			});
 		});
 
-		it('should set the _searchUrl with multiple query strings and filterCounts', function() {
+		it('should set the _searchUrl with multiple query strings and filterCounts', function(done) {
 			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				url: 'http://example.com?search=&pageSize=20',
 				filterCounts: {
@@ -150,9 +162,11 @@ describe('d2l-all-courses', function() {
 					roles: 0
 				}
 			});
-
-			expect(widget._searchUrl.indexOf('http://example.com?search=&pageSize=20&bustCache=') !== -1).to.be.true;
-			expect(widget._totalFilterCount).to.equal(15);
+			requestAnimationFrame(() => {
+				expect(widget._searchUrl.indexOf('http://example.com?search=&pageSize=20&bustCache=') !== -1).to.be.true;
+				expect(widget._totalFilterCount).to.equal(15);
+				done();
+			});
 		});
 	});
 
@@ -270,7 +284,10 @@ describe('d2l-all-courses', function() {
 				}
 			}];
 			widget._enrollmentsSearchAction.getFieldByName = sandbox.stub();
-			flush(() => { done(); });
+			flush();
+			requestAnimationFrame(() => {
+				done();
+			});
 		});
 
 		it('should hide tab contents when loading a tab\'s contents', function() {

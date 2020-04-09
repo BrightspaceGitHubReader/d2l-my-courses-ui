@@ -342,8 +342,8 @@ describe('d2l-my-courses-content', () => {
 	describe('Events', () => {
 
 		beforeEach((done) => {
+			flush();
 			requestAnimationFrame(() => {
-				flush();
 				done();
 			});
 		});
@@ -614,9 +614,12 @@ describe('d2l-my-courses-content', () => {
 	describe('Performance measures', () => {
 		let stub;
 
-		beforeEach(() => {
+		beforeEach((done) => {
 			stub = sandbox.stub(component, 'performanceMeasure');
 			flush();
+			requestAnimationFrame(() => {
+				done();
+			});
 		});
 
 		it('should measure d2l.my-courses when all visible course tile images have loaded', done => {
