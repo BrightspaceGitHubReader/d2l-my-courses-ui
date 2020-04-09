@@ -4,8 +4,8 @@ Polymer-based web component for the search widget, with added "Recent Searches" 
 Should be converted to a new input shared component.
 */
 import '@polymer/polymer/polymer-legacy.js';
-import 'd2l-dropdown/d2l-dropdown.js';
-import 'd2l-dropdown/d2l-dropdown-content.js';
+import '@brightspace-ui/core/components/dropdown/dropdown.js';
+import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import 'd2l-search-widget/d2l-search-widget.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-search-listbox.js';
