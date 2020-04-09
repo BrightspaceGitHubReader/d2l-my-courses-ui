@@ -16,16 +16,17 @@ the user has in that organization - student, teacher, TA, etc.
 import '@polymer/polymer/polymer-legacy.js';
 
 import 'd2l-course-image/d2l-course-image.js';
-import 'd2l-dropdown/d2l-dropdown.js';
-import 'd2l-dropdown/d2l-dropdown-menu.js';
+import '@brightspace-ui/core/components/dropdown/dropdown.js';
+import '@brightspace-ui/core/components/dropdown/dropdown-menu.js';
 import { Classes } from 'd2l-hypermedia-constants';
 import { Rels } from 'd2l-hypermedia-constants';
 import { Actions } from 'd2l-hypermedia-constants';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/icons/icon.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
-import 'd2l-menu/d2l-menu-item-link.js';
-import 'd2l-menu/d2l-menu-item.js';
+import '@brightspace-ui/core/components/menu/menu.js';
+import '@brightspace-ui/core/components/menu/menu-item-link.js';
+import '@brightspace-ui/core/components/menu/menu-item.js';
 import '@brightspace-ui/core/components/offscreen/offscreen.js';
 import { isComposedAncestor } from '@brightspace-ui/core/helpers/dom.js';
 import { IronA11yAnnouncer } from '@polymer/iron-a11y-announcer/iron-a11y-announcer.js';
