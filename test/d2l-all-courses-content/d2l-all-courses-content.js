@@ -1,5 +1,5 @@
 describe('d2l-all-courses-content', function() {
-	var widget, sandbox;
+	let widget, sandbox;
 
 	beforeEach(function(done) {
 		sandbox = sinon.sandbox.create();

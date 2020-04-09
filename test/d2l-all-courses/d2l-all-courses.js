@@ -1,5 +1,7 @@
+import { flush } from '@polymer/polymer/lib/utils/render-status.js';
+
 describe('d2l-all-courses', function() {
-	var widget,
+	let widget,
 		clock,
 		sandbox;
 
@@ -32,8 +34,10 @@ describe('d2l-all-courses', function() {
 
 		widget.updatedSortLogic = false;
 
-		flush(() => { done(); });
-
+		flush();
+		requestAnimationFrame(() => {
+			done();
+		});
 	});
 
 	afterEach(function() {
@@ -67,8 +71,8 @@ describe('d2l-all-courses', function() {
 
 	describe('filter menu', function() {
 		it('should load filter menu content when filter menu is opened', function() {
-			var semestersTabStub = sandbox.stub(widget.$.filterMenu.$.semestersTab, 'load');
-			var departmentsTabStub = sandbox.stub(widget.$.filterMenu.$.departmentsTab, 'load');
+			const semestersTabStub = sandbox.stub(widget.$.filterMenu.$.semestersTab, 'load');
+			const departmentsTabStub = sandbox.stub(widget.$.filterMenu.$.departmentsTab, 'load');
 
 			return widget._onFilterDropdownOpen().then(function() {
 				expect(semestersTabStub.called).to.be.true;
@@ -85,7 +89,7 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('Alerts', function() {
-		var setCourseImageFailureAlert = { alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' };
+		const setCourseImageFailureAlert = { alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' };
 
 		it('should remove a setCourseImageFailure alert when the overlay is opened', function() {
 			widget._addAlert('warning', 'setCourseImageFailure', 'failed to do that thing it should do');
@@ -95,28 +99,28 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should remove and course image failure alerts before adding and new ones', function() {
-			var removeAlertSpy = sandbox.spy(widget, '_removeAlert');
+			const removeAlertSpy = sandbox.spy(widget, '_removeAlert');
 			widget._onSetCourseImage();
 			expect(removeAlertSpy.called);
 		});
 
 		it('should add an alert after setting the course image results in failure (after a timeout)', function() {
 			clock = sinon.useFakeTimers();
-			var setCourseImageEvent = { detail: { status: 'failure'} };
+			const setCourseImageEvent = { detail: { status: 'failure'} };
 			widget._onSetCourseImage(setCourseImageEvent);
 			clock.tick(1001);
 			expect(widget._alertsView).to.include(setCourseImageFailureAlert);
 		});
 
 		it('should not add a setCourseImageFailure warning alert when a request to set the image succeeds', function() {
-			var setCourseImageEvent = { detail: { status: 'success'} };
+			const setCourseImageEvent = { detail: { status: 'success'} };
 			widget._onSetCourseImage(setCourseImageEvent);
 			expect(widget._alertsView).not.to.include(setCourseImageFailureAlert);
 		});
 
 		it('should remove a setCourseImageFailure warning alert when a request to set the image is made', function() {
 			clock = sinon.useFakeTimers();
-			var setCourseImageEvent = { detail: { status: 'failure'} };
+			let setCourseImageEvent = { detail: { status: 'failure'} };
 			widget._onSetCourseImage(setCourseImageEvent);
 			clock.tick(1001);
 			expect(widget._alertsView).to.include(setCourseImageFailureAlert);
@@ -127,7 +131,13 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('d2l-filter-menu-change event', function() {
-		it('should set the _searchUrl with one query string and filterCounts', function() {
+		beforeEach(done => {
+			flush();
+			requestAnimationFrame(() => {
+				done();
+			});
+		});
+		it('should set the _searchUrl with one query string and filterCounts', function(done) {
 			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				url: 'http://example.com',
 				filterCounts: {
@@ -136,12 +146,14 @@ describe('d2l-all-courses', function() {
 					roles: 0
 				}
 			});
-
-			expect(widget._searchUrl.indexOf('http://example.com?bustCache') !== -1).to.be.true;
-			expect(widget._totalFilterCount).to.equal(12);
+			requestAnimationFrame(() => {
+				expect(widget._searchUrl.indexOf('http://example.com?bustCache') !== -1).to.be.true;
+				expect(widget._totalFilterCount).to.equal(12);
+				done();
+			});
 		});
 
-		it('should set the _searchUrl with multiple query strings and filterCounts', function() {
+		it('should set the _searchUrl with multiple query strings and filterCounts', function(done) {
 			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				url: 'http://example.com?search=&pageSize=20',
 				filterCounts: {
@@ -150,9 +162,11 @@ describe('d2l-all-courses', function() {
 					roles: 0
 				}
 			});
-
-			expect(widget._searchUrl.indexOf('http://example.com?search=&pageSize=20&bustCache=') !== -1).to.be.true;
-			expect(widget._totalFilterCount).to.equal(15);
+			requestAnimationFrame(() => {
+				expect(widget._searchUrl.indexOf('http://example.com?search=&pageSize=20&bustCache=') !== -1).to.be.true;
+				expect(widget._totalFilterCount).to.equal(15);
+				done();
+			});
 		});
 	});
 
@@ -199,8 +213,8 @@ describe('d2l-all-courses', function() {
 	describe('closing the overlay', function() {
 
 		it('should clear search text', function() {
-			var spy = sandbox.spy(widget, '_clearSearchWidget');
-			var searchField = widget.$['search-widget'];
+			const spy = sandbox.spy(widget, '_clearSearchWidget');
+			const searchField = widget.$['search-widget'];
 
 			searchField._getSearchWidget()._getSearchInput().value = 'foo';
 			widget.$$('d2l-simple-overlay')._renderOpened();
@@ -209,7 +223,7 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should clear filters', function() {
-			var spy = sandbox.spy(widget.$.filterMenu, 'clearFilters');
+			const spy = sandbox.spy(widget.$.filterMenu, 'clearFilters');
 
 			fireEvent(widget.$.filterMenu, 'd2l-filter-menu-change', {
 				filterCounts: {
@@ -227,9 +241,9 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should clear sort', function() {
-			var spy = sandbox.spy(widget, '_resetSortDropdown');
+			const spy = sandbox.spy(widget, '_resetSortDropdown');
 
-			var event = {
+			const event = {
 				selected: true,
 				value: 'OrgUnitCode'
 			};
@@ -270,7 +284,10 @@ describe('d2l-all-courses', function() {
 				}
 			}];
 			widget._enrollmentsSearchAction.getFieldByName = sandbox.stub();
-			flush(() => { done(); });
+			flush();
+			requestAnimationFrame(() => {
+				done();
+			});
 		});
 
 		it('should hide tab contents when loading a tab\'s contents', function() {

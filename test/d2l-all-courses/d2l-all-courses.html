@@ -11,14 +11,15 @@
 	<body>
 		<test-fixture id="d2l-all-courses-fixture">
 			<template>
-				<d2l-all-courses id="all-courses-tab-12345"
+				<d2l-all-courses
+					advanced-search-url="/test/url/"
+					id="all-courses-tab-12345"
 					pinned-enrollments='[]'
-					unpinned-enrollments='[]'
-					advanced-search-url="/test/url/">
+					unpinned-enrollments='[]'>
 				</d2l-all-courses>
 			</template>
 		</test-fixture>
 
-		<script src="./d2l-all-courses.js"></script>
+		<script type="module" src="./d2l-all-courses.js"></script>
 	</body>
 </html>

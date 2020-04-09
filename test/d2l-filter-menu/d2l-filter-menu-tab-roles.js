@@ -1,6 +1,6 @@
 describe('d2l-filter-menu-tab-roles', function() {
 
-	var sandbox,
+	let sandbox,
 		component,
 		myEnrollmentsEntity,
 		roleFiltersEntity;
@@ -97,7 +97,7 @@ describe('d2l-filter-menu-tab-roles', function() {
 			it(testCase.name, function(done) {
 				component._roleFiltersEntity = roleFiltersEntity;
 				component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve(roleFiltersEntity));
-				var listener = function() {
+				const listener = function() {
 					component.removeEventListener('role-filters-changed', listener);
 					expect(component.fetchSirenEntity).to.have.been.calledWith(testCase.url);
 					done();
@@ -114,7 +114,7 @@ describe('d2l-filter-menu-tab-roles', function() {
 		it('should fire a role-filters-changed event with the new URL', function(done) {
 			component._roleFiltersEntity = roleFiltersEntity;
 			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve(roleFiltersEntity));
-			var listener = function(e) {
+			const listener = function(e) {
 				component.removeEventListener('role-filters-changed', listener);
 				expect(e.detail.url).to.equal('http://example.com?roles=1,2,3,4');
 				done();
@@ -128,17 +128,17 @@ describe('d2l-filter-menu-tab-roles', function() {
 		});
 
 		it('should work with a filter title that corresponds to more than one filter', function(done) {
-			var filterOn = getFilter('foo', 'on');
-			var filterOff = getFilter('foo', 'off');
+			const filterOn = getFilter('foo', 'on');
+			const filterOff = getFilter('foo', 'off');
 			component._roleFiltersEntity = parse({ entities: [filterOff, filterOff] });
 			component.createActionUrl = sinon.stub();
 
-			var stub = sandbox.stub();
+			const stub = sandbox.stub();
 			stub.onFirstCall().returns(Promise.resolve(parse({ entities: [filterOn, filterOff] })));
 			stub.onSecondCall().returns(Promise.resolve(parse({ entities: [filterOn, filterOn] })));
 			component.fetchSirenEntity = stub;
 
-			var listener = function() {
+			const listener = function() {
 				component.removeEventListener('role-filters-changed', listener);
 				// Once per filter with the name 'foo'
 				expect(component.fetchSirenEntity.callCount).to.equal(2);
@@ -156,13 +156,13 @@ describe('d2l-filter-menu-tab-roles', function() {
 	describe('clear', function() {
 		it('should reset the "selected" state to false on all filter items', function() {
 			component._filterTitles = [ 'one', 'two', 'three' ];
-			var filters = component.$$('d2l-menu').querySelectorAll('d2l-filter-list-item-role');
-			for (var i = 0; i < filters.length; i++) {
+			const filters = component.$$('d2l-menu').querySelectorAll('d2l-filter-list-item-role');
+			for (let i = 0; i < filters.length; i++) {
 				filters[i].selected = true;
 			}
 
 			return component.clear().then(function() {
-				for (var i = 0; i < filters.length; i++) {
+				for (let i = 0; i < filters.length; i++) {
 					expect(filters[i].selected).to.be.false;
 				}
 			});

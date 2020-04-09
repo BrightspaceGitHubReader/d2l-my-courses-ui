@@ -2,7 +2,7 @@ import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/Enrollment
 import { flush } from '@polymer/polymer/lib/utils/render-status.js';
 
 describe('d2l-my-courses-content', () => {
-	var sandbox,
+	let sandbox,
 		clock,
 		component,
 		fetchStub,
@@ -212,15 +212,15 @@ describe('d2l-my-courses-content', () => {
 		expect(component._lastPinnedIndex).to.equal(-1);
 		expect(component._enrollments.length).to.equal(0);
 		expect(component._numberOfEnrollments).to.equal(0);
-		for (var key in component._existingEnrollmentsMap) {
+		for (const key in component._existingEnrollmentsMap) {
 			expect(component._existingEnrollmentsMap.hasOwnProperty(key)).to.be.false;
 		}
 	});
 
 	describe('Set Refetch Enrollment Flag', () => {
-		var newValue = { orgUnitId: 1234 };
-		var href = '/enrollments/users/1';
-		var fields = [
+		const newValue = { orgUnitId: 1234 };
+		const href = '/enrollments/users/1';
+		const fields = [
 			{ name: 'search', type: 'search', value: '' },
 			{ name: 'sort', type: 'text', value: 'current' }
 		];
@@ -275,11 +275,11 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should set the columns-"n" class on the correct card grid on resize', done => {
-			var listener = () => {
+			const listener = () => {
 				window.removeEventListener('resize', listener);
 
 				setTimeout(() => {
-					var courseTileGrid = component.$$('.course-card-grid');
+					const courseTileGrid = component.$$('.course-card-grid');
 					expect(courseTileGrid.classList.toString()).to.contain('columns-');
 					done();
 				}, 500);
@@ -291,13 +291,13 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should call refreshImage on each course image card in courseImageUploadCompleted', () => {
-			var courseTiles;
+			let courseTiles;
 			if (component.shadowRoot) {
 				courseTiles = component.shadowRoot.querySelectorAll('d2l-enrollment-card');
 			} else {
 				courseTiles = component.querySelectorAll('d2l-enrollment-card');
 			}
-			var stub1 = sandbox.stub(courseTiles[0], 'refreshImage');
+			const stub1 = sandbox.stub(courseTiles[0], 'refreshImage');
 			//var stub2 = sandbox.stub(courseTiles[1], 'refreshImage');
 
 			component.courseImageUploadCompleted(true);
@@ -307,8 +307,8 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should call focus on the correct card grid when focus is called', () => {
-			var courseTileGrid = component.$$('.course-card-grid');
-			var spy = sandbox.spy(courseTileGrid, 'focus');
+			const courseTileGrid = component.$$('.course-card-grid');
+			const spy = sandbox.spy(courseTileGrid, 'focus');
 
 			component.focus();
 
@@ -316,7 +316,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should add the hide-past-attributes to the correct card grid in _populateEnrollments', () => {
-			var spy = sandbox.spy(component.$$('.course-card-grid'), 'setAttribute');
+			const spy = sandbox.spy(component.$$('.course-card-grid'), 'setAttribute');
 			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity));
 			expect(spy).to.have.been.calledWith('hide-past-courses', '');
 		});
@@ -342,14 +342,14 @@ describe('d2l-my-courses-content', () => {
 	describe('Events', () => {
 
 		beforeEach((done) => {
+			flush();
 			requestAnimationFrame(() => {
-				flush();
 				done();
 			});
 		});
 
 		describe('d2l-tab-panel-selected', () => {
-			var parentComponent;
+			let parentComponent;
 
 			beforeEach(() => {
 				parentComponent = fixture('tab-event-fixture');
@@ -363,10 +363,10 @@ describe('d2l-my-courses-content', () => {
 			});
 
 			[true, false].forEach(hasEnrollments => {
-				it('should ' + (hasEnrollments ? '' : 'not ') + 'fetch enrollments', () => {
+				it(`should ${hasEnrollments ? '' : 'not '}fetch enrollments`, () => {
 					component._numberOfEnrollments = hasEnrollments ? 1 : 0;
 
-					var stub = sandbox.stub(component, '_fetchRoot').returns(Promise.resolve());
+					const stub = sandbox.stub(component, '_fetchRoot').returns(Promise.resolve());
 
 					parentComponent.dispatchEvent(new CustomEvent(
 						'd2l-tab-panel-selected', { bubbles: true, composed: true }
@@ -399,11 +399,11 @@ describe('d2l-my-courses-content', () => {
 			});
 
 			[true, false].forEach(refetchNeeded => {
-				it('should ' + (refetchNeeded ? '' : 'not ') + 'refetch enrollments', () => {
+				it(`should ${refetchNeeded ? '' : 'not '}refetch enrollments`, () => {
 					component._isRefetchNeeded = refetchNeeded;
 
-					var refetchStub = sandbox.stub(component, '_refetchEnrollments').returns(Promise.resolve());
-					var resetStub = sandbox.stub(component, '_resetEnrollments');
+					const refetchStub = sandbox.stub(component, '_refetchEnrollments').returns(Promise.resolve());
+					const resetStub = sandbox.stub(component, '_resetEnrollments');
 
 					parentComponent.dispatchEvent(new CustomEvent(
 						'd2l-tab-panel-selected', { bubbles: true, composed: true }
@@ -417,7 +417,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		describe('open-change-image-view', () => {
-			var event;
+			let event;
 
 			beforeEach(() => {
 				// Prevents the _searchPath of the image selector from being null
@@ -442,7 +442,7 @@ describe('d2l-my-courses-content', () => {
 			});
 
 			it('should open the course image overlay', done => {
-				var spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'open');
+				const spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'open');
 
 				component.addEventListener('open-change-image-view', function() {
 					requestAnimationFrame(() => {
@@ -456,7 +456,7 @@ describe('d2l-my-courses-content', () => {
 			});
 
 			it('should focus on course grid when focus called after course interacted with', done => {
-				var tileGridFocusSpy = sandbox.spy(component.$$('.course-card-grid'), 'focus');
+				const tileGridFocusSpy = sandbox.spy(component.$$('.course-card-grid'), 'focus');
 
 				component.addEventListener('open-change-image-view', function() {
 					expect(tileGridFocusSpy.called);
@@ -494,10 +494,10 @@ describe('d2l-my-courses-content', () => {
 		describe('clear-image-scroll-threshold', () => {
 
 			it('should clear triggers on the image-selector-threshold', (done) => {
-				var threshold = component.shadowRoot.querySelector('#image-selector-threshold');
-				var spy = sandbox.spy(threshold, 'clearTriggers');
+				const threshold = component.shadowRoot.querySelector('#image-selector-threshold');
+				const spy = sandbox.spy(threshold, 'clearTriggers');
 
-				var event = new CustomEvent('clear-image-scroll-threshold');
+				const event = new CustomEvent('clear-image-scroll-threshold');
 				component.dispatchEvent(event);
 				requestAnimationFrame(() => {
 					expect(spy).to.have.been.calledOnce;
@@ -510,12 +510,12 @@ describe('d2l-my-courses-content', () => {
 		describe('d2l-course-pinned-change', () => {
 
 			it('should refetch enrollments if the new pinned enrollment has not previously been fetched', () => {
-				var _enrollmentEntity = {
+				const _enrollmentEntity = {
 					_entity: {},
 					organizationHref: function() { return 'organizationHref'; },
 				};
 
-				var event = {
+				const event = {
 					detail: {
 						isPinned: true,
 						enrollment: _enrollmentEntity
@@ -526,7 +526,7 @@ describe('d2l-my-courses-content', () => {
 					1: enrollmentEntity
 				};
 
-				var refetchSpy = sandbox.spy(component, '_refetchEnrollments');
+				const refetchSpy = sandbox.spy(component, '_refetchEnrollments');
 				component._onEnrollmentPinnedMessage(event);
 				setTimeout(() => {
 					expect(refetchSpy).to.have.been.called;
@@ -538,9 +538,9 @@ describe('d2l-my-courses-content', () => {
 		describe('d2l-simple-overlay-closed', () => {
 
 			it('should remove any existing set-course-image-failure alerts', done => {
-				var spy = sandbox.spy(component, '_removeAlert');
+				const spy = sandbox.spy(component, '_removeAlert');
 
-				var event = new CustomEvent('d2l-simple-overlay-closed');
+				const event = new CustomEvent('d2l-simple-overlay-closed');
 				component.dispatchEvent(event);
 
 				setTimeout(() => {
@@ -554,7 +554,7 @@ describe('d2l-my-courses-content', () => {
 		describe('course-tile-organization', () => {
 
 			it('should increase _courseTileOrganizationEventCount count', () => {
-				var event = new CustomEvent('course-tile-organization');
+				const event = new CustomEvent('course-tile-organization');
 				component.dispatchEvent(event);
 
 				expect(component._courseTileOrganizationEventCount).to.equal(1);
@@ -568,7 +568,7 @@ describe('d2l-my-courses-content', () => {
 			it('should increment the count of course images loaded', done => {
 				expect(component._courseImagesLoadedEventCount).to.equal(0);
 
-				var event = new CustomEvent('course-image-loaded');
+				const event = new CustomEvent('course-image-loaded');
 				component.dispatchEvent(event);
 
 				requestAnimationFrame(() => {
@@ -584,7 +584,7 @@ describe('d2l-my-courses-content', () => {
 			it('should increment the count of initially visible course tiles', done => {
 				expect(component._initiallyVisibleCourseTileCount).to.equal(0);
 
-				var event = new CustomEvent('initially-visible-course-tile');
+				const event = new CustomEvent('initially-visible-course-tile');
 				component.dispatchEvent(event);
 
 				requestAnimationFrame(() => {
@@ -598,9 +598,9 @@ describe('d2l-my-courses-content', () => {
 		describe('set-course-image', () => {
 
 			it('should close the image-selector overlay', done => {
-				var spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'close');
+				const spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'close');
 
-				var event = new CustomEvent('set-course-image');
+				const event = new CustomEvent('set-course-image');
 				document.body.dispatchEvent(event);
 
 				setTimeout(() => {
@@ -612,11 +612,14 @@ describe('d2l-my-courses-content', () => {
 	});
 
 	describe('Performance measures', () => {
-		var stub;
+		let stub;
 
-		beforeEach(() => {
+		beforeEach((done) => {
 			stub = sandbox.stub(component, 'performanceMeasure');
 			flush();
+			requestAnimationFrame(() => {
+				done();
+			});
 		});
 
 		it('should measure d2l.my-courses when all visible course tile images have loaded', done => {
@@ -699,7 +702,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should fetch all pinned enrollments', done => {
-			var spy = sandbox.stub(component, '_onEnrollmentsEntityChange', () => {
+			const spy = sandbox.stub(component, '_onEnrollmentsEntityChange', () => {
 				component._populateEnrollments(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity));
 			})
 				.withArgs(sinon.match('/enrollments/users/169?bookmark=2'));
@@ -714,7 +717,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should rescale the course tile grid on search response', () => {
-			var spy = sandbox.spy(component, 'fire');
+			const spy = sandbox.spy(component, 'fire');
 
 			component._populateEnrollments(new EnrollmentCollectionEntity(enrollmentsRootEntity));
 			expect(spy).to.have.been.calledWith('recalculate-columns');
@@ -783,21 +786,21 @@ describe('d2l-my-courses-content', () => {
 
 		it('should add a setCourseImageFailure warning alert when a request to set the image fails', () => {
 			clock = sinon.useFakeTimers();
-			var setCourseImageEvent = { detail: { status: 'failure'} };
+			const setCourseImageEvent = { detail: { status: 'failure'} };
 			component._onSetCourseImage(setCourseImageEvent);
 			clock.tick(1001);
 			expect(component._alertsView).to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' });
 		});
 
 		it('should not add a setCourseImageFailure warning alert when a request to set the image succeeds', () => {
-			var setCourseImageEvent = { detail: { status: 'success'} };
+			const setCourseImageEvent = { detail: { status: 'success'} };
 			component._onSetCourseImage(setCourseImageEvent);
 			expect(component._alertsView).not.to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' });
 		});
 
 		it('should remove a setCourseImageFailure warning alert when a request to set the image is made', () => {
 			clock = sinon.useFakeTimers();
-			var setCourseImageEvent = { detail: { status: 'failure'} };
+			let setCourseImageEvent = { detail: { status: 'failure'} };
 			component._onSetCourseImage(setCourseImageEvent);
 			clock.tick(1001);
 			expect(component._alertsView).to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' });
@@ -857,7 +860,7 @@ describe('d2l-my-courses-content', () => {
 	});
 
 	describe('Get Enrollment Card Status and Card Fetched', () => {
-		var _enrollmentCollectionEntity;
+		let _enrollmentCollectionEntity;
 		beforeEach((done) => {
 			_enrollmentCollectionEntity = {
 				_entity: oneEnrollmentSearchEntity,
@@ -878,13 +881,13 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('Should call _insertToOrgUnitIdMap', () => {
-			var spy = sandbox.spy(component, '_insertToOrgUnitIdMap');
+			const spy = sandbox.spy(component, '_insertToOrgUnitIdMap');
 			component._populateEnrollments(_enrollmentCollectionEntity);
 			expect(spy).to.have.been.called;
 		});
 
 		it('Should call _fetchEnrollmentCardStatus', () => {
-			var spy = sandbox.spy(component, '_fetchEnrollmentCardStatus');
+			const spy = sandbox.spy(component, '_fetchEnrollmentCardStatus');
 			component._populateEnrollments(_enrollmentCollectionEntity);
 			expect(spy).to.have.been.called;
 		});
@@ -892,12 +895,12 @@ describe('d2l-my-courses-content', () => {
 	});
 
 	describe('EnrollmentCollectionOnChange', () => {
-		var _enrollmentCollectionEntity, _enrollmentEntity;
+		let _enrollmentCollectionEntity, _enrollmentEntity;
 		beforeEach((done) => {
-			var onUserActivityUsageChangeStub = sinon.stub();
-			var onEnrollmentEntityChangeStub = sinon.stub();
-			var onOrganizationChangeStub = sinon.stub();
-			var processedDateStub = sinon.stub();
+			const onUserActivityUsageChangeStub = sinon.stub();
+			const onEnrollmentEntityChangeStub = sinon.stub();
+			const onOrganizationChangeStub = sinon.stub();
+			const processedDateStub = sinon.stub();
 			_enrollmentCollectionEntity = {
 				_entity: oneEnrollmentSearchEntity,
 				getEnrollmentEntities: function() { return [
@@ -917,12 +920,12 @@ describe('d2l-my-courses-content', () => {
 				onUserActivityUsageChange: onUserActivityUsageChangeStub
 			};
 
-			var userActivityUsageEntity = {
+			const userActivityUsageEntity = {
 				isCompletionDate: function() { return true; },
 				date: function() { return '1969-08-11T04:00:00.000Z'; }
 			};
 
-			var organizationEntity = {
+			const organizationEntity = {
 				_entity: {},
 				processedDate: processedDateStub
 			};
@@ -943,7 +946,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('Should call _setEnrollmentCardStatus', () => {
-			var spy = sandbox.spy(component, '_setEnrollmentCardStatus');
+			const spy = sandbox.spy(component, '_setEnrollmentCardStatus');
 			component._fetchEnrollmentCardStatus(1, _enrollmentCollectionEntity);
 			expect(spy).to.have.been.calledTwice;
 		});
