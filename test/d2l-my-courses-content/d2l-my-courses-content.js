@@ -451,7 +451,9 @@ describe('d2l-my-courses-content', () => {
 					});
 				});
 
-				component.dispatchEvent(event);
+				requestAnimationFrame(() => {
+					component.dispatchEvent(event);
+				});
 
 			});
 
@@ -463,8 +465,10 @@ describe('d2l-my-courses-content', () => {
 					done();
 				});
 
-				component.dispatchEvent(event);
-				component.focus();
+				requestAnimationFrame(() => {
+					component.dispatchEvent(event);
+					component.focus();
+				});
 
 			});
 
@@ -481,7 +485,9 @@ describe('d2l-my-courses-content', () => {
 					});
 				});
 
-				component.dispatchEvent(event);
+				requestAnimationFrame(() => {
+					component.dispatchEvent(event);
+				});
 			});
 
 			it('should return correct org unit id from various href', () => {
