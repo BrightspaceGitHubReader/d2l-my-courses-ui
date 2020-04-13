@@ -11,7 +11,6 @@ Polymer-based web component for the search listbox.
 import '@polymer/polymer/polymer-legacy.js';
 
 import '@brightspace-ui/core/components/colors/colors.js';
-import '@polymer/iron-a11y-keys/iron-a11y-keys.js';
 import { IronMenuBehavior } from '@polymer/iron-menu-behavior/iron-menu-behavior.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { IronA11yKeysBehavior } from '@polymer/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
