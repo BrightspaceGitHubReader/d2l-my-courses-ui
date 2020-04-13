@@ -3,7 +3,6 @@
 Polymer-based web component for the search widget, with added "Recent Searches" functionality.
 Should be converted to a new input shared component.
 */
-import '@polymer/polymer/polymer-legacy.js';
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import 'd2l-search-widget/d2l-search-widget.js';
@@ -11,14 +10,53 @@ import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-search-listbox.js';
 import '../d2l-utility-behavior.js';
 import '../localize-behavior.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { isComposedAncestor } from '@brightspace-ui/core/helpers/dom.js';
-const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-search-widget-custom">
-	<template strip-whitespace="">
+class SearchWidgetCustom extends mixinBehaviors([
+	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
+	D2L.MyCourses.UtilityBehavior
+], PolymerElement) {
+
+	static get is() { return 'd2l-search-widget-custom'; }
+
+	static get properties() {
+		return {
+			// URL to use to search. Updated by the search field, as well as external sources like sort/filter menus
+			searchUrl: {
+				type: String,
+				observer: '_handleSearchUrlChange'
+			},
+			// URL to use to search. Updated by the search field, as well as external sources like sort/filter menus
+			searchAction: {
+				type: Object
+			},
+			orgUnitTypeIds: {
+				type: Array
+			},
+			// List of strings containing previously searched terms/selected courses
+			_previousSearches: {
+				type: Array,
+				value: function() {
+					return [];
+				}
+			},
+			// Calculated width of live search dropdown
+			_dropdownWidth: Number,
+			_keyCodes: {
+				type: Object,
+				value: {
+					DOWN: 40,
+					UP: 38
+				}
+			}
+		};
+	}
+
+	static get template() {
+		return html`
 		<style>
 			.dropdown-content {
 				background: transparent;
@@ -61,95 +99,58 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-search-widget-custom">
 					</d2l-search-listbox>
 				</div>
 			</d2l-dropdown-content>
-		</d2l-dropdown>
-	</template>
+		</d2l-dropdown>`;
+	}
 
-</dom-module>`;
-
-document.head.appendChild($_documentContainer.content);
-Polymer({
-	is: 'd2l-search-widget-custom',
-
-	properties: {
-		// URL to use to search. Updated by the search field, as well as external sources like sort/filter menus
-		searchUrl: {
-			type: String,
-			observer: '_handleSearchUrlChange'
-		},
-		// URL to use to search. Updated by the search field, as well as external sources like sort/filter menus
-		searchAction: {
-			type: Object
-		},
-		orgUnitTypeIds: {
-			type: Array
-		},
-		// List of strings containing previously searched terms/selected courses
-		_previousSearches: {
-			type: Array,
-			value: function() {
-				return [];
-			}
-		},
-		// Calculated width of live search dropdown
-		_dropdownWidth: Number
-	},
-	listeners: {
-		'iron-activate': '_onIronActivate'
-	},
-	behaviors: [
-		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.UtilityBehavior
-	],
-	ready: function() {
+	ready() {
+		super.ready();
 		this._handleFocusBound = this._handleFocus.bind(this);
 		this._handleClickBound = this._handleClick.bind(this);
 		this._handleSearch = this._handleSearch.bind(this);
-	},
-	attached: function() {
+	}
+	connectedCallback() {
+		super.connectedCallback();
 		document.body.addEventListener('focus', this._handleFocusBound, true);
 		document.body.addEventListener('click', this._handleClickBound, true);
 
 		afterNextRender(this, function() {
+			this.addEventListener('iron-activate', this._onIronActivate);
 			this._getSearchWidget().addEventListener('d2l-search-widget-results-changed', this._handleSearch);
 		}.bind(this));
 
 		this._initializePreviousSearches();
-	},
-	detached: function() {
+	}
+	disconnectedCallback() {
+		super.disconnectedCallback();
 		document.body.removeEventListener('focus', this._handleFocusBound, true);
 		document.body.removeEventListener('click', this._handleClickBound, true);
-		this._getSearchWidget().removeEventListener('d2l-search-widget-results-changed', this._handleSearch);
-	},
-	search: function() {
+	}
+	search() {
 		this._getSearchWidget().search();
-	},
-	clear: function() {
+	}
+	clear() {
 		this._getSearchWidget().clear();
-	},
-	_keyCodes: {
-		DOWN: 40,
-		UP: 38
-	},
+	}
 	_computeSearchQuery(orgUnitTypeIds) {
 		return {
 			page: 1,
 			orgUnitTypeId: orgUnitTypeIds,
 			pageSize: 20
 		};
-	},
+	}
 	_getSearchWidget() {
 		return this.shadowRoot.querySelector('d2l-search-widget');
-	},
+	}
 	_getListbox() {
 		return this.shadowRoot.querySelector('d2l-search-listbox');
-	},
+	}
 	_handleSearch(e) {
 		this._addSearchToHistory(e.detail.searchValue);
-	},
+	}
 	_handleSearchUrlChange(url) {
 		this._getSearchWidget()._searchUrl = url;
-	},
-	_onSearchInputKeyPressed: function(e) {
+	}
+	_onSearchInputKeyPressed(e) {
 		switch (e.keyCode) {
 			case this._keyCodes.DOWN:
 				if (this._getListbox().hasItems()) {
@@ -164,13 +165,12 @@ Polymer({
 				e.preventDefault();
 				break;
 		}
-	},
+	}
 
 	/*
 	* Recent searches functionality
 	*/
-
-	_initializePreviousSearches: function() {
+	_initializePreviousSearches() {
 		if (window.localStorage.getItem('myCourses.previousSearches')) {
 			try {
 				var prevSearchObject = JSON.parse(window.localStorage.getItem('myCourses.previousSearches'));
@@ -183,8 +183,8 @@ Polymer({
 				this._previousSearches = [];
 			}
 		}
-	},
-	_addSearchToHistory: function(searchTerm) {
+	}
+	_addSearchToHistory(searchTerm) {
 		if (searchTerm.trim() === '') {
 			return;
 		}
@@ -214,18 +214,18 @@ Polymer({
 		} catch (e) {
 			// Local storage not available/full - oh well.
 		}
-	},
+	}
 	// Handles iron-activate events, which are fired when listbox items are selected
-	_onIronActivate: function(e) {
+	_onIronActivate(e) {
 		var text = e.detail.item.dataset.text;
 		if (text) {
 			this._getSearchWidget()._getSearchInput().value = text;
 			this.search();
 		}
 		e.stopPropagation();
-	},
+	}
 	// Called when an element within the search bar gains focus, to open the dropdown if required
-	_onSearchInputFocused: function() {
+	_onSearchInputFocused() {
 		if (this.$.dropdown.opened) {
 			return;
 		}
@@ -236,22 +236,25 @@ Polymer({
 		if (this._previousSearches.length > 0) {
 			this.$.dropdown.open();
 		}
-	},
-	_onSearchInputBlur: function(e) {
+	}
+	_onSearchInputBlur(e) {
 		var className = e.relatedTarget ? e.relatedTarget.className : '';
 		if (e.relatedTarget !== this._getListbox() && className.indexOf('d2l-search-widget-custom-item') === -1) {
 			this.$.dropdown.close();
 		}
-	},
-	_handleFocus: function() {
+	}
+	_handleFocus() {
 		this._checkFocusLost(document.activeElement);
-	},
-	_handleClick: function(e) {
-		this._checkFocusLost(dom(e).rootTarget);
-	},
-	_checkFocusLost: function(focusedElement) {
+	}
+	_handleClick(e) {
+		this._checkFocusLost(e.composedPath()[0]);
+	}
+	_checkFocusLost(focusedElement) {
 		if (this.$.dropdown.opened && !isComposedAncestor(this, focusedElement)) {
 			this.$.dropdown.close();
 		}
 	}
-});
+
+}
+
+window.customElements.define(SearchWidgetCustom.is, SearchWidgetCustom);
