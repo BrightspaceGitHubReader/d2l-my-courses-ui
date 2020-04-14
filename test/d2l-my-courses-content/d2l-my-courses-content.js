@@ -465,7 +465,7 @@ describe('d2l-my-courses-content', () => {
 					done();
 				});
 
-				requestAnimationFrame(() => {
+				afterNextRender(this, () => {
 					component.dispatchEvent(event);
 					component.focus();
 				});
@@ -485,7 +485,7 @@ describe('d2l-my-courses-content', () => {
 					});
 				});
 
-				requestAnimationFrame(() => {
+				afterNextRender(this, () => {
 					component.dispatchEvent(event);
 				});
 			});
