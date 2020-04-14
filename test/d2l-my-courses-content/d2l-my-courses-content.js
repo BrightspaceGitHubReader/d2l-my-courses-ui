@@ -340,12 +340,6 @@ describe('d2l-my-courses-content', () => {
 
 	describe('Events', () => {
 
-		beforeEach((done) => {
-			requestAnimationFrame(() => {
-				done();
-			});
-		});
-
 		describe('d2l-tab-panel-selected', () => {
 			let parentComponent;
 
@@ -612,11 +606,8 @@ describe('d2l-my-courses-content', () => {
 	describe('Performance measures', () => {
 		let stub;
 
-		beforeEach((done) => {
+		beforeEach(() => {
 			stub = sandbox.stub(component, 'performanceMeasure');
-			requestAnimationFrame(() => {
-				done();
-			});
 		});
 
 		it('should measure d2l.my-courses when all visible course tile images have loaded', done => {
@@ -634,10 +625,9 @@ describe('d2l-my-courses-content', () => {
 					component.dispatchEvent(new CustomEvent('course-image-loaded'));
 				});
 			});
-			requestAnimationFrame(() => {
-				expect(component._initiallyVisibleCourseTileCount).to.equal(0);
-				component.dispatchEvent(new CustomEvent('initially-visible-course-tile'));
-			});
+
+			expect(component._initiallyVisibleCourseTileCount).to.equal(0);
+			component.dispatchEvent(new CustomEvent('initially-visible-course-tile'));
 		});
 
 		it('should measure d2l.my-courses.root-enrollments when the root enrollments call has finished', () => {
