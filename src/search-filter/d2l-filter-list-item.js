@@ -10,12 +10,12 @@ Polymer-based web component for the filter list item.
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import { Rels } from 'd2l-hypermedia-constants';
 import '@brightspace-ui/core/components/icons/icon.js';
 import 'd2l-menu/d2l-menu-item-selectable-behavior.js';
-import '../d2l-utility-behavior.js';
 import './d2l-filter-list-item-styles.js';
+import '../d2l-utility-behavior.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import { Rels } from 'd2l-hypermedia-constants';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-filter-list-item">

@@ -10,11 +10,11 @@ Polymer-based web component for the filter menu tab roles.
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import { Actions } from 'd2l-hypermedia-constants';
 import '@brightspace-ui/core/components/menu/menu.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import '../d2l-utility-behavior.js';
 import './d2l-filter-list-item-role.js';
+import '../d2l-utility-behavior.js';
+import { Actions } from 'd2l-hypermedia-constants';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 const $_documentContainer = document.createElement('template');
 
@@ -73,20 +73,20 @@ Polymer({
 	},
 
 	clear: function() {
-		var items = this.$$('d2l-menu').querySelectorAll('d2l-filter-list-item-role');
-		for (var i = 0; i < items.length; i++) {
+		const items = this.$$('d2l-menu').querySelectorAll('d2l-filter-list-item-role');
+		for (let i = 0; i < items.length; i++) {
 			items[i].selected = false;
 		}
 
 		// This should instead use a `clear-role-filters` action from the API
 		// (which would do effectively the same thing), but it doesn't exist yet
-		var myEnrollmentsEntity = this.parseEntity(this.myEnrollmentsEntity);
-		var actionName = Actions.enrollments.setRoleFilters;
+		const myEnrollmentsEntity = this.parseEntity(this.myEnrollmentsEntity);
+		const actionName = Actions.enrollments.setRoleFilters;
 		if (!myEnrollmentsEntity.hasActionByName(actionName)) {
 			return;
 		}
-		var setRoleFiltersAction = myEnrollmentsEntity.getActionByName(actionName);
-		var clearRoleFiltersUrl = this.createActionUrl(setRoleFiltersAction, {
+		const setRoleFiltersAction = myEnrollmentsEntity.getActionByName(actionName);
+		const clearRoleFiltersUrl = this.createActionUrl(setRoleFiltersAction, {
 			include: ''
 		});
 
@@ -95,10 +95,10 @@ Polymer({
 	resize: function() {
 		this.$$('d2l-menu').resize();
 
-		setTimeout(function() {
+		setTimeout(() => {
 			// DE24225 - force dropdown to resize after opening
 			window.dispatchEvent(new Event('resize'));
-		}.bind(this), 200);
+		}, 200);
 	},
 
 	_computeShowContent: function(filtersLength) {
@@ -106,44 +106,44 @@ Polymer({
 	},
 	_myEnrollmentsEntityChanged: function(myEnrollmentsEntity) {
 		myEnrollmentsEntity = this.parseEntity(myEnrollmentsEntity);
-		var actionName = Actions.enrollments.setRoleFilters;
+		const actionName = Actions.enrollments.setRoleFilters;
 		if (!myEnrollmentsEntity.hasActionByName(actionName)) {
 			return;
 		}
 
-		var setRoleFiltersAction = myEnrollmentsEntity.getActionByName(actionName);
-		var setRoleFiltersUrl = this.createActionUrl(setRoleFiltersAction);
+		const setRoleFiltersAction = myEnrollmentsEntity.getActionByName(actionName);
+		const setRoleFiltersUrl = this.createActionUrl(setRoleFiltersAction);
 
 		this._fetchFilterItems(setRoleFiltersUrl);
 	},
 	_onMenuItemChange: function(e) {
-		var actionName;
+		let actionName;
 		if (e.detail.selected) {
 			actionName = Actions.enrollments.roleFilters.addFilter;
 		} else {
 			actionName = Actions.enrollments.roleFilters.removeFilter;
 		}
 
-		var filterTitle = e.detail.value;
+		const filterTitle = e.detail.value;
 
-		var filter = this._findNextFilter(this._roleFiltersEntity.entities, filterTitle, actionName);
-		var action = filter.getActionByName(actionName);
-		var url = this.createActionUrl(action);
-		var request = this.fetchSirenEntity(url);
+		const filter = this._findNextFilter(this._roleFiltersEntity.entities, filterTitle, actionName);
+		const action = filter.getActionByName(actionName);
+		const url = this.createActionUrl(action);
+		let request = this.fetchSirenEntity(url);
 
-		for (var i = 1; i < this._roleFiltersEntity.entities.length; i++) {
-			request = request.then(function(updatedFilters) {
-				var filter = this._findNextFilter(updatedFilters.entities, filterTitle, actionName);
+		for (let i = 1; i < this._roleFiltersEntity.entities.length; i++) {
+			request = request.then((updatedFilters) => {
+				const filter = this._findNextFilter(updatedFilters.entities, filterTitle, actionName);
 				// If there aren't any more "off" filters with the desired title, skip through to end
 				if (!filter) {
 					return Promise.resolve(updatedFilters);
 				}
 
 				// Create the URL to enable the next correctly-titled, "off" filter
-				var action = filter.getActionByName(actionName);
-				var url = this.createActionUrl(action);
+				const action = filter.getActionByName(actionName);
+				const url = this.createActionUrl(action);
 				return this.fetchSirenEntity(url);
-			}.bind(this));
+			});
 		}
 
 		return request
@@ -152,8 +152,8 @@ Polymer({
 	},
 	_findNextFilter: function(array, title, actionName) {
 		// This could easily be replaced with Array.prototype.find, but... IE.
-		for (var i = 0; i < array.length; i++) {
-			var filter = array[i];
+		for (let i = 0; i < array.length; i++) {
+			const filter = array[i];
 			if (filter.title === title && filter.hasActionByName(actionName)) {
 				return filter;
 			}
@@ -161,10 +161,10 @@ Polymer({
 	},
 	_applyRoleFilters: function() {
 		// Use the apply-role-filters action to create the new searchUrl
-		var applyAction = this._roleFiltersEntity.getActionByName(
+		const applyAction = this._roleFiltersEntity.getActionByName(
 			Actions.enrollments.roleFilters.applyRoleFilters
 		);
-		var searchUrl = this.createActionUrl(applyAction);
+		const searchUrl = this.createActionUrl(applyAction);
 		this.fire('role-filters-changed', {
 			url: searchUrl,
 			filterCount: this.querySelectorAll('d2l-filter-list-item-role[selected]').length
@@ -179,8 +179,8 @@ Polymer({
 		this._roleFiltersEntity.entities = this._roleFiltersEntity.entities || [];
 
 		// DE27982 - Filters with the same title should be combined into one item
-		var uniqueTitles = [];
-		this._roleFiltersEntity.entities.forEach(function(filterEntity) {
+		const uniqueTitles = [];
+		this._roleFiltersEntity.entities.forEach((filterEntity) => {
 			if (uniqueTitles.indexOf(filterEntity.title) === -1) {
 				uniqueTitles.push(filterEntity.title);
 			}

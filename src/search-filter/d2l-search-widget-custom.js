@@ -11,9 +11,9 @@ import './d2l-search-listbox.js';
 import '../d2l-utility-behavior.js';
 import '../localize-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { isComposedAncestor } from '@brightspace-ui/core/helpers/dom.js';
+import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 
 class SearchWidgetCustom extends mixinBehaviors([
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
@@ -113,10 +113,10 @@ class SearchWidgetCustom extends mixinBehaviors([
 		document.body.addEventListener('focus', this._handleFocusBound, true);
 		document.body.addEventListener('click', this._handleClickBound, true);
 
-		afterNextRender(this, function() {
+		afterNextRender(this, () => {
 			this.addEventListener('iron-activate', this._onIronActivate);
 			this._getSearchWidget().addEventListener('d2l-search-widget-results-changed', this._handleSearch);
-		}.bind(this));
+		});
 
 		this._initializePreviousSearches();
 	}
@@ -173,7 +173,7 @@ class SearchWidgetCustom extends mixinBehaviors([
 	_initializePreviousSearches() {
 		if (window.localStorage.getItem('myCourses.previousSearches')) {
 			try {
-				var prevSearchObject = JSON.parse(window.localStorage.getItem('myCourses.previousSearches'));
+				const prevSearchObject = JSON.parse(window.localStorage.getItem('myCourses.previousSearches'));
 
 				if (prevSearchObject.hasOwnProperty('searches') && prevSearchObject.searches instanceof Array) {
 					this._previousSearches = prevSearchObject.searches;
@@ -190,7 +190,7 @@ class SearchWidgetCustom extends mixinBehaviors([
 		}
 
 		// Remove prior existence of this search term if it exists
-		for (var i = 0; i < this._previousSearches.length; i++) {
+		for (let i = 0; i < this._previousSearches.length; i++) {
 			if (searchTerm === this._previousSearches[i]) {
 				this.splice('_previousSearches', i, 1);
 			}
@@ -217,7 +217,7 @@ class SearchWidgetCustom extends mixinBehaviors([
 	}
 	// Handles iron-activate events, which are fired when listbox items are selected
 	_onIronActivate(e) {
-		var text = e.detail.item.dataset.text;
+		const text = e.detail.item.dataset.text;
 		if (text) {
 			this._getSearchWidget()._getSearchInput().value = text;
 			this.search();
@@ -238,7 +238,7 @@ class SearchWidgetCustom extends mixinBehaviors([
 		}
 	}
 	_onSearchInputBlur(e) {
-		var className = e.relatedTarget ? e.relatedTarget.className : '';
+		const className = e.relatedTarget ? e.relatedTarget.className : '';
 		if (e.relatedTarget !== this._getListbox() && className.indexOf('d2l-search-widget-custom-item') === -1) {
 			this.$.dropdown.close();
 		}

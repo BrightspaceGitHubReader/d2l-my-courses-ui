@@ -21,7 +21,7 @@ D2L.MyCourses.AlertBehavior = {
 		}
 	},
 	_populateAlertsView: function(alert) {
-		this._alertsView = Object.keys(alert).map(function(key) {
+		this._alertsView = Object.keys(alert).map((key) => {
 			if (!alert[key]) {
 				return null;
 			}
@@ -30,7 +30,7 @@ D2L.MyCourses.AlertBehavior = {
 				alertName: key,
 				alertMessage: alert[key].alertMessage
 			};
-		}.bind(this)).filter(function(element) {
+		}).filter((element) => {
 			return element;
 		});
 	},

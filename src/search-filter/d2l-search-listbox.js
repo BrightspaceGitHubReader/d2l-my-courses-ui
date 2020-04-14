@@ -11,9 +11,9 @@ Polymer-based web component for the search listbox.
 import '@polymer/polymer/polymer-legacy.js';
 
 import '@brightspace-ui/core/components/colors/colors.js';
+import { IronA11yKeysBehavior } from '@polymer/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 import { IronMenuBehavior } from '@polymer/iron-menu-behavior/iron-menu-behavior.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { IronA11yKeysBehavior } from '@polymer/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-search-listbox">
@@ -87,7 +87,7 @@ Polymer({
 	],
 
 	hasItems: function() {
-		var selectableItems = this.items.filter(function(item) {
+		const selectableItems = this.items.filter((item) => {
 			if (item.hasAttribute('role') &&
 				item.getAttribute('role') === 'option' &&
 				!item.hasAttribute('disabled')) {
@@ -98,10 +98,10 @@ Polymer({
 	},
 
 	focusLast: function() {
-		var length = this.items.length;
+		const length = this.items.length;
 
-		for (var i = length - 1; i >= 0; i--) {
-			var item = this.items[i];
+		for (let i = length - 1; i >= 0; i--) {
+			const item = this.items[i];
 			if (!item.hasAttribute('disabled')) {
 				this._setFocusedItem(item);
 				return;
@@ -111,12 +111,12 @@ Polymer({
 
 	// Override IronMenuBehavior._focusPrevious so that the listbox owner can be focused
 	_focusPrevious: function() {
-		var length = this.items.length;
-		var curFocusIndex = this.indexOf(this.focusedItem);
+		const length = this.items.length;
+		const curFocusIndex = this.indexOf(this.focusedItem);
 
-		for (var i = 1; i < length + 1; i++) {
-			var newItemIndex = (curFocusIndex - i + length) % length;
-			var item = this.items[newItemIndex];
+		for (let i = 1; i < length + 1; i++) {
+			const newItemIndex = (curFocusIndex - i + length) % length;
+			const item = this.items[newItemIndex];
 
 			if (this.owner && newItemIndex === length - 1) {
 				this._setFocusedItem(null);
@@ -131,12 +131,12 @@ Polymer({
 
 	// Override IronMenuBehavior._focusNext so that the listbox owner can be focused
 	_focusNext: function() {
-		var length = this.items.length;
-		var curFocusIndex = this.indexOf(this.focusedItem);
+		const length = this.items.length;
+		const curFocusIndex = this.indexOf(this.focusedItem);
 
-		for (var i = 1; i < length + 1; i++) {
-			var newItemIndex = (curFocusIndex + i) % length;
-			var item = this.items[newItemIndex];
+		for (let i = 1; i < length + 1; i++) {
+			const newItemIndex = (curFocusIndex + i) % length;
+			const item = this.items[newItemIndex];
 
 			if (this.owner && (curFocusIndex > newItemIndex) && (newItemIndex === 0)) {
 				this._setFocusedItem(null);
@@ -161,7 +161,7 @@ Polymer({
 
 	// Override IronMenuBehavior._resetTabindices to disable tab focus of all items
 	_resetTabindices: function() {
-		for (var i = 0; i < this.items.length; i++) {
+		for (let i = 0; i < this.items.length; i++) {
 			this.items[i].setAttribute('tabindex', -1);
 		}
 	},
