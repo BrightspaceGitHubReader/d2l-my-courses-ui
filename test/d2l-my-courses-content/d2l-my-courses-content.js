@@ -485,9 +485,9 @@ describe('d2l-my-courses-content', () => {
 					});
 				});
 
-				requestAnimationFrame(() => {
+				setTimeout(() => {
 					component.dispatchEvent(event);
-				});
+				}, 50);
 			});
 
 			it('should return correct org unit id from various href', () => {
