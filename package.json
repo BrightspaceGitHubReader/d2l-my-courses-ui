@@ -67,7 +67,7 @@
     "d2l-tabs": "BrightspaceUI/tabs#semver:^1",
     "d2l-typography": "BrightspaceUI/typography#semver:^7",
     "@polymer/iron-a11y-announcer": "^3.0.0",
-    "@polymer/iron-a11y-keys": "^3.0.0",
+    "@polymer/iron-a11y-keys-behavior": "^3.0.0",
     "@polymer/iron-menu-behavior": "^3.0.0",
     "@polymer/iron-scroll-threshold": "^3.0.0",
     "@polymer/iron-pages": "^3.0.0",

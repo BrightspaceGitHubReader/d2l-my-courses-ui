@@ -25,7 +25,6 @@ import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntit
 import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js'; //todo: Remove
 
@@ -327,15 +326,13 @@ class MyCoursesContent extends mixinBehaviors([
 		document.body.addEventListener('set-course-image', this._onSetCourseImage);
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
 
-		afterNextRender(this, () => {
-			this.addEventListener('open-change-image-view', this._onOpenChangeImageView);
-			this.addEventListener('clear-image-scroll-threshold', this._onClearImageScrollThreshold);
-			this.addEventListener('d2l-simple-overlay-closed', this._onSimpleOverlayClosed);
-			this.addEventListener('course-tile-organization', this._onCourseTileOrganization);
-			this.addEventListener('course-image-loaded', this._onCourseImageLoaded);
-			this.addEventListener('initially-visible-course-tile', this._onInitiallyVisibleCourseTile);
-			this.addEventListener('d2l-enrollment-new', this._onD2lEnrollmentNew);
-		});
+		this.addEventListener('clear-image-scroll-threshold', this._onClearImageScrollThreshold);
+		this.addEventListener('course-tile-organization', this._onCourseTileOrganization);
+		this.addEventListener('course-image-loaded', this._onCourseImageLoaded);
+		this.addEventListener('d2l-enrollment-new', this._onD2lEnrollmentNew);
+		this.addEventListener('d2l-simple-overlay-closed', this._onSimpleOverlayClosed);
+		this.addEventListener('initially-visible-course-tile', this._onInitiallyVisibleCourseTile);
+		this.addEventListener('open-change-image-view', this._onOpenChangeImageView);
 
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
 

@@ -1,5 +1,4 @@
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
-import { flush } from '@polymer/polymer/lib/utils/render-status.js';
 
 describe('d2l-my-courses-content', () => {
 	let sandbox,
@@ -342,7 +341,6 @@ describe('d2l-my-courses-content', () => {
 	describe('Events', () => {
 
 		beforeEach((done) => {
-			flush();
 			requestAnimationFrame(() => {
 				done();
 			});
@@ -451,7 +449,9 @@ describe('d2l-my-courses-content', () => {
 					});
 				});
 
-				component.dispatchEvent(event);
+				requestAnimationFrame(() => {
+					component.dispatchEvent(event);
+				});
 
 			});
 
@@ -463,8 +463,10 @@ describe('d2l-my-courses-content', () => {
 					done();
 				});
 
-				component.dispatchEvent(event);
-				component.focus();
+				requestAnimationFrame(() => {
+					component.dispatchEvent(event);
+					component.focus();
+				});
 
 			});
 
@@ -481,7 +483,9 @@ describe('d2l-my-courses-content', () => {
 					});
 				});
 
-				component.dispatchEvent(event);
+				setTimeout(() => {
+					component.dispatchEvent(event);
+				}, 50);
 			});
 
 			it('should return correct org unit id from various href', () => {
@@ -616,7 +620,6 @@ describe('d2l-my-courses-content', () => {
 
 		beforeEach((done) => {
 			stub = sandbox.stub(component, 'performanceMeasure');
-			flush();
 			requestAnimationFrame(() => {
 				done();
 			});
@@ -633,10 +636,12 @@ describe('d2l-my-courses-content', () => {
 			});
 			component.addEventListener('initially-visible-course-tile', () => {
 				requestAnimationFrame(() => {
+					expect(component._initiallyVisibleCourseTileCount).to.equal(1);
 					component.dispatchEvent(new CustomEvent('course-image-loaded'));
 				});
 			});
 			requestAnimationFrame(() => {
+				expect(component._initiallyVisibleCourseTileCount).to.equal(0);
 				component.dispatchEvent(new CustomEvent('initially-visible-course-tile'));
 			});
 		});
