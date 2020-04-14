@@ -1,5 +1,4 @@
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
-import { flush } from '@polymer/polymer/lib/utils/render-status.js';
 
 describe('d2l-my-courses-content', () => {
 	let sandbox,
@@ -342,7 +341,6 @@ describe('d2l-my-courses-content', () => {
 	describe('Events', () => {
 
 		beforeEach((done) => {
-			flush();
 			requestAnimationFrame(() => {
 				done();
 			});
@@ -622,7 +620,6 @@ describe('d2l-my-courses-content', () => {
 
 		beforeEach((done) => {
 			stub = sandbox.stub(component, 'performanceMeasure');
-			flush();
 			requestAnimationFrame(() => {
 				done();
 			});
