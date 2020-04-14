@@ -1,5 +1,5 @@
-import { afterNextRender, flush } from '@polymer/polymer/lib/utils/render-status.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
+import { flush } from '@polymer/polymer/lib/utils/render-status.js';
 
 describe('d2l-my-courses-content', () => {
 	let sandbox,
@@ -451,7 +451,7 @@ describe('d2l-my-courses-content', () => {
 					});
 				});
 
-				afterNextRender(this, () => {
+				requestAnimationFrame(() => {
 					component.dispatchEvent(event);
 				});
 
@@ -465,7 +465,7 @@ describe('d2l-my-courses-content', () => {
 					done();
 				});
 
-				afterNextRender(this, () => {
+				requestAnimationFrame(() => {
 					component.dispatchEvent(event);
 					component.focus();
 				});
@@ -485,7 +485,7 @@ describe('d2l-my-courses-content', () => {
 					});
 				});
 
-				afterNextRender(this, () => {
+				requestAnimationFrame(() => {
 					component.dispatchEvent(event);
 				});
 			});
@@ -643,7 +643,7 @@ describe('d2l-my-courses-content', () => {
 					component.dispatchEvent(new CustomEvent('course-image-loaded'));
 				});
 			});
-			afterNextRender(this, () => {
+			requestAnimationFrame(() => {
 				expect(component._initiallyVisibleCourseTileCount).to.equal(0);
 				component.dispatchEvent(new CustomEvent('initially-visible-course-tile'));
 			});
