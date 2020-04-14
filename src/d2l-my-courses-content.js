@@ -21,7 +21,6 @@ import './localize-behavior.js';
 import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js'; //todo: Remove
 
@@ -329,16 +328,13 @@ class MyCoursesContent extends mixinBehaviors([
 		document.body.addEventListener('set-course-image', this._onSetCourseImage);
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
 
+		this.addEventListener('clear-image-scroll-threshold', this._onClearImageScrollThreshold);
 		this.addEventListener('course-tile-organization', this._onCourseTileOrganization);
 		this.addEventListener('course-image-loaded', this._onCourseImageLoaded);
-		this.addEventListener('initially-visible-course-tile', this._onInitiallyVisibleCourseTile);
 		this.addEventListener('d2l-enrollment-new', this._onD2lEnrollmentNew);
-
-		afterNextRender(this, () => {
-			this.addEventListener('open-change-image-view', this._onOpenChangeImageView);
-			this.addEventListener('clear-image-scroll-threshold', this._onClearImageScrollThreshold);
-			this.addEventListener('d2l-simple-overlay-closed', this._onSimpleOverlayClosed);
-		});
+		this.addEventListener('d2l-simple-overlay-closed', this._onSimpleOverlayClosed);
+		this.addEventListener('initially-visible-course-tile', this._onInitiallyVisibleCourseTile);
+		this.addEventListener('open-change-image-view', this._onOpenChangeImageView);
 
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
 
