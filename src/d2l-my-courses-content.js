@@ -22,8 +22,6 @@ import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js'
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
 
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js'; //todo: Remove
-
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
@@ -541,7 +539,7 @@ class MyCoursesContent extends mixinBehaviors([
 		this._initiallyVisibleCourseTileCount++;
 	}
 	_onEnrollmentPinnedMessage(e) {
-		if (dom(e).rootTarget === this) return;
+		if (e.composedPath()[0] === this) return;
 
 		const isPinned = e.detail.isPinned;
 		let orgUnitId;
@@ -571,14 +569,6 @@ class MyCoursesContent extends mixinBehaviors([
 		}));
 		this._isRefetchNeeded = false;
 
-		// Pretty sure this is broken... it returns the my-courses component in Shadow DOM, and even when I set it to the actual enrollment-card component,
-		// enrollmentCard.hasAttribute('completed') and enrollmentCard.hasAttribute('closed') always seem to return false even when the attribute is there
-		// I think because things have already started "moving" and dom-repeat is infuriating
-		// Going to cleanup next PR
-		const enrollmentCard = dom(e).event && dom(e).event.srcElement;
-
-		const shouldHide = enrollmentCard && !isPinned && (enrollmentCard.hasAttribute('completed') || (enrollmentCard.hasAttribute('closed')));
-
 		const removalIndex = this._enrollments.indexOf(changedEnrollmentId);
 		let insertIndex = this._lastPinnedIndex + 1;
 
@@ -590,18 +580,13 @@ class MyCoursesContent extends mixinBehaviors([
 			this._lastPinnedIndex++;
 		}
 
-		if (removalIndex === insertIndex && !shouldHide) {
+		if (removalIndex === insertIndex) {
 			this._onResize();
 			return;
 		}
 
 		if (removalIndex !== -1) {
 			this.splice('_enrollments', removalIndex, 1);
-
-			if (shouldHide && !this._isPinnedTab) {
-				this._onResize();
-				return;
-			}
 
 			if (removalIndex < insertIndex) {
 				insertIndex--;
@@ -624,7 +609,7 @@ class MyCoursesContent extends mixinBehaviors([
 	}
 	_onTabSelected(e) {
 		// Only handle if tab selected corresponds to this panel
-		if (!this.parentElement || dom(e).rootTarget.id !== this.parentElement.id) {
+		if (!this.parentElement || e.composedPath()[0].id !== this.parentElement.id) {
 			document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
 			return;
 		}

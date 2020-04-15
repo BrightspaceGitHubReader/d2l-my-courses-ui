@@ -507,12 +507,12 @@ describe('d2l-my-courses-content', () => {
 					organizationHref: function() { return 'organizationHref'; },
 				};
 
-				const event = {
+				const event = new CustomEvent('d2l-course-pinned-change', {
 					detail: {
 						isPinned: true,
 						enrollment: _enrollmentEntity
 					}
-				};
+				});
 
 				component._orgUnitIdMap = {
 					1: enrollmentEntity
