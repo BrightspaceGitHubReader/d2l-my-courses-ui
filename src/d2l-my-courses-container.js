@@ -161,7 +161,9 @@ class MyCoursesContainer extends mixinBehaviors([
 		}
 
 		if (userSettingsEntity.userSettingsHref()) {
-			this._presentationUrl = userSettingsEntity.userSettingsHref();
+			// We need to bust the cache so the entity store will refetch the presentation details after widget settings are updated
+			const url = userSettingsEntity.userSettingsHref();
+			this._presentationUrl = `${url}${(url.indexOf('?') !== -1 ? '&' : '?')}bustCache=${Math.random()}`;
 		}
 
 		this._updateUserSettingsAction = userSettingsEntity.userSettingsAction();
