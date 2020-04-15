@@ -4,32 +4,32 @@ Polymer-based web component for the all courses overlay.
 */
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
-import 'd2l-alert/d2l-alert.js';
 import '@brightspace-ui/core/components/colors/colors.js';
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-menu.js';
-import { Actions, Classes } from 'd2l-hypermedia-constants';
 import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/menu/menu.js';
 import '@brightspace-ui/core/components/menu/menu-item-radio.js';
+import 'd2l-alert/d2l-alert.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
-import SirenParse from 'siren-parser';
 import 'd2l-tabs/d2l-tabs.js';
+import './card-grid/d2l-all-courses-content.js';
 import './d2l-alert-behavior.js';
-import './search-filter/d2l-filter-menu.js';
-import './search-filter/d2l-search-widget-custom.js';
 import './d2l-utility-behavior.js';
 import './localize-behavior.js';
-import './card-grid/d2l-all-courses-content.js';
-import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
+import './search-filter/d2l-filter-menu.js';
+import './search-filter/d2l-search-widget-custom.js';
+import { Actions, Classes } from 'd2l-hypermedia-constants';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import SirenParse from 'siren-parser';
 
 class AllCourses extends mixinBehaviors([
 	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
@@ -462,9 +462,9 @@ class AllCourses extends mixinBehaviors([
 
 		if (details && details.detail) {
 			if (details.detail.status === 'failure') {
-				setTimeout(function() {
+				setTimeout(() => {
 					this._addAlert('warning', 'setCourseImageFailure', this.localize('error.settingImage'));
-				}.bind(this), 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
+				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
 			}
 		}
 	}
@@ -475,7 +475,7 @@ class AllCourses extends mixinBehaviors([
 
 	_onAllCoursesLowerThreshold() {
 		if (this.$['all-courses'].opened && this._lastEnrollmentsSearchResponse) {
-			var lastResponseEntity = this._lastEnrollmentsSearchResponse;
+			const lastResponseEntity = this._lastEnrollmentsSearchResponse;
 			if (!lastResponseEntity._entity) {
 				if (lastResponseEntity && lastResponseEntity.hasLinkByRel('next')) {
 					const url = lastResponseEntity.getLinkByRel('next').href;
@@ -508,7 +508,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onFilterDropdownClose() {
-		var text;
+		let text;
 		if (this._totalFilterCount === 0) {
 			text = this.localize('filtering.filter');
 		} else if (this._totalFilterCount === 1) {
@@ -525,8 +525,8 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onSortOrderChanged(e) {
-		var sortParameter, langterm;
-		var promotePins = false;
+		let sortParameter, langterm;
+		let promotePins = false;
 
 		switch (e.detail.value) {
 			case 'OrgUnitName':
@@ -584,7 +584,7 @@ class AllCourses extends mixinBehaviors([
 		this._showContent = true;
 		this._showTabContent = true;
 
-		setTimeout(function() {
+		setTimeout(() => {
 			// Triggers the course tiles to resize after switching tab
 			window.dispatchEvent(new Event('resize'));
 		}, 10);
@@ -604,22 +604,22 @@ class AllCourses extends mixinBehaviors([
 
 	_onTabSelected(e) {
 		this._selectedTabId = e.composedPath()[0].id;
-		var actionName = this._selectedTabId.replace('all-courses-tab-', '');
-		var tabAction;
-		for (var i = 0; i < this.tabSearchActions.length; i++) {
+		const actionName = this._selectedTabId.replace('all-courses-tab-', '');
+		let tabAction;
+		for (let i = 0; i < this.tabSearchActions.length; i++) {
 			if (this.tabSearchActions[i].name === actionName) {
 				tabAction = this.tabSearchActions[i];
 				break;
 			}
 		}
-		var search = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('search') ?
+		const search = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('search') ?
 			this._enrollmentsSearchAction.getFieldByName('search').value : '';
 		if (!tabAction) {
 			return;
 		}
 
 		this._showTabContent = false;
-		var params = {
+		const params = {
 			search: search,
 			orgUnitTypeId: this.orgUnitTypeIds,
 			autoPinCourses: false,
@@ -641,13 +641,13 @@ class AllCourses extends mixinBehaviors([
 	_onEnrollmentPinned(e) {
 		if (this._showGroupByTabs) {
 			this._bustCacheToken = Math.random();
-			var actionName = this._selectedTabId.replace('all-courses-tab-', '');
+			const actionName = this._selectedTabId.replace('all-courses-tab-', '');
 			if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments) {
 				this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
 			}
 		}
 
-		var orgUnitId;
+		let orgUnitId;
 		if (e.detail.orgUnitId) {
 			orgUnitId = e.detail.orgUnitId;
 		} else if (e.detail.organization) {
@@ -671,21 +671,21 @@ class AllCourses extends mixinBehaviors([
 	*/
 
 	_myEnrollmentsEntityChanged(entity) {
-		var myEnrollmentsEntity = SirenParse(entity);
+		const myEnrollmentsEntity = SirenParse(entity);
 		if (!myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMyEnrollments)) {
 			return;
 		}
 
-		var searchAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
+		const searchAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
 		this._enrollmentsSearchAction = searchAction;
 
 		if (searchAction && searchAction.hasFieldByName('sort')) {
-			var sortParameter = searchAction.getFieldByName('sort').value;
+			const sortParameter = searchAction.getFieldByName('sort').value;
 			if (!sortParameter) {
 				return;
 			}
 
-			var sortMap = {
+			const sortMap = {
 				'OrgUnitName,OrgUnitId': {
 					name: 'OrgUnitName',
 					langterm: 'sorting.sortCourseName'
@@ -712,7 +712,7 @@ class AllCourses extends mixinBehaviors([
 				}
 			};
 
-			var sort = sortMap[sortParameter];
+			const sort = sortMap[sortParameter];
 			if (sort) {
 				this.$.sortText.textContent = this.localize(sort.langterm || '');
 				this._selectSortOption(sort.name);
@@ -733,15 +733,15 @@ class AllCourses extends mixinBehaviors([
 			return null;
 		}
 
-		var bustCacheStr = 'bustCache=';
-		var index = url.indexOf(bustCacheStr);
+		const bustCacheStr = 'bustCache=';
+		let index = url.indexOf(bustCacheStr);
 		if (index === -1) {
-			return url + (url.indexOf('?') !== -1 ? '&' : '?') + 'bustCache=' + this._bustCacheToken;
+			return `${url}${(url.indexOf('?') !== -1 ? '&' : '?')}bustCache=${this._bustCacheToken}`;
 		}
 
 		index += bustCacheStr.length;
-		var prefix = url.substring(0, index);
-		var suffix = url.substring(index, url.length);
+		const prefix = url.substring(0, index);
+		let suffix = url.substring(index, url.length);
 		index = suffix.indexOf('&');
 		suffix = index === -1 ? '' : suffix.substring(index, suffix.length);
 		return prefix + this._bustCacheToken + suffix;
@@ -771,30 +771,30 @@ class AllCourses extends mixinBehaviors([
 	_resetSortDropdown() {
 		this._selectSortOption(this._defaultSortValue);
 
-		var content = this.$.sortDropdown.__getContentElement();
+		const content = this.$.sortDropdown.__getContentElement();
 		if (content) {
 			content.close();
 		}
 	}
 
 	_selectSortOption(sortName) {
-		var items = this.$.sortDropdownMenu.querySelectorAll('d2l-menu-item-radio');
-		for (var i = 0; i < items.length; i++) {
+		const items = this.$.sortDropdownMenu.querySelectorAll('d2l-menu-item-radio');
+		for (let i = 0; i < items.length; i++) {
 			items[i].selected = false;
 		}
 
-		this.$.sortDropdownMenu.querySelector('d2l-menu-item-radio[value=' + sortName + ']').selected = true;
+		this.$.sortDropdownMenu.querySelector(`d2l-menu-item-radio[value=${sortName}]`).selected = true;
 	}
 
 	_updateFilteredEnrollments(enrollments, append) {
-		var gridEntities, content;
+		let gridEntities, content;
 		if (!enrollments._entity) {
-			var enrollmentEntities = enrollments.getSubEntitiesByClass(Classes.enrollments.enrollment);
-			gridEntities = enrollmentEntities.map(function(value) {
+			const enrollmentEntities = enrollments.getSubEntitiesByClass(Classes.enrollments.enrollment);
+			gridEntities = enrollmentEntities.map((value) => {
 				return value.href;
-			}.bind(this));
+			});
 			content = this._showGroupByTabs
-				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-content')
+				? this.$$(`#${this._selectedTabId} d2l-all-courses-content`)
 				: this.$$('d2l-all-courses-content');
 			if (append) {
 				content.filteredEnrollments = content.filteredEnrollments.concat(gridEntities);
@@ -805,7 +805,7 @@ class AllCourses extends mixinBehaviors([
 		else {
 			gridEntities = enrollments.enrollmentsHref();
 			content = this._showGroupByTabs
-				? this.$$('#' + this._selectedTabId + ' d2l-all-courses-content')
+				? this.$$(`#${this._selectedTabId} d2l-all-courses-content`)
 				: this.$$('d2l-all-courses-content');
 			if (append) {
 				content.filteredEnrollments = content.filteredEnrollments.concat(gridEntities);
@@ -815,14 +815,14 @@ class AllCourses extends mixinBehaviors([
 		}
 
 		this._lastEnrollmentsSearchResponse = enrollments;
-		requestAnimationFrame(function() {
+		requestAnimationFrame(() => {
 			window.dispatchEvent(new Event('resize')); // doing this so ie11 and older edge browser will get ms-grid style assigned
 			this.$['all-courses-scroll-threshold'].clearTriggers();
-		}.bind(this));
+		});
 	}
 
 	_getOrgUnitIdFromHref(organizationHref) {
-		var match = /[0-9]+$/.exec(organizationHref);
+		const match = /[0-9]+$/.exec(organizationHref);
 
 		if (!match) {
 			return;

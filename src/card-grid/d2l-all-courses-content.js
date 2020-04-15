@@ -9,8 +9,8 @@ import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import './d2l-card-grid-behavior.js';
 import './d2l-card-grid-styles.js';
 import '../localize-behavior.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-content">
@@ -125,9 +125,9 @@ Polymer({
 	],
 
 	attached: function() {
-		afterNextRender(this, function() {
+		afterNextRender(this, () => {
 			this._onResize();
-		}.bind(this));
+		});
 	},
 
 	_enrollmentsChanged: function(enrollmentLength) {

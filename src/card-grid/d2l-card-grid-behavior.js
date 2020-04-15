@@ -9,11 +9,11 @@ window.D2L.MyCourses = window.D2L.MyCourses || {};
 */
 D2L.MyCourses.CardGridBehavior = {
 	attached: function() {
-		afterNextRender(this, function() {
+		afterNextRender(this, () => {
 			window.addEventListener('resize', this._onResize.bind(this));
 			// Sets initial number of columns
 			this._onResize();
-		}.bind(this));
+		});
 	},
 
 	detached: function() {
@@ -21,37 +21,37 @@ D2L.MyCourses.CardGridBehavior = {
 	},
 
 	_onResize: function(ie11retryCount) {
-		var courseTileGrid = this.$$('.course-card-grid');
+		const courseTileGrid = this.$$('.course-card-grid');
 		if (!courseTileGrid) {
 			return;
 		}
 
-		var containerWidth = this.offsetWidth;
+		let containerWidth = this.offsetWidth;
 
-		for (var parent = this.parentNode; containerWidth <= 0 && parent; parent = parent.parentNode) {
+		for (let parent = this.parentNode; containerWidth <= 0 && parent; parent = parent.parentNode) {
 			containerWidth = parent.offsetWidth;
 		}
 
-		var numColumns = Math.min(Math.floor(containerWidth / 350), 4) + 1;
-		var columnClass = 'columns-' + numColumns;
+		const numColumns = Math.min(Math.floor(containerWidth / 350), 4) + 1;
+		const columnClass = `columns-${numColumns}`;
 		if (courseTileGrid.classList.toString().indexOf(columnClass) === -1) {
 			courseTileGrid.classList.remove('columns-1');
 			courseTileGrid.classList.remove('columns-2');
 			courseTileGrid.classList.remove('columns-3');
 			courseTileGrid.classList.remove('columns-4');
-			courseTileGrid.classList.add('columns-' + numColumns);
+			courseTileGrid.classList.add(`columns-${numColumns}`);
 		}
 
-		this.updateStyles({'--course-image-tile-height': containerWidth / numColumns * 0.43 + 'px'});
+		this.updateStyles({'--course-image-tile-height': `${containerWidth / numColumns * 0.43}px`});
 
-		var cssGridStyle = document.body.style['grid-template-columns'];
+		const cssGridStyle = document.body.style['grid-template-columns'];
 		// Can be empty string, hence the strict comparison
 		if (cssGridStyle !== undefined) {
 			// Non-IE11 browsers support grid-template-columns, so we're done
 			return;
 		}
 
-		var courseTileDivs = dom(this.root).querySelectorAll('.course-card-grid d2l-enrollment-card');
+		const courseTileDivs = dom(this.root).querySelectorAll('.course-card-grid d2l-enrollment-card');
 		ie11retryCount = ie11retryCount || 0;
 		if (
 			ie11retryCount < 20
@@ -63,12 +63,12 @@ D2L.MyCourses.CardGridBehavior = {
 			return;
 		}
 
-		for (var i = 0, position = 0; i < courseTileDivs.length; i++, position++) {
-			var div = courseTileDivs[i];
+		for (let i = 0, position = 0; i < courseTileDivs.length; i++, position++) {
+			const div = courseTileDivs[i];
 
 			// The (* 2 - 1) accounts for the grid-gap-esque columns
-			var column = (position % numColumns + 1) * 2 - 1;
-			var row = Math.floor(position / numColumns) + 1;
+			const column = (position % numColumns + 1) * 2 - 1;
+			const row = Math.floor(position / numColumns) + 1;
 			div.style['-ms-grid-column'] = column;
 			div.style['-ms-grid-row'] = row;
 		}

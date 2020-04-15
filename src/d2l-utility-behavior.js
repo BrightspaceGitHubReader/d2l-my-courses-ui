@@ -1,6 +1,6 @@
 import '@polymer/polymer/polymer-legacy.js';
-import SirenParse from 'siren-parser';
 import 'd2l-fetch/d2l-fetch.js';
+import SirenParse from 'siren-parser';
 window.D2L = window.D2L || {};
 window.D2L.MyCourses = window.D2L.MyCourses || {};
 
@@ -13,10 +13,10 @@ D2L.MyCourses.UtilityBehavior = {
 	createActionUrl: function(action, parameters) {
 		parameters = parameters || {};
 		action.fields = action.fields || [];
-		var query = {};
-		var val;
+		const query = {};
+		let val;
 
-		action.fields.forEach(function(field) {
+		action.fields.forEach((field) => {
 			if (parameters.hasOwnProperty(field.name)) {
 				val = parameters[field.name];
 			} else {
@@ -24,12 +24,12 @@ D2L.MyCourses.UtilityBehavior = {
 			}
 
 			if (val && typeof val === 'object' && val.constructor === Array) {
-				var collapsedVal = '';
-				for (var i = 0; i < val.length; i++) {
+				let collapsedVal = '';
+				for (let i = 0; i < val.length; i++) {
 					if (i === 0) {
 						collapsedVal += val[i];
 					} else {
-						collapsedVal += field.name + '=' + val[i];
+						collapsedVal += `${field.name}=${val[i]}`;
 					}
 					if (i < val.length - 1) { collapsedVal += '&'; }
 				}
@@ -39,8 +39,8 @@ D2L.MyCourses.UtilityBehavior = {
 			}
 		});
 
-		var queryString = Object.keys(query).map(function(key) {
-			return key + '=' + query[key];
+		const queryString = Object.keys(query).map((key) => {
+			return `${key}=${query[key]}`;
 		}).join('&');
 
 		if (!queryString) {
@@ -49,15 +49,15 @@ D2L.MyCourses.UtilityBehavior = {
 
 		if (action.href.indexOf('?') > -1) {
 			// href already has some query params, append ours
-			return action.href + '&' + queryString;
+			return `${action.href}&${queryString}`;
 		}
 
-		return action.href + '?' + queryString;
+		return `${action.href}?${queryString}`;
 	},
 	// Creates a unique identifier for a Siren Entity (really just the self Link href)
 	getEntityIdentifier: function(entity) {
 		// An entity's self href should be unique, so use it as an identifier
-		var selfLink = entity.getLinkByRel('self');
+		const selfLink = entity.getLinkByRel('self');
 		return selfLink.href;
 	},
 	parseEntity: function(entity) {
@@ -68,7 +68,7 @@ D2L.MyCourses.UtilityBehavior = {
 			return;
 		}
 
-		var headers = {
+		const headers = {
 			Accept: 'application/vnd.siren+json'
 		};
 
@@ -96,7 +96,7 @@ D2L.MyCourses.UtilityBehavior = {
 	performanceMeasure: function(name, startMark, endMark, fireEvent) {
 		if (window.performance && window.performance.measure) {
 			window.performance.measure(name, startMark, endMark);
-			var measure = window.performance.getEntriesByName(name, 'measure');
+			const measure = window.performance.getEntriesByName(name, 'measure');
 			if (measure.length === 1 && fireEvent) {
 				document.dispatchEvent(new CustomEvent('d2l-performance-measure', {
 					bubbles: true,
@@ -109,8 +109,8 @@ D2L.MyCourses.UtilityBehavior = {
 		}
 	},
 	submitForm: function(url, formParameters) {
-		var formData = new FormData();
-		for (var formKey in formParameters) {
+		const formData = new FormData();
+		for (const formKey in formParameters) {
 			if (formParameters.hasOwnProperty(formKey)) {
 				formData.append(formKey, formParameters[formKey]);
 			}
@@ -126,10 +126,10 @@ D2L.MyCourses.UtilityBehavior = {
 		if (response.ok) {
 			return response
 				.json()
-				.then(function(json) {
+				.then((json) => {
 					return SirenParse(json);
 				});
 		}
-		return Promise.reject(response.status + ' ' + response.statusText);
+		return Promise.reject(`${response.status} ${response.statusText}`);
 	}
 };

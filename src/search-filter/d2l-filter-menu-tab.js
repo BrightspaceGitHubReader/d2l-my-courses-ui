@@ -10,14 +10,14 @@ Polymer-based web component for the filter menu tabs.
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import { Rels } from 'd2l-hypermedia-constants';
 import '@brightspace-ui/core/components/menu/menu.js';
 import 'd2l-search-widget/d2l-search-widget.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
+import './d2l-filter-list-item.js';
 import '../d2l-utility-behavior.js';
 import '../localize-behavior.js';
-import './d2l-filter-list-item.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import { Rels } from 'd2l-hypermedia-constants';
 const $_documentContainer = document.createElement('template');
 
 $_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu-tab">
@@ -105,15 +105,15 @@ Polymer({
 		}
 
 		return this.fetchSirenEntity(this.searchAction.href)
-			.then(function(resultsEntity) {
+			.then((resultsEntity) => {
 				this.set('_allFilters', resultsEntity.entities || []);
 				this.$$('d2l-search-widget').search();
 				this._showContent = this._allFilters.length > 0;
-			}.bind(this));
+			});
 	},
 	clear: function() {
-		var items = this.$$('d2l-menu').querySelectorAll('d2l-filter-list-item');
-		for (var i = 0; i < items.length; i++) {
+		const items = this.$$('d2l-menu').querySelectorAll('d2l-filter-list-item');
+		for (let i = 0; i < items.length; i++) {
 			items[i].selected = false;
 		}
 
@@ -123,15 +123,15 @@ Polymer({
 	resize: function() {
 		this.$$('d2l-menu').resize();
 
-		setTimeout(function() {
+		setTimeout(() => {
 			// DE24225 - force dropdown to resize after opening
 			window.dispatchEvent(new Event('resize'));
-		}.bind(this), 200);
+		}, 200);
 	},
 
 	_checkSelected: function(entity) {
 		// Checks if the given entity should be "selected" - used when search results change
-		var id = entity.href || entity.getLinkByRel(Rels.organization).href;
+		const id = entity.href || entity.getLinkByRel(Rels.organization).href;
 		return this.selectedFilters.indexOf(id) > -1;
 	},
 	_computeHasSearchResults: function(allFiltersLength) {
@@ -141,7 +141,7 @@ Polymer({
 		if (e.detail.selected) {
 			this.push('selectedFilters', e.detail.value);
 		} else {
-			var index = this.selectedFilters.indexOf(e.detail.value);
+			const index = this.selectedFilters.indexOf(e.detail.value);
 			this.splice('selectedFilters', index, 1);
 		}
 		this.fire('selected-filters-changed');

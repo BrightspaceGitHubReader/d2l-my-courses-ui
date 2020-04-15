@@ -9,15 +9,15 @@ Polymer-based web component for the filter menu.
   then delete this comment!
 */
 import '@polymer/polymer/polymer-legacy.js';
+import '@polymer/iron-pages/iron-pages.js';
 
 import '@brightspace-ui/core/components/colors/colors.js';
-import { Actions } from 'd2l-hypermedia-constants';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import '@polymer/iron-pages/iron-pages.js';
-import '../d2l-utility-behavior.js';
-import '../localize-behavior.js';
 import './d2l-filter-menu-tab.js';
 import './d2l-filter-menu-tab-roles.js';
+import '../d2l-utility-behavior.js';
+import '../localize-behavior.js';
+import { Actions } from 'd2l-hypermedia-constants';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 const $_documentContainer = document.createElement('template');
 
@@ -210,7 +210,7 @@ Polymer({
 
 	open: function() {
 
-		var defaultTab = !this._semestersTabHidden
+		const defaultTab = !this._semestersTabHidden
 			? 'semesters'
 			: !this._departmentsTabHidden ? 'departments' : 'roles';
 
@@ -242,7 +242,7 @@ Polymer({
 			return;
 		}
 
-		var params = {};
+		const params = {};
 		if (!this._semestersTabHidden || !this._departmentsTabHidden) {
 			// Only clear semesters/departments when My Courses is grouped by role
 			params.parentOrganizations = '';
@@ -252,7 +252,7 @@ Polymer({
 			params.roles = '';
 		}
 
-		var searchUrl = this.createActionUrl(this._searchMyEnrollmentsAction, params);
+		const searchUrl = this.createActionUrl(this._searchMyEnrollmentsAction, params);
 
 		this.fire('d2l-filter-menu-change', {
 			url: searchUrl,
@@ -281,9 +281,9 @@ Polymer({
 			return;
 		}
 
-		var departmentSemesterFilters = this._semesterFilters.concat(this._departmentFilters);
+		const departmentSemesterFilters = this._semesterFilters.concat(this._departmentFilters);
 
-		var searchUrl = this.createActionUrl(this._searchMyEnrollmentsAction, {
+		const searchUrl = this.createActionUrl(this._searchMyEnrollmentsAction, {
 			orgUnitTypeId: this.orgUnitTypeIds,
 			parentOrganizations: departmentSemesterFilters.join(',')
 		});
@@ -315,7 +315,7 @@ Polymer({
 		this._hideInvalidSearchTabs();
 	},
 	_selectTab: function(e) {
-		var tabName = e.target.dataset.tabName;
+		const tabName = e.target.dataset.tabName;
 
 		this.$$('iron-pages').select(tabName);
 
@@ -336,7 +336,7 @@ Polymer({
 	},
 	_hideInvalidSearchTabs: function() {
 		// If My Courses is grouped by semesters/departments, don't show either of these tabs
-		var semesterOrDepartmentGrouping = this.tabSearchType === 'BySemester' || this.tabSearchType === 'ByDepartment';
+		const semesterOrDepartmentGrouping = this.tabSearchType === 'BySemester' || this.tabSearchType === 'ByDepartment';
 		this._semestersTabHidden = semesterOrDepartmentGrouping || !this._searchSemestersAction;
 		this._departmentsTabHidden = semesterOrDepartmentGrouping || !this._searchDepartmentsAction;
 		// If My Courses is grouped by role alias, don't show the Role tab

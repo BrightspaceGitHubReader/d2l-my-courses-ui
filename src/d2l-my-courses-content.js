@@ -4,29 +4,31 @@ Polymer-based web component for the my-courses content.
 */
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
-import 'd2l-alert/d2l-alert.js';
-import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
-import 'd2l-simple-overlay/d2l-simple-overlay.js';
+import 'd2l-alert/d2l-alert.js';
+import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import 'd2l-image-selector/d2l-basic-image-selector.js';
+import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import './d2l-all-courses.js';
-import './card-grid/d2l-card-grid-styles.js';
 import './card-grid/d2l-card-grid-behavior.js';
+import './card-grid/d2l-card-grid-styles.js';
 import './d2l-alert-behavior.js';
+import './d2l-all-courses.js';
 import './d2l-utility-behavior.js';
 import './localize-behavior.js';
-import { Actions } from 'd2l-hypermedia-constants';
-import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
+
 import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js';
-import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntity.js';
-import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
-import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { Actions } from 'd2l-hypermedia-constants';
 
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js'; //todo: Remove
+
+import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
+import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
+import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntity.js';
+import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
 
 class MyCoursesContent extends mixinBehaviors([
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
@@ -336,7 +338,7 @@ class MyCoursesContent extends mixinBehaviors([
 
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
 
-		var ouTypeIds = []; //default value
+		let ouTypeIds = []; //default value
 		try {
 			ouTypeIds = JSON.parse(this.orgUnitTypeIds).value;
 		} catch (e) {
@@ -403,8 +405,8 @@ class MyCoursesContent extends mixinBehaviors([
 		return this.$$('.course-card-grid');
 	}
 	_refreshTileGridImages() {
-		var courseTiles = this._getTileGrid().querySelectorAll('d2l-enrollment-card');
-		for (var i = 0; i < courseTiles.length; i++) {
+		const courseTiles = this._getTileGrid().querySelectorAll('d2l-enrollment-card');
+		for (let i = 0; i < courseTiles.length; i++) {
 			courseTiles[i].refreshImage(this._setImageOrg);
 		}
 	}
@@ -413,7 +415,7 @@ class MyCoursesContent extends mixinBehaviors([
 			return;
 		}
 		enrollmentCollectionEntity.onEnrollmentEntityChange(url, (enrollmentEntity) => {
-			var orgUnitId = this._getOrgUnitIdFromHref(enrollmentEntity.organizationHref());
+			const orgUnitId = this._getOrgUnitIdFromHref(enrollmentEntity.organizationHref());
 			this._orgUnitIdMap[orgUnitId] = url;
 		});
 	}
@@ -423,8 +425,8 @@ class MyCoursesContent extends mixinBehaviors([
 			return;
 		}
 
-		var hide = this._hidePastCourses && (enrollmentCardStatusDetails.status.closed);
-		var index = this._enrollments.indexOf(enrollmentCardStatusDetails.enrollmentUrl);
+		const hide = this._hidePastCourses && (enrollmentCardStatusDetails.status.closed);
+		const index = this._enrollments.indexOf(enrollmentCardStatusDetails.enrollmentUrl);
 
 		if (hide && index !== -1 && index > this._lastPinnedIndex) {
 			this.splice('_enrollments', index, 1);
@@ -444,7 +446,7 @@ class MyCoursesContent extends mixinBehaviors([
 		enrollmentCollectionEntity.onEnrollmentEntityChange(url, (enrollmentEntity) => {
 			enrollmentEntity.onUserActivityUsageChange((userActivityUsage) => {
 				const cardStatus = this.enrollmentStatus(userActivityUsage.isCompletionDate(), userActivityUsage.date());
-				var enrollmentCardStatusDetails = {
+				const enrollmentCardStatusDetails = {
 					status: {
 						completed: cardStatus && cardStatus.status === 'completed' ? true : false
 					},
@@ -454,8 +456,8 @@ class MyCoursesContent extends mixinBehaviors([
 			});
 
 			enrollmentEntity.onOrganizationChange((org) => {
-				var enrollmentDate = org.processedDate(this._hideCourseStartDate, this._hideCourseEndDate);
-				var enrollmentCardStatusDetails = {
+				const enrollmentDate = org.processedDate(this._hideCourseStartDate, this._hideCourseEndDate);
+				const enrollmentCardStatusDetails = {
 					status: {closed: enrollmentDate && enrollmentDate.afterEndDate},
 					enrollmentUrl: url
 				};
@@ -471,7 +473,7 @@ class MyCoursesContent extends mixinBehaviors([
 		if (this._hasAlert('newEnrollmentMultiple')) {
 			return;
 		}
-		var message = 'newEnrollment';
+		let message = 'newEnrollment';
 		if (this._hasAlert(message)) {
 			this._removeAlert(message);
 			message = 'newEnrollmentMultiple';
@@ -541,20 +543,20 @@ class MyCoursesContent extends mixinBehaviors([
 	_onEnrollmentPinnedMessage(e) {
 		if (dom(e).rootTarget === this) return;
 
-		var isPinned = e.detail.isPinned;
-		var orgUnitId;
+		const isPinned = e.detail.isPinned;
+		let orgUnitId;
 
 		if (e.detail.orgUnitId) {
 			orgUnitId = e.detail.orgUnitId;
 			if (this._orgUnitIdMap[orgUnitId]) {
-				var enrollmentHref = this._orgUnitIdMap[orgUnitId];
+				const enrollmentHref = this._orgUnitIdMap[orgUnitId];
 				updateEntity(enrollmentHref, this.token);
 			}
 		} else {
 			orgUnitId = this._getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
 		}
 		// Only want to move pinned/unpinned enrollment if it exists in the panel
-		var changedEnrollmentId = orgUnitId && this._orgUnitIdMap[orgUnitId];
+		const changedEnrollmentId = orgUnitId && this._orgUnitIdMap[orgUnitId];
 		if (!changedEnrollmentId) {
 			this._refetchEnrollments();
 		}
@@ -573,12 +575,12 @@ class MyCoursesContent extends mixinBehaviors([
 		// enrollmentCard.hasAttribute('completed') and enrollmentCard.hasAttribute('closed') always seem to return false even when the attribute is there
 		// I think because things have already started "moving" and dom-repeat is infuriating
 		// Going to cleanup next PR
-		var enrollmentCard = dom(e).event && dom(e).event.srcElement;
+		const enrollmentCard = dom(e).event && dom(e).event.srcElement;
 
-		var shouldHide = enrollmentCard && !isPinned && (enrollmentCard.hasAttribute('completed') || (enrollmentCard.hasAttribute('closed')));
+		const shouldHide = enrollmentCard && !isPinned && (enrollmentCard.hasAttribute('completed') || (enrollmentCard.hasAttribute('closed')));
 
-		var removalIndex = this._enrollments.indexOf(changedEnrollmentId);
-		var insertIndex = this._lastPinnedIndex + 1;
+		const removalIndex = this._enrollments.indexOf(changedEnrollmentId);
+		let insertIndex = this._lastPinnedIndex + 1;
 
 		if (!isPinned) {
 			this._lastPinnedIndex--;
@@ -636,14 +638,14 @@ class MyCoursesContent extends mixinBehaviors([
 			this._rootTabSelected = true;
 			this._fetchRoot();
 		} else {
-			setTimeout(function() {
+			setTimeout(() => {
 				// Force redraw of course tiles.
 				window.dispatchEvent(new Event('resize'));
 			}, 10);
 		}
 		this._setLastSearchName(this.enrollmentsSearchAction.name);
 
-		var tabChanged = new CustomEvent('d2l-tab-changed', {
+		const tabChanged = new CustomEvent('d2l-tab-changed', {
 			bubbles: true,
 			composed: true,
 			detail: {
@@ -653,14 +655,14 @@ class MyCoursesContent extends mixinBehaviors([
 		this.dispatchEvent(tabChanged);
 		// Whenever the selected tab changes, update tabSearchActions so
 		// All Courses will have the same tab selected when it opens
-		this.tabSearchActions = this.tabSearchActions.map(function(action) {
+		this.tabSearchActions = this.tabSearchActions.map((action) => {
 			return {
 				name: action.name,
 				title: action.title,
 				selected: action.name === this.enrollmentsSearchAction.name,
 				enrollmentsSearchAction: action.enrollmentsSearchAction
 			};
-		}.bind(this));
+		});
 	}
 	_onSimpleOverlayClosed() {
 		this._removeAlert('setCourseImageFailure');
@@ -684,9 +686,9 @@ class MyCoursesContent extends mixinBehaviors([
 		this._removeAlert('setCourseImageFailure');
 		if (e && e.detail) {
 			if (e.detail.status === 'failure') {
-				setTimeout(function() {
+				setTimeout(() => {
 					this._addAlert('warning', 'setCourseImageFailure', this.localize('error.settingImage'));
-				}.bind(this), 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
+				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
 			}
 		}
 	}
@@ -724,7 +726,7 @@ class MyCoursesContent extends mixinBehaviors([
 	*/
 	_createFetchEnrollmentsUrl(bustCache) {
 
-		var query = {
+		const query = {
 			pageSize: 20,
 			sort: 'current',
 			autoPinCourses: false,
@@ -732,17 +734,17 @@ class MyCoursesContent extends mixinBehaviors([
 			promotePins: true,
 			embedDepth: 0
 		};
-		var enrollmentsSearchUrl = this.createActionUrl(this.enrollmentsSearchAction, query);
+		let enrollmentsSearchUrl = this.createActionUrl(this.enrollmentsSearchAction, query);
 
 		if (bustCache) {
-			enrollmentsSearchUrl += '&bustCache=' + Math.random();
+			enrollmentsSearchUrl += `&bustCache=${Math.random()}`;
 		}
 
 		return enrollmentsSearchUrl;
 	}
 	_createAllCourses() {
 		if (!this._allCoursesCreated) {
-			var allCourses = document.createElement('d2l-all-courses');
+			const allCourses = document.createElement('d2l-all-courses');
 			this.$.allCoursesPlaceholder.appendChild(allCourses);
 			this._allCoursesCreated = true;
 		}
@@ -783,7 +785,7 @@ class MyCoursesContent extends mixinBehaviors([
 		this._enrollmentsRootResponse(enrollmentsEntity);
 	}
 	_getOrgUnitIdFromHref(organizationHref) {
-		var match = /[0-9]+$/.exec(organizationHref);
+		const match = /[0-9]+$/.exec(organizationHref);
 
 		if (!match) {
 			return;
@@ -791,27 +793,27 @@ class MyCoursesContent extends mixinBehaviors([
 		return match[0];
 	}
 	_getViewAllCoursesText(hasMoreEnrollments, enrollmentsLength) {
-		var viewAllCourses = this.localize('viewAllCourses');
+		const viewAllCourses = this.localize('viewAllCourses');
 
 		// With individual fetching of courses as they get pinned, we can end
 		// up with "21+", "22+", etc., so round down to nearest 5 for >20 courses
-		var maxCount = 99;
-		var count = enrollmentsLength < 20
+		const maxCount = 99;
+		let count = enrollmentsLength < 20
 			? enrollmentsLength
 			: String(enrollmentsLength - (enrollmentsLength % 5));
 		if (count > maxCount) {
-			count = maxCount + '+';
+			count = `${maxCount}+`;
 		}
-		if (hasMoreEnrollments && count !== maxCount + '+') {
+		if (hasMoreEnrollments && count !== `${maxCount}+`) {
 			count += '+';
 		}
 
-		return enrollmentsLength > 0 ? viewAllCourses + ' (' + count + ')' : viewAllCourses;
+		return enrollmentsLength > 0 ? `${viewAllCourses} (${count})` : viewAllCourses;
 	}
 	_openAllCoursesView(e) {
 		this._createAllCourses();
 
-		var allCourses = this.$$('d2l-all-courses');
+		const allCourses = this.$$('d2l-all-courses');
 
 		allCourses.enrollmentsSearchAction = this.enrollmentsSearchAction;
 		allCourses.tabSearchActions = this.tabSearchActions;
@@ -854,7 +856,7 @@ class MyCoursesContent extends mixinBehaviors([
 		});
 	}
 	_enrollmentRefetchResponse(entity) {
-		var completeFetch = function() {
+		const completeFetch = function() {
 			this._showContent = true;
 		}.bind(this);
 
@@ -867,11 +869,11 @@ class MyCoursesContent extends mixinBehaviors([
 		}
 	}
 	_enrollmentsRootResponse(entity) {
-		var showContent = function() {
+		const showContent = function() {
 			this._showContent = true;
 		}.bind(this);
 
-		var tabSelected = this._rootTabSelected;
+		const tabSelected = this._rootTabSelected;
 
 		try {
 			this._populateEnrollments(entity);
@@ -892,14 +894,14 @@ class MyCoursesContent extends mixinBehaviors([
 			throw new Error('No entity');
 		}
 
-		var enrollmentCollectionEntity = entity;
-		var enrollmentEntities = enrollmentCollectionEntity.getEnrollmentEntities();
-		var hasMoreEnrollments = enrollmentCollectionEntity.hasMoreEnrollments();
+		const enrollmentCollectionEntity = entity;
+		const enrollmentEntities = enrollmentCollectionEntity.getEnrollmentEntities();
+		const hasMoreEnrollments = enrollmentCollectionEntity.hasMoreEnrollments();
 		this._nextEnrollmentEntityUrl = hasMoreEnrollments ? enrollmentCollectionEntity.getNextEnrollmentHref() : null;
 
-		var newEnrollments = [];
+		const newEnrollments = [];
 
-		var searchAction = enrollmentCollectionEntity.getSearchEnrollmentsActions();
+		const searchAction = enrollmentCollectionEntity.getSearchEnrollmentsActions();
 
 		if (searchAction
 			&& searchAction.hasFieldByName('sort')
@@ -916,7 +918,7 @@ class MyCoursesContent extends mixinBehaviors([
 		}
 
 		enrollmentEntities.forEach(function(enrollment) {
-			var enrollmentId = enrollment.href;
+			const enrollmentId = enrollment.href;
 			if (!this._existingEnrollmentsMap.hasOwnProperty(enrollmentId)) {
 				newEnrollments.push(enrollmentId);
 				this._existingEnrollmentsMap[enrollmentId] = true;
@@ -937,7 +939,7 @@ class MyCoursesContent extends mixinBehaviors([
 
 		this.fire('recalculate-columns');
 
-		var lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
+		const lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
 		if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._nextEnrollmentEntityUrl) {
 			this._onEnrollmentsEntityChange(this._nextEnrollmentEntityUrl);
 		}

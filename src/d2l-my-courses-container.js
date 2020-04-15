@@ -12,12 +12,12 @@ import './d2l-my-courses-content.js';
 import './d2l-utility-behavior.js';
 import './localize-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
-import { UserSettingsEntity } from 'siren-sdk/src/userSettings/UserSettingsEntity';
-import { PromotedSearchEntity } from 'siren-sdk/src/promotedSearch/PromotedSearchEntity.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { PromotedSearchEntity } from 'siren-sdk/src/promotedSearch/PromotedSearchEntity.js';
+import { UserSettingsEntity } from 'siren-sdk/src/userSettings/UserSettingsEntity';
 
 class MyCoursesContainer extends mixinBehaviors([
 	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
@@ -149,8 +149,8 @@ class MyCoursesContainer extends mixinBehaviors([
 		if (!this._enrollmentCollectionEntity || !this._userSettingsEntity) {
 			return;
 		}
-		var enrollmentsRootEntity = this._enrollmentCollectionEntity;
-		var userSettingsEntity = this._userSettingsEntity;
+		const enrollmentsRootEntity = this._enrollmentCollectionEntity;
+		const userSettingsEntity = this._userSettingsEntity;
 
 		if (enrollmentsRootEntity.searchMyEnrollmentsAction()) {
 			this._enrollmentsSearchAction = enrollmentsRootEntity.searchMyEnrollmentsAction();
@@ -173,8 +173,8 @@ class MyCoursesContainer extends mixinBehaviors([
 		if (!this._promotedSearchEntity || !this._userSettingsEntity) {
 			return;
 		}
-		var promotedSearchesEntity = this._promotedSearchEntity;
-		var userSettingsEntity = this._userSettingsEntity;
+		const promotedSearchesEntity = this._promotedSearchEntity;
+		const userSettingsEntity = this._userSettingsEntity;
 
 		this._tabSearchActions = [];
 
@@ -192,10 +192,10 @@ class MyCoursesContainer extends mixinBehaviors([
 			this._tabSearchType = promotedSearchesEntity.userEnrollmentsSearchType();
 		}
 
-		var lastEnrollmentsSearchName = userSettingsEntity.mostRecentEnrollmentsSearchName();
+		const lastEnrollmentsSearchName = userSettingsEntity.mostRecentEnrollmentsSearchName();
 
 		if (promotedSearchesEntity.actions().length > 1) {
-			this._tabSearchActions = promotedSearchesEntity.actions().map(function(action) {
+			this._tabSearchActions = promotedSearchesEntity.actions().map((action) => {
 				return {
 					name: action.name,
 					title: action.title,
@@ -209,7 +209,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			return;
 		}
 
-		var actions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
+		const actions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
 		this._tabSearchActions = actions.concat(this._tabSearchActions);
 	}
 	_setEnrollmentCollectionEntity(url) {
@@ -251,7 +251,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			: this.$$(`#${this._currentTabId} d2l-my-courses-content`);
 	}
 	_getPinTabAndAllTabActions(lastEnrollmentsSearchName) {
-		var actions = [];
+		const actions = [];
 
 		if (this._enrollmentsSearchAction) {
 			actions.push({
@@ -279,7 +279,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		}
 
 		if (!this.promotedSearches && this._enrollmentsSearchAction && this._pinnedTabAction) {
-			var lastEnrollmentsSearchName = this._userSettingsEntity.mostRecentEnrollmentsSearchName();
+			const lastEnrollmentsSearchName = this._userSettingsEntity.mostRecentEnrollmentsSearchName();
 			this._tabSearchActions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
 			this._showContent = true;
 			return;
