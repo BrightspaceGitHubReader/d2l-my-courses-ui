@@ -10,15 +10,14 @@ import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-filter-menu-tab.js';
 import './d2l-filter-menu-tab-roles.js';
 import '../d2l-utility-behavior.js';
-import '../localize-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { MyCoursesLocalizeBehavior } from '../localize-behavior.js';
 
 class FilterMenu extends mixinBehaviors([
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 	D2L.MyCourses.UtilityBehavior
-], PolymerElement) {
+], MyCoursesLocalizeBehavior(PolymerElement)) {
 
 	static get is() { return 'd2l-filter-menu'; }
 

@@ -6,15 +6,14 @@ Polymer-based web component for the all courses content.
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import './d2l-card-grid-behavior.js';
 import './d2l-card-grid-styles.js';
-import '../localize-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { MyCoursesLocalizeBehavior } from '../localize-behavior.js';
 
 class AllCoursesContent extends mixinBehaviors([
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 	D2L.MyCourses.CardGridBehavior
-], PolymerElement) {
+], MyCoursesLocalizeBehavior(PolymerElement)) {
 
 	static get is() { return 'd2l-all-courses-content'; }
 

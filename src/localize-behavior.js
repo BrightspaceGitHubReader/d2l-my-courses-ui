@@ -1,84 +1,56 @@
 import 'd2l-localize-behavior/d2l-localize-behavior.js';
-import './lang/ar.js';
-import './lang/da-dk.js';
-import './lang/de.js';
-import './lang/en.js';
-import './lang/es.js';
-import './lang/fi.js';
-import './lang/fr.js';
-import './lang/fr-fr.js';
-import './lang/ja.js';
-import './lang/ko.js';
-import './lang/nb.js';
-import './lang/nl.js';
-import './lang/pt.js';
-import './lang/sv.js';
-import './lang/tr.js';
-import './lang/zh-tw.js';
-import './lang/zh.js';
-window.D2L = window.D2L || {};
-window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
-window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
-/*
-* @polymerBehavior D2L.PolymerBehaviors.MyCourses.LocalizeBehavior
-*/
-D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImpl = {
-	properties: {
-		locale: {
-			type: String,
-			value: function() {
-				return document.documentElement.lang
-					|| document.documentElement.getAttribute('data-lang-default')
-					|| 'en-us';
-			}
-		},
-		resources: {
-			value: function() {
-				return {
-					'en': this.en,
-					'ar': this.ar,
-					'da-dk': this['da-dk'],
-					'de': this.de,
-					'es': this.es,
-					'fi': this.fi,
-					'fr': this.fr,
-					'fr-fr': this['fr-fr'],
-					'ja': this.ja,
-					'ko': this.ko,
-					'nb': this.nb,
-					'nl': this.nl,
-					'pt': this.pt,
-					'sv': this.sv,
-					'tr': this.tr,
-					'zh': this.zh,
-					'zh-tw': this['zh-tw']
-				};
-			}
+import ar from './lang/ar.js';
+import dadk from './lang/da-dk.js';
+import de from './lang/de.js';
+import en from './lang/en.js';
+import es from './lang/es.js';
+import fi from './lang/fi.js';
+import fr from './lang/fr.js';
+import frfr from './lang/fr-fr.js';
+import ja from './lang/ja.js';
+import ko from './lang/ko.js';
+import nb from './lang/nb.js';
+import nl from './lang/nl.js';
+import pt from './lang/pt.js';
+import sv from './lang/sv.js';
+import tr from './lang/tr.js';
+import zh from './lang/zh.js';
+import zhtw from './lang/zh-tw.js';
+
+// eslint-disable-next-line sort-imports
+import {dedupingMixin} from '@polymer/polymer/lib/utils/mixin.js';
+import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
+
+const MyCoursesLocalizeBehaviorImpl = (superClass) => {
+	return class extends mixinBehaviors([D2L.PolymerBehaviors.LocalizeBehavior], superClass) {
+		static get properties() {
+			return {
+				resources: {
+					value: function() {
+						return {
+							'en': en,
+							'ar': ar,
+							'da-dk': dadk,
+							'de': de,
+							'es': es,
+							'fi': fi,
+							'fr': fr,
+							'fr-fr': frfr,
+							'ja': ja,
+							'ko': ko,
+							'nb': nb,
+							'nl': nl,
+							'pt': pt,
+							'sv': sv,
+							'tr': tr,
+							'zh': zh,
+							'zh-tw': zhtw
+						};
+					}
+				}
+			};
 		}
-	}
+	};
 };
 
-/*
-* @polymerBehavior D2L.PolymerBehaviors.MyCourses.LocalizeBehavior
-*/
-D2L.PolymerBehaviors.MyCourses.LocalizeBehavior = [
-	D2L.PolymerBehaviors.LocalizeBehavior,
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImpl,
-	D2L.PolymerBehaviors.MyCourses.LangArBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangDadkBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangDeBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangEnBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangEsBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangFiBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangFrBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangFrfrBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangJaBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangKoBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangNbBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangNlBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangPtBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangSvBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangTrBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangZhtwBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangZhBehavior
-];
+export const MyCoursesLocalizeBehavior = dedupingMixin(MyCoursesLocalizeBehaviorImpl);
