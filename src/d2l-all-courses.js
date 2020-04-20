@@ -787,31 +787,24 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_updateFilteredEnrollments(enrollments, append) {
-		let gridEntities, content;
+		let gridEntities;
 		if (!enrollments._entity) {
 			const enrollmentEntities = enrollments.getSubEntitiesByClass(Classes.enrollments.enrollment);
 			gridEntities = enrollmentEntities.map((value) => {
 				return value.href;
 			});
-			content = this._showGroupByTabs
-				? this.$$(`#${this._selectedTabId} d2l-all-courses-content`)
-				: this.$$('d2l-all-courses-content');
-			if (append) {
-				content.filteredEnrollments = content.filteredEnrollments.concat(gridEntities);
-			} else {
-				content.filteredEnrollments = gridEntities;
-			}
 		}
 		else {
 			gridEntities = enrollments.enrollmentsHref();
-			content = this._showGroupByTabs
-				? this.$$(`#${this._selectedTabId} d2l-all-courses-content`)
-				: this.$$('d2l-all-courses-content');
-			if (append) {
-				content.filteredEnrollments = content.filteredEnrollments.concat(gridEntities);
-			} else {
-				content.filteredEnrollments = gridEntities;
-			}
+		}
+
+		const content = this._showGroupByTabs
+			? this.$$(`#${this._selectedTabId} d2l-all-courses-content`)
+			: this.$$('d2l-all-courses-content');
+		if (append) {
+			content.filteredEnrollments = content.filteredEnrollments.concat(gridEntities);
+		} else {
+			content.filteredEnrollments = gridEntities;
 		}
 
 		this._lastEnrollmentsSearchResponse = enrollments;
