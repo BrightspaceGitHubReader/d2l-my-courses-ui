@@ -30,13 +30,13 @@ Testing from within LMS:
 
 3. In d2l-my-courses-ui directory, run
 	```shell
-	bower link
+	npm link
 	```
 to allow it to be linked from brightspace-integration
 
 4. In brightspace-integration directory, run
 	```shell
-	bower link d2l-my-courses
+	npm link d2l-my-courses
 	```
 to link to the local d2l-my-courses-ui project
 
