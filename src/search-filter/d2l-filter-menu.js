@@ -1,14 +1,8 @@
 /*
 `d2l-filter-menu`
 Polymer-based web component for the filter menu.
+*/
 
-*/
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
-import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/iron-pages/iron-pages.js';
 
 import '@brightspace-ui/core/components/colors/colors.js';
@@ -17,12 +11,99 @@ import './d2l-filter-menu-tab.js';
 import './d2l-filter-menu-tab-roles.js';
 import '../d2l-utility-behavior.js';
 import '../localize-behavior.js';
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-const $_documentContainer = document.createElement('template');
+import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu">
-	<template strip-whitespace="">
+class FilterMenu extends mixinBehaviors([
+	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
+	D2L.MyCourses.UtilityBehavior
+], PolymerElement) {
+
+	static get is() { return 'd2l-filter-menu'; }
+
+	static get properties() {
+		return {
+			filterStandardDepartmentName: String,
+			filterStandardSemesterName: String,
+			filterRolesName: String,
+			myEnrollmentsEntity: {
+				type: Object,
+				observer: '_myEnrollmentsEntityChanged'
+			},
+			tabSearchType: {
+				type: String,
+				observer: '_tabSearchTypeChanged'
+			},
+			_departmentFilters: {
+				type: Array,
+				value: function() { return []; }
+			},
+			_semesterFilters: {
+				type: Array,
+				value: function() { return []; }
+			},
+			_roleFiltersCount: {
+				type: Number,
+				value: 0
+			},
+			_searchDepartmentsAction: Object,
+			_searchSemestersAction: Object,
+			_searchMyEnrollmentsAction: Object,
+			_semestersTabSelected: {
+				type: Boolean,
+				value: false
+			},
+			_departmentsTabSelected: {
+				type: Boolean,
+				value: false
+			},
+			_rolesTabSelected: {
+				type: Boolean,
+				value: false
+			},
+			_hasFilters: {
+				type: Boolean,
+				value: false,
+				computed: '_computeHasFilters(_departmentFilters.length, _semesterFilters.length, _roleFiltersCount)'
+			},
+			_semestersTabText: {
+				type: String,
+				computed: '_computeTabText(filterStandardSemesterName, _semesterFilters.length)'
+			},
+			_departmentsTabText: {
+				type: String,
+				computed: '_computeTabText(filterStandardDepartmentName, _departmentFilters.length)'
+			},
+			_rolesTabText: {
+				type: String,
+				computed: '_computeTabText(filterRolesName, _roleFiltersCount)'
+			},
+			_semestersSearchPlaceholderText: {
+				type: String,
+				computed: '_computeSearchPlaceholderText(filterStandardSemesterName)'
+			},
+			_departmentsSearchPlaceholderText: {
+				type: String,
+				computed: '_computeSearchPlaceholderText(filterStandardDepartmentName)'
+			},
+			_rolesTabHidden: {
+				type: Boolean,
+				value: false
+			},
+			_semestersTabHidden: {
+				type: Boolean,
+				value: false
+			},
+			_departmentsTabHidden: {
+				type: Boolean,
+				value: false
+			}
+		};
+	}
+
+	static get template() {
+		return html`
 		<style>
 			:host {
 				display: flex;
@@ -111,105 +192,18 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu">
 
 			<d2l-filter-menu-tab-roles id="rolesTab" data-tab-name="roles" aria-labelledby="rolesTabButton" no-filters-text="[[localize('filtering.noRoles')]]" my-enrollments-entity="[[myEnrollmentsEntity]]" hidden$="[[_rolesTabHidden]]">
 			</d2l-filter-menu-tab-roles>
-		</iron-pages>
-	</template>
-	
-</dom-module>`;
+		</iron-pages>`;
+	}
 
-document.head.appendChild($_documentContainer.content);
-Polymer({
-	is: 'd2l-filter-menu',
-	properties: {
-		filterStandardDepartmentName: String,
-		filterStandardSemesterName: String,
-		filterRolesName: String,
-		myEnrollmentsEntity: {
-			type: Object,
-			observer: '_myEnrollmentsEntityChanged'
-		},
-		tabSearchType: {
-			type: String,
-			observer: '_tabSearchTypeChanged'
-		},
-		_departmentFilters: {
-			type: Array,
-			value: function() { return []; }
-		},
-		_semesterFilters: {
-			type: Array,
-			value: function() { return []; }
-		},
-		_roleFiltersCount: {
-			type: Number,
-			value: 0
-		},
-		_searchDepartmentsAction: Object,
-		_searchSemestersAction: Object,
-		_searchMyEnrollmentsAction: Object,
-		_semestersTabSelected: {
-			type: Boolean,
-			value: false
-		},
-		_departmentsTabSelected: {
-			type: Boolean,
-			value: false
-		},
-		_rolesTabSelected: {
-			type: Boolean,
-			value: false
-		},
-		_hasFilters: {
-			type: Boolean,
-			value: false,
-			computed: '_computeHasFilters(_departmentFilters.length, _semesterFilters.length, _roleFiltersCount)'
-		},
-		_semestersTabText: {
-			type: String,
-			computed: '_computeTabText(filterStandardSemesterName, _semesterFilters.length)'
-		},
-		_departmentsTabText: {
-			type: String,
-			computed: '_computeTabText(filterStandardDepartmentName, _departmentFilters.length)'
-		},
-		_rolesTabText: {
-			type: String,
-			computed: '_computeTabText(filterRolesName, _roleFiltersCount)'
-		},
-		_semestersSearchPlaceholderText: {
-			type: String,
-			computed: '_computeSearchPlaceholderText(filterStandardSemesterName)'
-		},
-		_departmentsSearchPlaceholderText: {
-			type: String,
-			computed: '_computeSearchPlaceholderText(filterStandardDepartmentName)'
-		},
-		_rolesTabHidden: {
-			type: Boolean,
-			value: false
-		},
-		_semestersTabHidden: {
-			type: Boolean,
-			value: false
-		},
-		_departmentsTabHidden: {
-			type: Boolean,
-			value: false
-		}
-	},
-	behaviors: [
-		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.UtilityBehavior
-	],
-	listeners: {
-		'role-filters-changed': '_onRoleFiltersChanged',
-		'selected-filters-changed': '_onDepartmentOrSemesterFiltersChanged'
-	},
-	attached: function() {
+	connectedCallback() {
+		super.connectedCallback();
+		this.addEventListener('role-filters-changed', this._onRoleFiltersChanged);
+		this.addEventListener('selected-filters-changed', this._onDepartmentOrSemesterFiltersChanged);
+
 		this.filterRolesName = this.localize('filtering.roles');
-	},
+	}
 
-	open: function() {
-
+	open() {
 		const defaultTab = !this._semestersTabHidden
 			? 'semesters'
 			: !this._departmentsTabHidden ? 'departments' : 'roles';
@@ -220,8 +214,8 @@ Polymer({
 			this.$.semestersTab.load(),
 			this.$.departmentsTab.load()
 		]);
-	},
-	clearFilters: function() {
+	}
+	clearFilters() {
 		this.$.semestersTab.clear();
 		this.$.departmentsTab.clear();
 		this.$.rolesTab.clear();
@@ -262,9 +256,8 @@ Polymer({
 				roles: 0
 			}
 		});
-	},
-
-	_onRoleFiltersChanged: function(e) {
+	}
+	_onRoleFiltersChanged(e) {
 		this._roleFiltersCount = e.detail.filterCount;
 
 		this.fire('d2l-filter-menu-change', {
@@ -275,8 +268,8 @@ Polymer({
 				roles: this._roleFiltersCount
 			}
 		});
-	},
-	_onDepartmentOrSemesterFiltersChanged: function() {
+	}
+	_onDepartmentOrSemesterFiltersChanged() {
 		if (!this._semesterFilters || !this._departmentFilters || !this._searchMyEnrollmentsAction) {
 			return;
 		}
@@ -296,8 +289,8 @@ Polymer({
 				roles: this._roleFiltersCount
 			}
 		});
-	},
-	_myEnrollmentsEntityChanged: function(myEnrollmentsEntity) {
+	}
+	_myEnrollmentsEntityChanged(myEnrollmentsEntity) {
 		myEnrollmentsEntity = this.parseEntity(myEnrollmentsEntity);
 
 		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMySemesters)) {
@@ -313,8 +306,8 @@ Polymer({
 		}
 
 		this._hideInvalidSearchTabs();
-	},
-	_selectTab: function(e) {
+	}
+	_selectTab(e) {
 		const tabName = e.target.dataset.tabName;
 
 		this.$$('iron-pages').select(tabName);
@@ -330,25 +323,27 @@ Polymer({
 		this.$.semestersTabButton.setAttribute('aria-pressed', this._semestersTabSelected);
 		this.$.departmentsTabButton.setAttribute('aria-pressed', this._departmentsTabSelected);
 		this.$.rolesTabButton.setAttribute('aria-pressed', this._rolesTabSelected);
-	},
-	_tabSearchTypeChanged: function() {
+	}
+	_tabSearchTypeChanged() {
 		this._hideInvalidSearchTabs();
-	},
-	_hideInvalidSearchTabs: function() {
+	}
+	_hideInvalidSearchTabs() {
 		// If My Courses is grouped by semesters/departments, don't show either of these tabs
 		const semesterOrDepartmentGrouping = this.tabSearchType === 'BySemester' || this.tabSearchType === 'ByDepartment';
 		this._semestersTabHidden = semesterOrDepartmentGrouping || !this._searchSemestersAction;
 		this._departmentsTabHidden = semesterOrDepartmentGrouping || !this._searchDepartmentsAction;
 		// If My Courses is grouped by role alias, don't show the Role tab
 		this._rolesTabHidden = this.tabSearchType === 'ByRoleAlias';
-	},
-	_computeHasFilters: function(departmentFiltersLength, semesterFiltersLength, roleFiltersCount) {
+	}
+	_computeHasFilters(departmentFiltersLength, semesterFiltersLength, roleFiltersCount) {
 		return departmentFiltersLength + semesterFiltersLength + roleFiltersCount > 0;
-	},
-	_computeTabText: function(filterLabel, num) {
+	}
+	_computeTabText(filterLabel, num) {
 		return this.localize('filtering.filterLabel', 'filterLabel', filterLabel, 'num', num);
-	},
-	_computeSearchPlaceholderText: function(name) {
+	}
+	_computeSearchPlaceholderText(name) {
 		return this.localize('filtering.searchBy', 'filter', name);
 	}
-});
+}
+
+window.customElements.define(FilterMenu.is, FilterMenu);

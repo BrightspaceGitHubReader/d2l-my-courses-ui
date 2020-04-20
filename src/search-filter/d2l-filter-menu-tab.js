@@ -1,14 +1,7 @@
 /*
 `d2l-filter-menu-tab`
 Polymer-based web component for the filter menu tabs.
-
 */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
-import '@polymer/polymer/polymer-legacy.js';
 
 import '@brightspace-ui/core/components/menu/menu.js';
 import 'd2l-search-widget/d2l-search-widget.js';
@@ -16,12 +9,46 @@ import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-filter-list-item.js';
 import '../d2l-utility-behavior.js';
 import '../localize-behavior.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { Rels } from 'd2l-hypermedia-constants';
-const $_documentContainer = document.createElement('template');
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu-tab">
-	<template strip-whitespace="">
+class FilterMenuTab extends mixinBehaviors([
+	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
+	D2L.MyCourses.UtilityBehavior
+], PolymerElement) {
+
+	static get is() { return 'd2l-filter-menu-tab'; }
+
+	static get properties() {
+		return {
+			selectedFilters: {
+				type: Array,
+				value: function() { return []; },
+				notify: true
+			},
+			menuLabelText: String,
+			noFiltersText: String,
+			searchAction: Object,
+			searchPlaceholderText: String,
+			_hasSearchResults: {
+				type: Boolean,
+				value: false,
+				computed: '_computeHasSearchResults(_allFilters.length)'
+			},
+			_allFilters: {
+				type: Array,
+				value: function() { return []; }
+			},
+			_showContent: {
+				type: Boolean,
+				value: false
+			}
+		};
+	}
+
+	static get template() {
+		return html`
 		<style>
 			:host {
 				display: flex;
@@ -36,7 +63,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu-tab">
 				margin: 10px;
 			}
 		</style>
-
 		<div hidden$="[[!_showContent]]">
 			<d2l-search-widget placeholder-text="[[searchPlaceholderText]]" search-action="[[searchAction]]" search-field-name="search">
 			</d2l-search-widget>
@@ -50,50 +76,16 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-filter-menu-tab">
 
 			<div class="no-items-text" hidden$="[[_hasSearchResults]]">[[localize('noSearchResults')]]</div>
 		</div>
+		<div class="no-items-text" hidden$="[[_showContent]]">[[noFiltersText]]</div>`;
+	}
 
-		<div class="no-items-text" hidden$="[[_showContent]]">[[noFiltersText]]</div>
-	</template>
+	connectedCallback() {
+		super.connectedCallback();
+		this.addEventListener('d2l-search-widget-results-changed', this._onSearchWidgetResultsChanged);
+		this.addEventListener('d2l-menu-item-change', this._onMenuItemChange);
+	}
 
-	
-</dom-module>`;
-
-document.head.appendChild($_documentContainer.content);
-Polymer({
-	is: 'd2l-filter-menu-tab',
-	properties: {
-		selectedFilters: {
-			type: Array,
-			value: function() { return []; },
-			notify: true
-		},
-		menuLabelText: String,
-		noFiltersText: String,
-		searchAction: Object,
-		searchPlaceholderText: String,
-		_hasSearchResults: {
-			type: Boolean,
-			value: false,
-			computed: '_computeHasSearchResults(_allFilters.length)'
-		},
-		_allFilters: {
-			type: Array,
-			value: function() { return []; }
-		},
-		_showContent: {
-			type: Boolean,
-			value: false
-		}
-	},
-	behaviors: [
-		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.UtilityBehavior
-	],
-	listeners: {
-		'd2l-search-widget-results-changed': '_onSearchWidgetResultsChanged',
-		'd2l-menu-item-change': '_onMenuItemChange'
-	},
-
-	load: function() {
+	load() {
 		if (!this.searchAction) {
 			return;
 		}
@@ -110,8 +102,8 @@ Polymer({
 				this.$$('d2l-search-widget').search();
 				this._showContent = this._allFilters.length > 0;
 			});
-	},
-	clear: function() {
+	}
+	clear() {
 		const items = this.$$('d2l-menu').querySelectorAll('d2l-filter-list-item');
 		for (let i = 0; i < items.length; i++) {
 			items[i].selected = false;
@@ -119,25 +111,25 @@ Polymer({
 
 		this.$$('d2l-search-widget').clear();
 		this.selectedFilters = [];
-	},
-	resize: function() {
+	}
+	resize() {
 		this.$$('d2l-menu').resize();
 
 		setTimeout(() => {
 			// DE24225 - force dropdown to resize after opening
 			window.dispatchEvent(new Event('resize'));
 		}, 200);
-	},
+	}
 
-	_checkSelected: function(entity) {
+	_checkSelected(entity) {
 		// Checks if the given entity should be "selected" - used when search results change
 		const id = entity.href || entity.getLinkByRel(Rels.organization).href;
 		return this.selectedFilters.indexOf(id) > -1;
-	},
-	_computeHasSearchResults: function(allFiltersLength) {
+	}
+	_computeHasSearchResults(allFiltersLength) {
 		return allFiltersLength > 0;
-	},
-	_onMenuItemChange: function(e) {
+	}
+	_onMenuItemChange(e) {
 		if (e.detail.selected) {
 			this.push('selectedFilters', e.detail.value);
 		} else {
@@ -145,9 +137,11 @@ Polymer({
 			this.splice('selectedFilters', index, 1);
 		}
 		this.fire('selected-filters-changed');
-	},
-	_onSearchWidgetResultsChanged: function(e) {
+	}
+	_onSearchWidgetResultsChanged(e) {
 		this.set('_allFilters', e.detail.searchResponse.entities || []);
 		this.resize();
 	}
-});
+}
+
+window.customElements.define(FilterMenuTab.is, FilterMenuTab);

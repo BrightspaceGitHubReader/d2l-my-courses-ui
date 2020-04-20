@@ -3,18 +3,84 @@
 Polymer-based web component for the all courses content.
 */
 
-import '@polymer/polymer/polymer-legacy.js';
-
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import './d2l-card-grid-behavior.js';
 import './d2l-card-grid-styles.js';
 import '../localize-behavior.js';
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-const $_documentContainer = document.createElement('template');
+import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 
-$_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-content">
-	<template strip-whitespace="">
+class AllCoursesContent extends mixinBehaviors([
+	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
+	D2L.MyCourses.CardGridBehavior
+], PolymerElement) {
+
+	static get is() { return 'd2l-all-courses-content'; }
+
+	static get properties() {
+		return {
+			totalFilterCount: Number,
+			filterCounts: Object,
+			isSearched: Boolean,
+			filteredEnrollments: Array,
+			showOrganizationCode: {
+				type: Boolean,
+				value: false
+			},
+			showSemesterName: {
+				type: Boolean,
+				value: false
+			},
+			hideCourseStartDate: {
+				type: Boolean,
+				value: false
+			},
+			hideCourseEndDate: {
+				type: Boolean,
+				value: false
+			},
+			showDropboxUnreadFeedback: {
+				type: Boolean,
+				value: false
+			},
+			showUnattemptedQuizzes: {
+				type: Boolean,
+				value: false
+			},
+			showUngradedQuizAttempts: {
+				type: Boolean,
+				value: false
+			},
+			showUnreadDiscussionMessages: {
+				type: Boolean,
+				value: false
+			},
+			showUnreadDropboxSubmissions: {
+				type: Boolean,
+				value: false
+			},
+
+			_noCoursesInSearch: Boolean,
+			_noCoursesInSelection: Boolean,
+			_noCoursesInDepartment: Boolean,
+			_noCoursesInSemester: Boolean,
+			_noCoursesInRole: Boolean,
+			_itemCount: {
+				type: Number,
+				value: 0
+			}
+		};
+	}
+
+	static get observers() {
+		return [
+			'_enrollmentsChanged(filteredEnrollments.length)'
+		];
+	}
+
+	static get template() {
+		return html`
 		<style include="d2l-card-grid-styles">
 			:host {
 				display: block;
@@ -23,7 +89,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-content">
 				padding-bottom: 20px;
 			}
 		</style>
-
 		<span class="bottom-pad" hidden$="[[!_noCoursesInSearch]]">
 			[[localize('noCoursesInSearch')]]
 		</span>
@@ -56,81 +121,17 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-courses-content">
 					hide-course-end-date="[[hideCourseEndDate]]">
 				</d2l-enrollment-card>
 			</template>
-		</div>
-	</template>
+		</div>`;
+	}
 
-</dom-module>`;
-
-document.head.appendChild($_documentContainer.content);
-Polymer({
-	is: 'd2l-all-courses-content',
-	properties: {
-		totalFilterCount: Number,
-		filterCounts: Object,
-		isSearched: Boolean,
-		filteredEnrollments: Array,
-		showOrganizationCode: {
-			type: Boolean,
-			value: false
-		},
-		showSemesterName: {
-			type: Boolean,
-			value: false
-		},
-		hideCourseStartDate: {
-			type: Boolean,
-			value: false
-		},
-		hideCourseEndDate: {
-			type: Boolean,
-			value: false
-		},
-		showDropboxUnreadFeedback: {
-			type: Boolean,
-			value: false
-		},
-		showUnattemptedQuizzes: {
-			type: Boolean,
-			value: false
-		},
-		showUngradedQuizAttempts: {
-			type: Boolean,
-			value: false
-		},
-		showUnreadDiscussionMessages: {
-			type: Boolean,
-			value: false
-		},
-		showUnreadDropboxSubmissions: {
-			type: Boolean,
-			value: false
-		},
-
-		_noCoursesInSearch: Boolean,
-		_noCoursesInSelection: Boolean,
-		_noCoursesInDepartment: Boolean,
-		_noCoursesInSemester: Boolean,
-		_noCoursesInRole: Boolean,
-		_itemCount: {
-			type: Number,
-			value: 0
-		}
-	},
-	behaviors: [
-		D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
-		D2L.MyCourses.CardGridBehavior
-	],
-	observers: [
-		'_enrollmentsChanged(filteredEnrollments.length)'
-	],
-
-	attached: function() {
+	connectedCallback() {
+		super.connectedCallback();
 		afterNextRender(this, () => {
 			this._onResize();
 		});
-	},
+	}
 
-	_enrollmentsChanged: function(enrollmentLength) {
+	_enrollmentsChanged(enrollmentLength) {
 		this._noCoursesInSearch = false;
 		this._noCoursesInSelection = false;
 		this._noCoursesInDepartment = false;
@@ -156,4 +157,6 @@ Polymer({
 			}
 		}
 	}
-});
+}
+
+window.customElements.define(AllCoursesContent.is, AllCoursesContent);
