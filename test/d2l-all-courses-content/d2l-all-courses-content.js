@@ -28,19 +28,6 @@ describe('d2l-all-courses-content', function() {
 				expect(widget._noCoursesInSelection).to.equal(testCase.noCoursesInSelection);
 			});
 		});
-
-		[
-			{ isSearched: false, totalFilterCount: 0, enrollmentsChanged: 3, itemCount: 3 },
-			{ isSearched: true, totalFilterCount: 0, enrollmentsChanged: 2, itemCount: 0 },
-			{ isSearched: false, totalFilterCount: 1, enrollmentsChanged: 2, itemCount: 0 }
-		].forEach(testCase => {
-			it(`should set itemCount to ${testCase.itemCount} when enrollments change to ${testCase.enrollmentsChanged}, isSearched is ${testCase.isSearched} and totalFilterCount is ${testCase.totalFilterCount}`, () => {
-				widget.isSearched = testCase.isSearched;
-				widget.totalFilterCount = testCase.totalFilterCount;
-				widget._enrollmentsChanged(testCase.enrollmentsChanged);
-				expect(widget._itemCount).to.equal(testCase.itemCount);
-			});
-		});
 	});
 
 	describe('filtering when there are no courses', () => {
