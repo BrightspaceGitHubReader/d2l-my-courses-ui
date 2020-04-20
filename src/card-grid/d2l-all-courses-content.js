@@ -65,11 +65,7 @@ class AllCoursesContent extends mixinBehaviors([
 			_noCoursesInSelection: Boolean,
 			_noCoursesInDepartment: Boolean,
 			_noCoursesInSemester: Boolean,
-			_noCoursesInRole: Boolean,
-			_itemCount: {
-				type: Number,
-				value: 0
-			}
+			_noCoursesInRole: Boolean
 		};
 	}
 
@@ -150,10 +146,6 @@ class AllCoursesContent extends mixinBehaviors([
 				}
 			} else if (this.totalFilterCount > 1) {
 				this._noCoursesInSelection = true;
-			}
-		} else {
-			if (!this.isSearched && this.totalFilterCount === 0) {
-				this._itemCount = enrollmentLength;
 			}
 		}
 	}
