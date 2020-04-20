@@ -1,84 +1,56 @@
 import 'd2l-localize-behavior/d2l-localize-behavior.js';
-import './build/lang/ar.js';
-import './build/lang/da-dk.js';
-import './build/lang/de.js';
-import './build/lang/en.js';
-import './build/lang/es.js';
-import './build/lang/fi.js';
-import './build/lang/fr.js';
-import './build/lang/fr-fr.js';
-import './build/lang/ja.js';
-import './build/lang/ko.js';
-import './build/lang/nb.js';
-import './build/lang/nl.js';
-import './build/lang/pt.js';
-import './build/lang/sv.js';
-import './build/lang/tr.js';
-import './build/lang/zh-tw.js';
-import './build/lang/zh.js';
-window.D2L = window.D2L || {};
-window.D2L.PolymerBehaviors = window.D2L.PolymerBehaviors || {};
-window.D2L.PolymerBehaviors.MyCourses = window.D2L.PolymerBehaviors.MyCourses || {};
-/*
-* @polymerBehavior D2L.PolymerBehaviors.MyCourses.LocalizeBehavior
-*/
-D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImpl = {
-	properties: {
-		locale: {
-			type: String,
-			value: function() {
-				return document.documentElement.lang
-					|| document.documentElement.getAttribute('data-lang-default')
-					|| 'en-us';
-			}
-		},
-		resources: {
-			value: function() {
-				return {
-					'en': this.en,
-					'ar': this.ar,
-					'da-dk': this['da-dk'],
-					'de': this.de,
-					'es': this.es,
-					'fi': this.fi,
-					'fr': this.fr,
-					'fr-fr': this['fr-fr'],
-					'ja': this.ja,
-					'ko': this.ko,
-					'nb': this.nb,
-					'nl': this.nl,
-					'pt': this.pt,
-					'sv': this.sv,
-					'tr': this.tr,
-					'zh': this.zh,
-					'zh-tw': this['zh-tw']
-				};
-			}
+import ar from './lang/ar.js';
+import dadk from './lang/da-dk.js';
+import de from './lang/de.js';
+import en from './lang/en.js';
+import es from './lang/es.js';
+import fi from './lang/fi.js';
+import fr from './lang/fr.js';
+import frfr from './lang/fr-fr.js';
+import ja from './lang/ja.js';
+import ko from './lang/ko.js';
+import nb from './lang/nb.js';
+import nl from './lang/nl.js';
+import pt from './lang/pt.js';
+import sv from './lang/sv.js';
+import tr from './lang/tr.js';
+import zh from './lang/zh.js';
+import zhtw from './lang/zh-tw.js';
+
+// eslint-disable-next-line sort-imports
+import {dedupingMixin} from '@polymer/polymer/lib/utils/mixin.js';
+import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
+
+const MyCoursesLocalizeBehaviorImpl = (superClass) => {
+	return class extends mixinBehaviors([D2L.PolymerBehaviors.LocalizeBehavior], superClass) {
+		static get properties() {
+			return {
+				resources: {
+					value: function() {
+						return {
+							'en': en,
+							'ar': ar,
+							'da-dk': dadk,
+							'de': de,
+							'es': es,
+							'fi': fi,
+							'fr': fr,
+							'fr-fr': frfr,
+							'ja': ja,
+							'ko': ko,
+							'nb': nb,
+							'nl': nl,
+							'pt': pt,
+							'sv': sv,
+							'tr': tr,
+							'zh': zh,
+							'zh-tw': zhtw
+						};
+					}
+				}
+			};
 		}
-	}
+	};
 };
 
-/*
-* @polymerBehavior D2L.PolymerBehaviors.MyCourses.LocalizeBehavior
-*/
-D2L.PolymerBehaviors.MyCourses.LocalizeBehavior = [
-	D2L.PolymerBehaviors.LocalizeBehavior,
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehaviorImpl,
-	D2L.PolymerBehaviors.MyCourses.LangArBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangDadkBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangDeBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangEnBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangEsBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangFiBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangFrBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangFrfrBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangJaBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangKoBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangNbBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangNlBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangPtBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangSvBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangTrBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangZhtwBehavior,
-	D2L.PolymerBehaviors.MyCourses.LangZhBehavior
-];
+export const MyCoursesLocalizeBehavior = dedupingMixin(MyCoursesLocalizeBehaviorImpl);

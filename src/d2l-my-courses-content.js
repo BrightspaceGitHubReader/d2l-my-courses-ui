@@ -16,24 +16,22 @@ import './card-grid/d2l-card-grid-styles.js';
 import './d2l-alert-behavior.js';
 import './d2l-all-courses.js';
 import './d2l-utility-behavior.js';
-import './localize-behavior.js';
 
 import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
-
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
 import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntity.js';
 import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
 
 class MyCoursesContent extends mixinBehaviors([
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 	D2L.MyCourses.AlertBehavior,
 	D2L.MyCourses.UtilityBehavior,
 	D2L.MyCourses.CardGridBehavior
-], StatusMixin(PolymerElement)) {
+], StatusMixin(MyCoursesLocalizeBehavior(PolymerElement))) {
 
 	static get is() { return 'd2l-my-courses-content'; }
 
