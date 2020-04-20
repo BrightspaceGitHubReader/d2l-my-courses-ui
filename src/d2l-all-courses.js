@@ -20,7 +20,6 @@ import 'd2l-tabs/d2l-tabs.js';
 import './card-grid/d2l-all-courses-content.js';
 import './d2l-alert-behavior.js';
 import './d2l-utility-behavior.js';
-import './localize-behavior.js';
 import './search-filter/d2l-filter-menu.js';
 import './search-filter/d2l-search-widget-custom.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
@@ -29,14 +28,14 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 import SirenParse from 'siren-parser';
 
 class AllCourses extends mixinBehaviors([
 	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
-	D2L.PolymerBehaviors.MyCourses.LocalizeBehavior,
 	D2L.MyCourses.AlertBehavior,
 	D2L.MyCourses.UtilityBehavior
-], PolymerElement) {
+], MyCoursesLocalizeBehavior(PolymerElement)) {
 
 	static get is() { return 'd2l-all-courses'; }
 

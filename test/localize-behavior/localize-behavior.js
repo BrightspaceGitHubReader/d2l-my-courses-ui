@@ -5,20 +5,38 @@ describe('localize behavior', function() {
 		document.documentElement.removeAttribute('lang');
 	});
 
-	it('should have default locale', function() {
+	it('should have default language', done => {
 		component = fixture('default-fixture');
 
-		expect(component.locale).to.equal('en-us');
-		expect(component.localize('allCourses')).to.equal('All Courses');
+		requestAnimationFrame(() => {
+			expect(component.language).to.equal('en');
+			expect(component.localize('allCourses')).to.equal('All Courses');
+			done();
+		});
 	});
 
-	it('should use default locale if provided locale does not exist', function() {
+	it('should use lang specified', done => {
+		document.documentElement.setAttribute('lang', 'fr');
+
+		component = fixture('default-fixture');
+
+		requestAnimationFrame(() => {
+			expect(component.language).to.equal('fr');
+			expect(component.localize('allCourses')).to.equal('Tous les cours');
+			done();
+		});
+	});
+
+	it('should use default language if provided language does not exist', done => {
 		document.documentElement.setAttribute('lang', 'zz-ZZ');
 
 		component = fixture('default-fixture');
 
-		expect(component.locale).to.equal('zz-ZZ');
-		expect(component.localize('allCourses')).to.equal('All Courses');
+		requestAnimationFrame(() => {
+			expect(component.language).to.equal('en');
+			expect(component.localize('allCourses')).to.equal('All Courses');
+			done();
+		});
 	});
 
 	describe('localize mappings', function() {
