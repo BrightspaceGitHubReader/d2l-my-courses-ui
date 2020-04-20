@@ -196,6 +196,8 @@ class MyCoursesContainer extends mixinBehaviors([
 
 		const lastEnrollmentsSearchName = userSettingsEntity.mostRecentEnrollmentsSearchName();
 
+		// DE36672 - need to check here if there's only one semester/department/etc but you have
+		// some courses that are not in any semester/department
 		if (promotedSearchesEntity.actions().length > 1) {
 			this._tabSearchActions = promotedSearchesEntity.actions().map((action) => {
 				return {
