@@ -60,11 +60,7 @@ class AllCoursesContent extends mixinBehaviors([
 				value: false
 			},
 
-			_noCoursesInSearch: Boolean,
-			_noCoursesInSelection: Boolean,
-			_noCoursesInDepartment: Boolean,
-			_noCoursesInSemester: Boolean,
-			_noCoursesInRole: Boolean
+			_infoMessageText: String
 		};
 	}
 
@@ -84,22 +80,9 @@ class AllCoursesContent extends mixinBehaviors([
 				padding-bottom: 20px;
 			}
 		</style>
-		<span class="bottom-pad" hidden$="[[!_noCoursesInSearch]]">
-			[[localize('noCoursesInSearch')]]
+		<span class="bottom-pad" hidden$="[[!_infoMessageText]]">
+			[[_infoMessageText]]
 		</span>
-		<span class="bottom-pad" hidden$="[[!_noCoursesInSelection]]">
-			[[localize('noCoursesInSelection')]]
-		</span>
-		<span class="bottom-pad" hidden$="[[!_noCoursesInDepartment]]">
-			[[localize('noCoursesInDepartment')]]
-		</span>
-		<span class="bottom-pad" hidden$="[[!_noCoursesInSemester]]">
-			[[localize('noCoursesInSemester')]]
-		</span>
-		<span class="bottom-pad" hidden$="[[!_noCoursesInRole]]">
-			[[localize('noCoursesInRole')]]
-		</span>
-
 		<div class="course-card-grid">
 			<template is="dom-repeat" items="[[filteredEnrollments]]">
 				<d2l-enrollment-card
@@ -127,24 +110,26 @@ class AllCoursesContent extends mixinBehaviors([
 	}
 
 	_enrollmentsChanged(enrollmentLength) {
-		this._noCoursesInSearch = false;
-		this._noCoursesInSelection = false;
-		this._noCoursesInDepartment = false;
-		this._noCoursesInSemester = false;
-		this._noCoursesInRole = false;
+		this._infoMessageText = null;
+
 		if (enrollmentLength === 0) {
 			if (this.isSearched) {
-				this._noCoursesInSearch = true;
-			} else if (this.totalFilterCount === 1) {
+				this._infoMessageText = this.localize('noCoursesInSearch');
+				return;
+			}
+			if (this.totalFilterCount === 1) {
 				if (this.filterCounts.departments === 1) {
-					this._noCoursesInDepartment = true;
+					this._infoMessageText = this.localize('noCoursesInDepartment');
 				} else if (this.filterCounts.semesters === 1) {
-					this._noCoursesInSemester = true;
+					this._infoMessageText = this.localize('noCoursesInSemester');
 				} else if (this.filterCounts.roles === 1) {
-					this._noCoursesInRole = true;
+					this._infoMessageText = this.localize('noCoursesInRole');
 				}
-			} else if (this.totalFilterCount > 1) {
-				this._noCoursesInSelection = true;
+				return;
+			}
+			if (this.totalFilterCount > 1) {
+				this._infoMessageText = this.localize('noCoursesInSelection');
+				return;
 			}
 		}
 	}
