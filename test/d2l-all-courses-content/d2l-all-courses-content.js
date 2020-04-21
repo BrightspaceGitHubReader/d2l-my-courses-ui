@@ -1,3 +1,5 @@
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+
 describe('d2l-all-courses-content', function() {
 	let widget;
 
@@ -11,13 +13,16 @@ describe('d2l-all-courses-content', function() {
 
 	describe('Card Grid', function() {
 
-		it('should set --course-image-card-height as part of initial setup', () => {
-			const height = getComputedStyle(widget).getPropertyValue('--course-image-card-height');
+		it('should set --course-image-card-height as part of initial setup', done => {
+			afterNextRender(this, () => {
+				const height = getComputedStyle(widget).getPropertyValue('--course-image-card-height');
 
-			expect(height).not.to.be.null;
-			expect(height).not.to.be.undefined;
-			expect(height.trim()).not.to.equal('0');
-			expect(height.trim()).not.to.equal('0px');
+				expect(height).not.to.be.null;
+				expect(height).not.to.be.undefined;
+				expect(height.trim()).not.to.equal('0');
+				expect(height.trim()).not.to.equal('0px');
+				done();
+			});
 		});
 	});
 });
