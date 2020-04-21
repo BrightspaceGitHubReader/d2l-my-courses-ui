@@ -5,7 +5,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-card-grid-styles">
 		<style>
 			:host {
 				/* Recalculated in _onResize, so initial value is meaningless */
-				--course-image-tile-height: 0;
+				--course-image-card-height: 0;
 			}
 			.course-card-grid {
 				display: -ms-grid;
@@ -38,7 +38,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-card-grid-styles">
 				box-sizing: border-box;
 				height: 100%;
 				padding-bottom: 0.75rem;
-				--course-image-height: var(--course-image-tile-height);
+				--course-image-height: var(--course-image-card-height);
 			}
 		</style>
 	</template>
