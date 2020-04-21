@@ -60,7 +60,10 @@ class AllCoursesContent extends mixinBehaviors([
 				value: false
 			},
 
-			_infoMessageText: String
+			_infoMessageText: {
+				type: String,
+				value: null
+			}
 		};
 	}
 
