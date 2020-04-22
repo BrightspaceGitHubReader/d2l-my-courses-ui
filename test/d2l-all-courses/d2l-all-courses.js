@@ -32,8 +32,6 @@ describe('d2l-all-courses', function() {
 			}]
 		};
 
-		widget.updatedSortLogic = false;
-
 		flush();
 		requestAnimationFrame(() => {
 			done();
@@ -207,6 +205,72 @@ describe('d2l-all-courses', function() {
 		it('should read "Filter: 2 filters" when any 2 filters are selected', function() {
 			fireEvents(2);
 			expect(widget._filterText).to.equal('Filter: 2 Filters');
+		});
+	});
+
+	describe('Info Message', function() {
+
+		describe('changing enrollment entities', function() {
+			[
+				{ _isSearched: true, _totalFilterCount: 0, enrollmentsLength: 0, expectedMessage: 'noCoursesInSearch', hideMessage: false },
+				{ _isSearched: true, _totalFilterCount: 0, enrollmentsLength: 3, expectedMessage: null, hideMessage: true },
+				{ _isSearched: false, _totalFilterCount: 2, enrollmentsLength: 0, expectedMessage: 'noCoursesInSelection', hideMessage: false }
+			].forEach(testCase => {
+				it(`should set _infoMessageText to ${testCase.expectedMessage} and ${testCase.hideMessage ? 'hide' : 'show'} the message when enrollments length is ${testCase.enrollmentsLength}, _isSearched is ${testCase._isSearched} and _totalFilterCount is ${testCase._totalFilterCount}`, () => {
+					widget._isSearched = testCase._isSearched;
+					widget._totalFilterCount = testCase._totalFilterCount;
+					widget._updateInfoMessage(testCase.enrollmentsLength);
+
+					expect(widget._infoMessageText).to.equal(widget.localize(testCase.expectedMessage) ? widget.localize(testCase.expectedMessage) : null);
+					expect(widget.shadowRoot.querySelector('#infoMessage').hidden).to.equal(testCase.hideMessage);
+				});
+			});
+		});
+
+		describe('filtering when there are no courses', () => {
+			[
+				{ expectedMessage: 'noCoursesInDepartment', filter: 'departments' },
+				{ expectedMessage: 'noCoursesInSemester', filter: 'semesters' },
+				{ expectedMessage: 'noCoursesInRole', filter: 'roles' }
+			].forEach(testCase => {
+				it(`should set _infoMessageText to ${testCase.expectedMessage} when there are no enrollments and one ${testCase.filter} is filtered`, () => {
+					widget._isSearched = false;
+					widget._totalFilterCount = 1;
+					widget._filterCounts = {};
+					widget._filterCounts[testCase.filter] = 1;
+					widget._updateInfoMessage(0);
+
+					expect(widget._infoMessageText).to.equal(widget.localize(testCase.expectedMessage));
+					expect(widget.shadowRoot.querySelector('#infoMessage').hidden).to.be.false;
+				});
+			});
+
+			[
+				{ filter: 'departments' },
+				{ filter: 'semesters' },
+				{ filter: 'roles' }
+			].forEach(testCase => {
+				it(`should set _infoMessageText to catch-all langterm when there are no enrollments and more than one ${testCase.filter} are filtered`, () => {
+					widget._isSearched = false;
+					widget._totalFilterCount = 3;
+					widget._filterCounts = {};
+					widget._filterCounts[testCase.filter] = 3;
+					widget._updateInfoMessage(0);
+
+					expect(widget._infoMessageText).to.equal(widget.localize('noCoursesInSelection'));
+					expect(widget.shadowRoot.querySelector('#infoMessage').hidden).to.be.false;
+				});
+			});
+
+			it('should set _infoMessageText to catch-all langterm when there are more than one filters', () => {
+				widget._isSearched = false;
+				widget._totalFilterCount = 4;
+				widget._filterCounts = {};
+				widget._updateInfoMessage(0);
+
+				expect(widget._infoMessageText).to.equal(widget.localize('noCoursesInSelection'));
+				expect(widget.shadowRoot.querySelector('#infoMessage').hidden).to.be.false;
+			});
 		});
 	});
 

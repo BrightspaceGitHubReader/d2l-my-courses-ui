@@ -165,7 +165,11 @@ class AllCourses extends mixinBehaviors([
 			},
 			_isSearched: Boolean,
 			_bustCacheToken: Number,
-			_selectedTabId: String
+			_selectedTabId: String,
+			_infoMessageText: {
+				type: String,
+				value: null
+			}
 		};
 	}
 
@@ -262,6 +266,10 @@ class AllCourses extends mixinBehaviors([
 					text-decoration: underline;
 					color: var(--d2l-color-celestine);
 				}
+
+				#infoMessage {
+					padding-bottom: 20px;
+				}
 			</style>
 
 			<d2l-simple-overlay
@@ -340,9 +348,6 @@ class AllCourses extends mixinBehaviors([
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
 										<d2l-all-courses-content
-											total-filter-count="[[_totalFilterCount]]"
-											filter-counts="[[_filterCounts]]"
-											is-searched="[[_isSearched]]"
 											token="[[token]]"
 											org-unit-type-ids="[[orgUnitTypeIds]]"
 											show-organization-code="[[showOrganizationCode]]"
@@ -354,6 +359,9 @@ class AllCourses extends mixinBehaviors([
 											show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
 											hide-course-start-date="[[hideCourseStartDate]]"
 											hide-course-end-date="[[hideCourseEndDate]]">
+											<span id="infoMessage" hidden$="[[!_infoMessageText]]">
+												[[_infoMessageText]]
+											</span>
 										</d2l-all-courses-content>
 									</div>
 									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
@@ -364,9 +372,6 @@ class AllCourses extends mixinBehaviors([
 					</template>
 					<template is="dom-if" if="[[!_showGroupByTabs]]">
 						<d2l-all-courses-content
-							total-filter-count="[[_totalFilterCount]]"
-							filter-counts="[[_filterCounts]]"
-							is-searched="[[_isSearched]]"
 							token="[[token]]"
 							org-unit-type-ids="[[orgUnitTypeIds]]"
 							show-organization-code="[[showOrganizationCode]]"
@@ -378,6 +383,9 @@ class AllCourses extends mixinBehaviors([
 							show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
 							hide-course-start-date="[[hideCourseStartDate]]"
 							hide-course-end-date="[[hideCourseEndDate]]">
+							<span id="infoMessage" hidden$="[[!_infoMessageText]]">
+								[[_infoMessageText]]
+							</span>
 						</d2l-all-courses-content>
 					</template>
 					<d2l-loading-spinner id="lazyLoadSpinner" hidden$="[[!_hasMoreEnrollments]]" size="100">
@@ -806,11 +814,38 @@ class AllCourses extends mixinBehaviors([
 			content.filteredEnrollments = gridEntities;
 		}
 
+		this._updateInfoMessage(content.filteredEnrollments.length);
+
 		this._lastEnrollmentsSearchResponse = enrollments;
 		requestAnimationFrame(() => {
 			window.dispatchEvent(new Event('resize')); // doing this so ie11 and older edge browser will get ms-grid style assigned
 			this.$['all-courses-scroll-threshold'].clearTriggers();
 		});
+	}
+
+	_updateInfoMessage(enrollmentLength) {
+		this._infoMessageText = null;
+
+		if (enrollmentLength === 0) {
+			if (this._isSearched) {
+				this._infoMessageText = this.localize('noCoursesInSearch');
+				return;
+			}
+			if (this._totalFilterCount === 1) {
+				if (this._filterCounts.departments === 1) {
+					this._infoMessageText = this.localize('noCoursesInDepartment');
+				} else if (this._filterCounts.semesters === 1) {
+					this._infoMessageText = this.localize('noCoursesInSemester');
+				} else if (this._filterCounts.roles === 1) {
+					this._infoMessageText = this.localize('noCoursesInRole');
+				}
+				return;
+			}
+			if (this._totalFilterCount > 1) {
+				this._infoMessageText = this.localize('noCoursesInSelection');
+				return;
+			}
+		}
 	}
 
 	_getOrgUnitIdFromHref(organizationHref) {

@@ -21,8 +21,8 @@ D2L.MyCourses.CardGridBehavior = {
 	},
 
 	_onResize: function(ie11retryCount) {
-		const courseTileGrid = this.$$('.course-card-grid');
-		if (!courseTileGrid) {
+		const courseCardGrid = this.$$('.course-card-grid');
+		if (!courseCardGrid) {
 			return;
 		}
 
@@ -34,15 +34,15 @@ D2L.MyCourses.CardGridBehavior = {
 
 		const numColumns = Math.min(Math.floor(containerWidth / 350), 4) + 1;
 		const columnClass = `columns-${numColumns}`;
-		if (courseTileGrid.classList.toString().indexOf(columnClass) === -1) {
-			courseTileGrid.classList.remove('columns-1');
-			courseTileGrid.classList.remove('columns-2');
-			courseTileGrid.classList.remove('columns-3');
-			courseTileGrid.classList.remove('columns-4');
-			courseTileGrid.classList.add(`columns-${numColumns}`);
+		if (courseCardGrid.classList.toString().indexOf(columnClass) === -1) {
+			courseCardGrid.classList.remove('columns-1');
+			courseCardGrid.classList.remove('columns-2');
+			courseCardGrid.classList.remove('columns-3');
+			courseCardGrid.classList.remove('columns-4');
+			courseCardGrid.classList.add(`columns-${numColumns}`);
 		}
 
-		this.updateStyles({'--course-image-tile-height': `${containerWidth / numColumns * 0.43}px`});
+		this.updateStyles({'--course-image-card-height': `${containerWidth / numColumns * 0.43}px`});
 
 		const cssGridStyle = document.body.style['grid-template-columns'];
 		// Can be empty string, hence the strict comparison
@@ -51,20 +51,20 @@ D2L.MyCourses.CardGridBehavior = {
 			return;
 		}
 
-		const courseTileDivs = dom(this.root).querySelectorAll('.course-card-grid d2l-enrollment-card');
+		const courseCardDivs = dom(this.root).querySelectorAll('.course-card-grid d2l-enrollment-card');
 		ie11retryCount = ie11retryCount || 0;
 		if (
 			ie11retryCount < 20
-			&& courseTileDivs.length === 0
+			&& courseCardDivs.length === 0
 		) {
-			// If course tiles haven't yet rendered, try again for up to one second
+			// If course cards haven't yet rendered, try again for up to one second
 			// (only happens sometimes, only in IE)
 			setTimeout(this._onResize.bind(this, ++ie11retryCount), 250);
 			return;
 		}
 
-		for (let i = 0, position = 0; i < courseTileDivs.length; i++, position++) {
-			const div = courseTileDivs[i];
+		for (let i = 0, position = 0; i < courseCardDivs.length; i++, position++) {
+			const div = courseCardDivs[i];
 
 			// The (* 2 - 1) accounts for the grid-gap-esque columns
 			const column = (position % numColumns + 1) * 2 - 1;

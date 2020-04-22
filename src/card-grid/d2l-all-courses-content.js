@@ -9,19 +9,15 @@ import './d2l-card-grid-styles.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
-import { MyCoursesLocalizeBehavior } from '../localize-behavior.js';
 
 class AllCoursesContent extends mixinBehaviors([
 	D2L.MyCourses.CardGridBehavior
-], MyCoursesLocalizeBehavior(PolymerElement)) {
+], PolymerElement) {
 
 	static get is() { return 'd2l-all-courses-content'; }
 
 	static get properties() {
 		return {
-			totalFilterCount: Number,
-			filterCounts: Object,
-			isSearched: Boolean,
 			filteredEnrollments: Array,
 			showOrganizationCode: {
 				type: Boolean,
@@ -58,19 +54,8 @@ class AllCoursesContent extends mixinBehaviors([
 			showUnreadDropboxSubmissions: {
 				type: Boolean,
 				value: false
-			},
-
-			_infoMessageText: {
-				type: String,
-				value: null
 			}
 		};
-	}
-
-	static get observers() {
-		return [
-			'_enrollmentsChanged(filteredEnrollments.length)'
-		];
 	}
 
 	static get template() {
@@ -79,13 +64,8 @@ class AllCoursesContent extends mixinBehaviors([
 			:host {
 				display: block;
 			}
-			.bottom-pad {
-				padding-bottom: 20px;
-			}
 		</style>
-		<span class="bottom-pad" hidden$="[[!_infoMessageText]]">
-			[[_infoMessageText]]
-		</span>
+		<slot></slot>
 		<div class="course-card-grid">
 			<template is="dom-repeat" items="[[filteredEnrollments]]">
 				<d2l-enrollment-card
@@ -112,30 +92,6 @@ class AllCoursesContent extends mixinBehaviors([
 		});
 	}
 
-	_enrollmentsChanged(enrollmentLength) {
-		this._infoMessageText = null;
-
-		if (enrollmentLength === 0) {
-			if (this.isSearched) {
-				this._infoMessageText = this.localize('noCoursesInSearch');
-				return;
-			}
-			if (this.totalFilterCount === 1) {
-				if (this.filterCounts.departments === 1) {
-					this._infoMessageText = this.localize('noCoursesInDepartment');
-				} else if (this.filterCounts.semesters === 1) {
-					this._infoMessageText = this.localize('noCoursesInSemester');
-				} else if (this.filterCounts.roles === 1) {
-					this._infoMessageText = this.localize('noCoursesInRole');
-				}
-				return;
-			}
-			if (this.totalFilterCount > 1) {
-				this._infoMessageText = this.localize('noCoursesInSelection');
-				return;
-			}
-		}
-	}
 }
 
 window.customElements.define(AllCoursesContent.is, AllCoursesContent);
