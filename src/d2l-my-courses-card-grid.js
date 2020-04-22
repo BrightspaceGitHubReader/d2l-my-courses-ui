@@ -1,20 +1,20 @@
 /*
-`d2l-all-courses-content`
+`d2l-my-courses-card-grid`
 Polymer-based web component for the all courses content.
 */
 
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
-import './d2l-card-grid-behavior.js';
-import './d2l-card-grid-styles.js';
+import './card-grid/d2l-card-grid-behavior.js';
+import './card-grid/d2l-card-grid-styles.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 
-class AllCoursesContent extends mixinBehaviors([
+class MyCoursesCardGrid extends mixinBehaviors([
 	D2L.MyCourses.CardGridBehavior
 ], PolymerElement) {
 
-	static get is() { return 'd2l-all-courses-content'; }
+	static get is() { return 'd2l-my-courses-card-grid'; }
 
 	static get properties() {
 		return {
@@ -94,4 +94,4 @@ class AllCoursesContent extends mixinBehaviors([
 
 }
 
-window.customElements.define(AllCoursesContent.is, AllCoursesContent);
+window.customElements.define(MyCoursesCardGrid.is, MyCoursesCardGrid);

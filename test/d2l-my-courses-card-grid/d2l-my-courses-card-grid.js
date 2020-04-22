@@ -1,10 +1,10 @@
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
-describe('d2l-all-courses-content', function() {
+describe('d2l-my-courses-card-grid', function() {
 	let widget;
 
 	beforeEach(function(done) {
-		widget = fixture('d2l-all-courses-content-fixture');
+		widget = fixture('d2l-my-courses-card-grid-fixture');
 
 		setTimeout(function() {
 			done();
