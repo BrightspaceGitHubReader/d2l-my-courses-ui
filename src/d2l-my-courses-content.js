@@ -886,6 +886,8 @@ class MyCoursesContent extends mixinBehaviors([
 
 		const searchAction = enrollmentCollectionEntity.getSearchEnrollmentsActions();
 
+		// When using Current sort (for users with lower enrollment numbers) and
+		// when not on a specific semester tab (DE30485), hide past courses in the widget view
 		if (searchAction
 			&& searchAction.hasFieldByName('sort')
 			&& searchAction.getFieldByName('sort').value.toLowerCase() === 'current'
@@ -895,8 +897,9 @@ class MyCoursesContent extends mixinBehaviors([
 				&& this.tabSearchType.toLowerCase() === 'bysemester'
 			)
 		) {
-			// When using Current sort, hide past courses in the widget view
+			// This is needed for hiding a closed course that was just unpinned
 			this._getTileGrid().setAttribute('hide-past-courses', '');
+			// This is needed for removing closed courses initially
 			this._hidePastCourses = true;
 		}
 
