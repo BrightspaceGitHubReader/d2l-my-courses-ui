@@ -7,29 +7,17 @@
 		<script src="../../../wct-browser-legacy/browser.js"></script>
 		<script src="https://s.brightspace.com/lib/d2lfetch/1.2.0/d2lfetch.js"></script>
 
-		<script type="module" src="../../src/card-grid/d2l-all-courses-content.js"></script>
+		<script type="module" src="../../src/d2l-my-courses-card-grid.js"></script>
 	</head>
 	<body>
-		<test-fixture id="d2l-all-courses-content-fixture">
+		<test-fixture id="d2l-my-courses-card-grid-fixture">
 			<template>
-				<d2l-all-courses-content
+				<d2l-my-courses-card-grid
 					filtered-enrollments='[]'>
-				</d2l-all-courses-content>
+				</d2l-my-courses-card-grid>
 			</template>
 		</test-fixture>
 
-		<test-fixture id="event-test-fixture">
-			<template>
-				<div id="foo">
-					<div>
-						<d2l-all-courses-content
-							filtered-enrollments='[]'>
-						</d2l-all-courses-content>
-					</div>
-				</div>
-			</template>
-		</test-fixture>
-
-		<script type="module" src="./d2l-all-courses-content.js"></script>
+		<script type="module" src="./d2l-my-courses-card-grid.js"></script>
 	</body>
 </html>

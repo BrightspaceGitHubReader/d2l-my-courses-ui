@@ -17,8 +17,8 @@ import 'd2l-alert/d2l-alert.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-tabs/d2l-tabs.js';
-import './card-grid/d2l-all-courses-content.js';
 import './d2l-alert-behavior.js';
+import './d2l-my-courses-card-grid.js';
 import './d2l-utility-behavior.js';
 import './search-filter/d2l-filter-menu.js';
 import './search-filter/d2l-search-widget-custom.js';
@@ -347,7 +347,7 @@ class AllCourses extends mixinBehaviors([
 							<template items="[[tabSearchActions]]" is="dom-repeat">
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
-										<d2l-all-courses-content
+										<d2l-my-courses-card-grid
 											token="[[token]]"
 											org-unit-type-ids="[[orgUnitTypeIds]]"
 											show-organization-code="[[showOrganizationCode]]"
@@ -362,7 +362,7 @@ class AllCourses extends mixinBehaviors([
 											<span id="infoMessage" hidden$="[[!_infoMessageText]]">
 												[[_infoMessageText]]
 											</span>
-										</d2l-all-courses-content>
+										</d2l-my-courses-card-grid>
 									</div>
 									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
 									</d2l-loading-spinner>
@@ -371,7 +371,7 @@ class AllCourses extends mixinBehaviors([
 						</d2l-tabs>
 					</template>
 					<template is="dom-if" if="[[!_showGroupByTabs]]">
-						<d2l-all-courses-content
+						<d2l-my-courses-card-grid
 							token="[[token]]"
 							org-unit-type-ids="[[orgUnitTypeIds]]"
 							show-organization-code="[[showOrganizationCode]]"
@@ -386,7 +386,7 @@ class AllCourses extends mixinBehaviors([
 							<span id="infoMessage" hidden$="[[!_infoMessageText]]">
 								[[_infoMessageText]]
 							</span>
-						</d2l-all-courses-content>
+						</d2l-my-courses-card-grid>
 					</template>
 					<d2l-loading-spinner id="lazyLoadSpinner" hidden$="[[!_hasMoreEnrollments]]" size="100">
 					</d2l-loading-spinner>
@@ -805,16 +805,16 @@ class AllCourses extends mixinBehaviors([
 			gridEntities = enrollments.enrollmentsHref();
 		}
 
-		const content = this._showGroupByTabs
-			? this.$$(`#${this._selectedTabId} d2l-all-courses-content`)
-			: this.$$('d2l-all-courses-content');
+		const cardGrid = this._showGroupByTabs
+			? this.$$(`#${this._selectedTabId} d2l-my-courses-card-grid`)
+			: this.$$('d2l-my-courses-card-grid');
 		if (append) {
-			content.filteredEnrollments = content.filteredEnrollments.concat(gridEntities);
+			cardGrid.filteredEnrollments = cardGrid.filteredEnrollments.concat(gridEntities);
 		} else {
-			content.filteredEnrollments = gridEntities;
+			cardGrid.filteredEnrollments = gridEntities;
 		}
 
-		this._updateInfoMessage(content.filteredEnrollments.length);
+		this._updateInfoMessage(cardGrid.filteredEnrollments.length);
 
 		this._lastEnrollmentsSearchResponse = enrollments;
 		requestAnimationFrame(() => {
