@@ -309,7 +309,7 @@ class FilterMenu extends mixinBehaviors([
 	_selectTab(e) {
 		const tabName = e.target.dataset.tabName;
 
-		this.$$('iron-pages').select(tabName);
+		this.shadowRoot.querySelector('iron-pages').select(tabName);
 
 		this._semestersTabSelected = tabName === 'semesters';
 		this._departmentsTabSelected = tabName === 'departments';
