@@ -23,7 +23,7 @@ describe('d2l-filter-menu-tab', function() {
 
 	describe('DOM manipulation', function() {
 		it('should show empty state message initially', function() {
-			expect(component.$$('.no-items-text').getAttribute('hidden')).to.be.null;
+			expect(component.shadowRoot.querySelector('.no-items-text').getAttribute('hidden')).to.be.null;
 		});
 
 		it('should show content once the tab has loaded', function() {
@@ -32,7 +32,7 @@ describe('d2l-filter-menu-tab', function() {
 			}));
 
 			return component.load().then(function() {
-				expect(component.$$('.no-items-text').getAttribute('hidden')).to.not.be.null;
+				expect(component.shadowRoot.querySelector('.no-items-text').getAttribute('hidden')).to.not.be.null;
 			});
 		});
 
@@ -46,7 +46,7 @@ describe('d2l-filter-menu-tab', function() {
 
 				expect(component._allFilters.length).to.equal(0);
 				expect(component._hasSearchResults).to.be.false;
-				expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.be.null;
+				expect(component.shadowRoot.querySelector('div > div.no-items-text').getAttribute('hidden')).to.be.null;
 				done();
 			});
 		});
@@ -61,7 +61,7 @@ describe('d2l-filter-menu-tab', function() {
 
 				expect(component._allFilters.length).to.equal(1);
 				expect(component._hasSearchResults).to.be.true;
-				expect(component.$$('div > div.no-items-text').getAttribute('hidden')).to.not.be.null;
+				expect(component.shadowRoot.querySelector('div > div.no-items-text').getAttribute('hidden')).to.not.be.null;
 				done();
 			});
 
@@ -133,12 +133,12 @@ describe('d2l-filter-menu-tab', function() {
 
 	describe('load', function() {
 		it('should not re-fetch data if it has already loaded it, and instead just clear the search', function() {
-			component.$$('d2l-search-widget').clear = sandbox.stub();
+			component.shadowRoot.querySelector('d2l-search-widget').clear = sandbox.stub();
 			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({}));
 			component._allFilters = [organization];
 
 			return component.load().then(function() {
-				expect(component.$$('d2l-search-widget').clear).to.have.been.called;
+				expect(component.shadowRoot.querySelector('d2l-search-widget').clear).to.have.been.called;
 				expect(component.fetchSirenEntity).to.have.not.been.called;
 			});
 		});

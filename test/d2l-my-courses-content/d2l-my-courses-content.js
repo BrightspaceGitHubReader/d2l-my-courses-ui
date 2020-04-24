@@ -278,7 +278,7 @@ describe('d2l-my-courses-content', () => {
 				window.removeEventListener('resize', listener);
 
 				setTimeout(() => {
-					const courseTileGrid = component.$$('.course-card-grid');
+					const courseTileGrid = component.shadowRoot.querySelector('.course-card-grid');
 					expect(courseTileGrid.classList.toString()).to.contain('columns-');
 					done();
 				}, 500);
@@ -306,7 +306,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should call focus on the correct card grid when focus is called', () => {
-			const courseTileGrid = component.$$('.course-card-grid');
+			const courseTileGrid = component.shadowRoot.querySelector('.course-card-grid');
 			const spy = sandbox.spy(courseTileGrid, 'focus');
 
 			component.focus();
@@ -315,7 +315,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should add the hide-past-attributes to the correct card grid in _populateEnrollments', () => {
-			const spy = sandbox.spy(component.$$('.course-card-grid'), 'setAttribute');
+			const spy = sandbox.spy(component.shadowRoot.querySelector('.course-card-grid'), 'setAttribute');
 			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity));
 			expect(spy).to.have.been.calledWith('hide-past-courses', '');
 		});
@@ -448,7 +448,7 @@ describe('d2l-my-courses-content', () => {
 			});
 
 			it('should focus on course grid when focus called after course interacted with', done => {
-				const tileGridFocusSpy = sandbox.spy(component.$$('.course-card-grid'), 'focus');
+				const tileGridFocusSpy = sandbox.spy(component.shadowRoot.querySelector('.course-card-grid'), 'focus');
 
 				component.addEventListener('open-change-image-view', function() {
 					expect(tileGridFocusSpy.called);

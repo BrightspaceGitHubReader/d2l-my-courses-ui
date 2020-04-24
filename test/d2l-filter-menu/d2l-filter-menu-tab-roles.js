@@ -58,7 +58,7 @@ describe('d2l-filter-menu-tab-roles', function() {
 
 	describe('DOM manipulation', function() {
 		it('should show the empty state message initially', function() {
-			expect(component.$$('.no-items-text').getAttribute('hidden')).to.be.null;
+			expect(component.shadowRoot.querySelector('.no-items-text').getAttribute('hidden')).to.be.null;
 		});
 
 		it('should show the empty state message if there are no role filters', function(done) {
@@ -69,7 +69,7 @@ describe('d2l-filter-menu-tab-roles', function() {
 
 			setTimeout(function() {
 				expect(component._showContent).to.be.false;
-				expect(component.$$('.no-items-text').getAttribute('hidden')).to.be.null;
+				expect(component.shadowRoot.querySelector('.no-items-text').getAttribute('hidden')).to.be.null;
 				expect(component.fetchSirenEntity).to.have.been.called;
 				done();
 			});
@@ -83,7 +83,7 @@ describe('d2l-filter-menu-tab-roles', function() {
 
 			setTimeout(function() {
 				expect(component._showContent).to.be.true;
-				expect(component.$$('.no-items-text').getAttribute('hidden')).to.not.be.null;
+				expect(component.shadowRoot.querySelector('.no-items-text').getAttribute('hidden')).to.not.be.null;
 				done();
 			});
 		});
@@ -156,7 +156,7 @@ describe('d2l-filter-menu-tab-roles', function() {
 	describe('clear', function() {
 		it('should reset the "selected" state to false on all filter items', function() {
 			component._filterTitles = [ 'one', 'two', 'three' ];
-			const filters = component.$$('d2l-menu').querySelectorAll('d2l-filter-list-item-role');
+			const filters = component.shadowRoot.querySelector('d2l-menu').querySelectorAll('d2l-filter-list-item-role');
 			for (let i = 0; i < filters.length; i++) {
 				filters[i].selected = true;
 			}

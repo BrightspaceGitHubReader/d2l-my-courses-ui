@@ -131,27 +131,27 @@ describe('d2l-filter-menu', function() {
 		});
 
 		it('should be hidden when there are no filters selected', function() {
-			expect(component.$$('.clear-button').getAttribute('hidden')).to.not.be.null;
+			expect(component.shadowRoot.querySelector('.clear-button').getAttribute('hidden')).to.not.be.null;
 		});
 
 		it('should appear when at least one semester filter is selected', function() {
 			component._semesterFilters = [1];
 			component.fire('selected-filters-changed');
 
-			expect(component.$$('.clear-button').getAttribute('hidden')).to.be.null;
+			expect(component.shadowRoot.querySelector('.clear-button').getAttribute('hidden')).to.be.null;
 		});
 
 		it('should appear when at least one department filter is selected', function() {
 			component._departmentFilters = [1];
 			component.fire('selected-filters-changed');
 
-			expect(component.$$('.clear-button').getAttribute('hidden')).to.be.null;
+			expect(component.shadowRoot.querySelector('.clear-button').getAttribute('hidden')).to.be.null;
 		});
 
 		it('should appear when at least one roles filter is selected', function() {
 			component._roleFiltersCount = 1;
 
-			expect(component.$$('.clear-button').getAttribute('hidden')).to.be.null;
+			expect(component.shadowRoot.querySelector('.clear-button').getAttribute('hidden')).to.be.null;
 		});
 
 		it('should clear filters when clicked', function() {
@@ -160,10 +160,10 @@ describe('d2l-filter-menu', function() {
 			component._roleFiltersCount = 1;
 			component.fire('selected-filters-changed');
 
-			expect(component.$$('.clear-button').getAttribute('hidden')).to.be.null;
+			expect(component.shadowRoot.querySelector('.clear-button').getAttribute('hidden')).to.be.null;
 
-			component.$$('.clear-button').click();
-			expect(component.$$('.clear-button').getAttribute('hidden')).to.not.be.null;
+			component.shadowRoot.querySelector('.clear-button').click();
+			expect(component.shadowRoot.querySelector('.clear-button').getAttribute('hidden')).to.not.be.null;
 			expect(component._departmentFilters).to.be.empty;
 			expect(component._semesterFilters).to.be.empty;
 			expect(component._roleFiltersCount).to.equal(0);
@@ -189,7 +189,7 @@ describe('d2l-filter-menu', function() {
 			};
 
 			component.addEventListener('d2l-filter-menu-change', listener);
-			component.$$('.clear-button').click();
+			component.shadowRoot.querySelector('.clear-button').click();
 
 		});
 
