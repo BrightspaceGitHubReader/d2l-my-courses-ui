@@ -460,7 +460,7 @@ class AllCourses extends mixinBehaviors([
 		// to immediately show the already-loaded content.
 		this._showContent = !!this._searchUrl;
 
-		this.$$('#all-courses').open();
+		this.shadowRoot.querySelector('#all-courses').open();
 		this.load();
 	}
 
@@ -806,8 +806,8 @@ class AllCourses extends mixinBehaviors([
 		}
 
 		const cardGrid = this._showGroupByTabs
-			? this.$$(`#${this._selectedTabId} d2l-my-courses-card-grid`)
-			: this.$$('d2l-my-courses-card-grid');
+			? this.shadowRoot.querySelector(`#${this._selectedTabId} d2l-my-courses-card-grid`)
+			: this.shadowRoot.querySelector('d2l-my-courses-card-grid');
 		if (append) {
 			cardGrid.filteredEnrollments = cardGrid.filteredEnrollments.concat(gridEntities);
 		} else {

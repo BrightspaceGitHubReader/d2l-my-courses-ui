@@ -201,7 +201,7 @@ describe('d2l-my-courses', () => {
 			component.updatedSortLogic = true;
 			component._showGroupByTabs = false;
 			flush(() => {
-				const stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
+				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
 				expect(stub).to.have.been.called;
 				done();
@@ -212,7 +212,7 @@ describe('d2l-my-courses', () => {
 			component.updatedSortLogic = true;
 			component._showGroupByTabs = false;
 			flush(() => {
-				const stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
+				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
 				expect(stub).to.have.been.called;
 				done();
@@ -225,7 +225,7 @@ describe('d2l-my-courses', () => {
 			component.updatedSortLogic = true;
 			component._currentTabId = '6607';
 			flush(() => {
-				const stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'getLastOrgUnitId');
+				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'getLastOrgUnitId');
 				component.getLastOrgUnitId();
 				expect(stub).to.have.been.called;
 				done();
@@ -238,7 +238,7 @@ describe('d2l-my-courses', () => {
 			component.updatedSortLogic = true;
 			component._currentTabId = '6607';
 			flush(() => {
-				const stub = sandbox.stub(component.$$('d2l-my-courses-content'), 'courseImageUploadCompleted');
+				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'courseImageUploadCompleted');
 				component.courseImageUploadCompleted();
 				expect(stub).to.have.been.called;
 				done();

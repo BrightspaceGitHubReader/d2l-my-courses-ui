@@ -47,7 +47,7 @@ describe('d2l-all-courses', function() {
 
 	describe('loading spinner', function() {
 		it('should show before content has loaded', function() {
-			expect(widget.$$('d2l-loading-spinner:not(#lazyLoadSpinner)').hasAttribute('hidden')).to.be.false;
+			expect(widget.shadowRoot.querySelector('d2l-loading-spinner:not(#lazyLoadSpinner)').hasAttribute('hidden')).to.be.false;
 		});
 	});
 
@@ -56,14 +56,14 @@ describe('d2l-all-courses', function() {
 			widget.advancedSearchUrl = null;
 
 			expect(widget._showAdvancedSearchLink).to.be.false;
-			expect(widget.$$('.advanced-search-link').hasAttribute('hidden')).to.be.true;
+			expect(widget.shadowRoot.querySelector('.advanced-search-link').hasAttribute('hidden')).to.be.true;
 		});
 
 		it('should render when advancedSearchUrl is set', function() {
 			widget.advancedSearchUrl = '/test/url';
 
 			expect(widget._showAdvancedSearchLink).to.be.true;
-			expect(widget.$$('.advanced-search-link').hasAttribute('hidden')).to.be.false;
+			expect(widget.shadowRoot.querySelector('.advanced-search-link').hasAttribute('hidden')).to.be.false;
 		});
 	});
 
@@ -92,7 +92,7 @@ describe('d2l-all-courses', function() {
 		it('should remove a setCourseImageFailure alert when the overlay is opened', function() {
 			widget._addAlert('warning', 'setCourseImageFailure', 'failed to do that thing it should do');
 			expect(widget._alertsView).to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'failed to do that thing it should do' });
-			widget.$$('d2l-simple-overlay')._renderOpened();
+			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
 			expect(widget._alertsView).to.not.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'failed to do that thing it should do' });
 		});
 
@@ -281,7 +281,7 @@ describe('d2l-all-courses', function() {
 			const searchField = widget.$['search-widget'];
 
 			searchField._getSearchWidget()._getSearchInput().value = 'foo';
-			widget.$$('d2l-simple-overlay')._renderOpened();
+			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
 			expect(spy.called).to.be.true;
 			expect(searchField._getSearchWidget()._getSearchInput().value).to.equal('');
 		});
@@ -299,7 +299,7 @@ describe('d2l-all-courses', function() {
 			fireEvent(widget.$.filterDropdownContent, 'd2l-dropdown-close', {});
 
 			expect(widget._filterText).to.equal('Filter: 1 Filter');
-			widget.$$('d2l-simple-overlay')._renderOpened();
+			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
 			expect(spy.called).to.be.true;
 			expect(widget._filterText).to.equal('Filter');
 		});
@@ -313,10 +313,10 @@ describe('d2l-all-courses', function() {
 			};
 
 			widget.load();
-			fireEvent(widget.$$('d2l-dropdown-menu'), 'd2l-menu-item-change', event);
+			fireEvent(widget.shadowRoot.querySelector('d2l-dropdown-menu'), 'd2l-menu-item-change', event);
 			expect(widget._searchUrl).to.contain('OrgUnitCode,OrgUnitId');
 
-			widget.$$('d2l-simple-overlay')._renderOpened();
+			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
 			expect(spy.called).to.be.true;
 		});
 
