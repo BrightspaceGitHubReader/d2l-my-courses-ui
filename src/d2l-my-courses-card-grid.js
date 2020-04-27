@@ -13,7 +13,10 @@ class MyCoursesCardGrid extends PolymerElement {
 
 	static get properties() {
 		return {
+			// Array of courses to show
 			filteredEnrollments: Array,
+			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
+			token: String,
 			showOrganizationCode: {
 				type: Boolean,
 				value: false
