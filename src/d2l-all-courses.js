@@ -349,7 +349,6 @@ class AllCourses extends mixinBehaviors([
 									<div hidden$="[[!_showTabContent]]">
 										<d2l-my-courses-card-grid
 											token="[[token]]"
-											org-unit-type-ids="[[orgUnitTypeIds]]"
 											show-organization-code="[[showOrganizationCode]]"
 											show-semester-name="[[showSemesterName]]"
 											show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
@@ -373,7 +372,6 @@ class AllCourses extends mixinBehaviors([
 					<template is="dom-if" if="[[!_showGroupByTabs]]">
 						<d2l-my-courses-card-grid
 							token="[[token]]"
-							org-unit-type-ids="[[orgUnitTypeIds]]"
 							show-organization-code="[[showOrganizationCode]]"
 							show-semester-name="[[showSemesterName]]"
 							show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
