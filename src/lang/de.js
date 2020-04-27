@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "Sortieren: Standard",
 	"sorting.sortEnrollmentDate": "Sortieren: Anmeldedatum",
 	"sorting.sortLastAccessed": "Sortieren nach: Letzter Zugriff",
-	"startedInactiveAlert": "Sie haben Kurse, die begonnen haben, aber auf „Inaktiv“ festgelegt sind. Benutzer können möglicherweise nicht auf diesen Kurs zugreifen.",
 	"viewAllCourses": "Alle Kurse anzeigen"
 };

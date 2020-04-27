@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "並べ替え: デフォルト",
 	"sorting.sortEnrollmentDate": "並べ替え: 登録日",
 	"sorting.sortLastAccessed": "並べ替え: 最終アクセス",
-	"startedInactiveAlert": "開始済みではあるが非アクティブに設定されているコースがあります。これらのコースには、ユーザーはアクセスできない可能性があります。",
 	"viewAllCourses": "すべてのコースの表示"
 };

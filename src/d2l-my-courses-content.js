@@ -599,12 +599,6 @@ class MyCoursesContent extends mixinBehaviors([
 
 		this._onResize();
 	}
-	//This event handler is removed from handling `started-inactive` event, not referenced anywhere
-	_onStartedInactiveAlert() {
-		if (this.shadowRoot.querySelector('.course-card-grid d2l-enrollment-card[started-inactive]')) {
-			this._addAlert('warning', 'startedInactiveCourses', this.localize('startedInactiveAlert'));
-		}
-	}
 	_onTabSelected(e) {
 		// Only handle if tab selected corresponds to this panel
 		if (!this.parentElement || e.composedPath()[0].id !== this.parentElement.id) {

@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "排序：默认",
 	"sorting.sortEnrollmentDate": "排序：报名日期",
 	"sorting.sortLastAccessed": "排序：上次访问",
-	"startedInactiveAlert": "您有已开始但设置为非活动的课程。用户可能无法访问这些课程。",
 	"viewAllCourses": "查看所有课程"
 };

@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "Lajittelu: oletus",
 	"sorting.sortEnrollmentDate": "Lajittelu: rekisteröitymispäivämäärä",
 	"sorting.sortLastAccessed": "Lajittelu: viimeisin käyttökerta",
-	"startedInactiveAlert": "You have courses that have started but are set as inactive. Users may not be able to access these courses.",
 	"viewAllCourses": "Näytä kaikki kurssit"
 };

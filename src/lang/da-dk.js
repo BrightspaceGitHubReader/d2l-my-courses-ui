@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "Sortér: Standard",
 	"sorting.sortEnrollmentDate": "Sortér: Tilmeldingsdato",
 	"sorting.sortLastAccessed": "Sortér: Senest åbnet",
-	"startedInactiveAlert": "Du har kurser, der er startet, men ikke aktive. Brugere kan muligvis ikke få adgang til disse kurser.",
 	"viewAllCourses": "Vis alle kurser"
 };

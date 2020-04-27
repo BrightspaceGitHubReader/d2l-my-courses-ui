@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "Sırala: Varsayılan",
 	"sorting.sortEnrollmentDate": "Sırala: Kayıt Tarihi",
 	"sorting.sortLastAccessed": "Sırala: Son Erişim",
-	"startedInactiveAlert": "Başlamış ancak \"etkin değil\" olarak ayarlanmış dersleriniz var. Kullanıcılar bu derslere erişim sağlayamayabilir.",
 	"viewAllCourses": "Tüm Dersleri Görüntüle"
 };
