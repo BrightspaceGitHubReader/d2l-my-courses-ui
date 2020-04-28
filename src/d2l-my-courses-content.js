@@ -346,25 +346,24 @@ class MyCoursesContent extends mixinBehaviors([
 	/*
 	* Public API functions
 	*/
-
+	// This is called by the LE, but only when it's a user-uploaded image
+	// If it's a catalog image this is handled by the enrollment card
 	courseImageUploadCompleted(success) {
 		if (success) {
 			this.$['basic-image-selector-overlay'].close();
-			this._refreshTileGridImages();
+			this._getCardGrid().refreshCardGridImages(this._setImageOrg);
 		}
-		this.focus();
 	}
-	focus() {
-		if (this._getTileGrid().focus(this._setImageOrg)) {
-			return;
-		}
-		this.$.viewAllCourses.focus();
-	}
+	// This is called by the LE, but only when it's a user-uploaded image
 	getLastOrgUnitId() {
 		if (!this._setImageOrg.links) {
 			return;
 		}
 		return this._getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
+	}
+
+	_getCardGrid() {
+		return this.shadowRoot.querySelector('d2l-my-courses-card-grid');
 	}
 	_enrollmentsChanged(viewAbleLength, totalLength) {
 		this._removeAlert('noCourses');
@@ -389,15 +388,6 @@ class MyCoursesContent extends mixinBehaviors([
 		return this._hidePastCourses
 			&& this._numberOfEnrollments !== 0
 			&& this._enrollments.length === 0;
-	}
-	_getTileGrid() {
-		return this.shadowRoot.querySelector('.course-card-grid');
-	}
-	_refreshTileGridImages() {
-		const courseTiles = this._getTileGrid().querySelectorAll('d2l-enrollment-card');
-		for (let i = 0; i < courseTiles.length; i++) {
-			courseTiles[i].refreshImage(this._setImageOrg);
-		}
 	}
 	_insertToOrgUnitIdMap(url, enrollmentCollectionEntity) {
 		if (!url || !enrollmentCollectionEntity) {

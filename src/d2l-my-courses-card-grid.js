@@ -214,6 +214,13 @@ class MyCoursesCardGrid extends PolymerElement {
 		}
 	}
 
+	refreshCardGridImages(organization) {
+		const courseCards = this.shadowRoot.querySelectorAll('d2l-enrollment-card');
+		for (let i = 0; i < courseCards.length; i++) {
+			courseCards[i].refreshImage(organization);
+		}
+	}
+
 }
 
 window.customElements.define(MyCoursesCardGrid.is, MyCoursesCardGrid);
