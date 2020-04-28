@@ -13,7 +13,10 @@ class MyCoursesCardGrid extends PolymerElement {
 
 	static get properties() {
 		return {
+			// Array of courses to show
 			filteredEnrollments: Array,
+			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
+			token: String,
 			showOrganizationCode: {
 				type: Boolean,
 				value: false
@@ -59,7 +62,7 @@ class MyCoursesCardGrid extends PolymerElement {
 			:host {
 				display: block;
 
-				/* Recalculated in _onResize, so initial value is meaningless */
+				/* Recalculated in onResize, so initial value is meaningless */
 				--course-image-card-height: 0;
 			}
 			.course-card-grid {
@@ -116,21 +119,26 @@ class MyCoursesCardGrid extends PolymerElement {
 		</div>`;
 	}
 
+	ready() {
+		super.ready();
+		this.onResize = this.onResize.bind(this);
+	}
+
 	connectedCallback() {
 		super.connectedCallback();
 		afterNextRender(this, () => {
-			window.addEventListener('resize', this._onResize.bind(this));
+			window.addEventListener('resize', this.onResize);
 			// Sets initial number of columns
-			this._onResize();
+			this.onResize();
 		});
 	}
 
 	disconnectedCallback() {
 		super.disconnectedCallback();
-		window.removeEventListener('resize', this._onResize.bind(this));
+		window.removeEventListener('resize', this.onResize);
 	}
 
-	_onResize(ie11retryCount) {
+	onResize(ie11retryCount) {
 		const courseCardGrid = this.shadowRoot.querySelector('.course-card-grid');
 		if (!courseCardGrid) {
 			return;
@@ -173,7 +181,7 @@ class MyCoursesCardGrid extends PolymerElement {
 		) {
 			// If course cards haven't yet rendered, try again for up to one second
 			// (only happens sometimes, only in IE)
-			setTimeout(this._onResize.bind(this, ++ie11retryCount), 250);
+			setTimeout(this.onResize.bind(this, ++ie11retryCount), 250);
 			return;
 		}
 
