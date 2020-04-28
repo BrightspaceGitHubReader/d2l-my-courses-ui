@@ -102,7 +102,7 @@ class MyCoursesContent extends mixinBehaviors([
 				value: false
 			},
 
-			// Alerts to display in widget, above course tiles
+			// Alerts to display in course grid, above the course cards
 			_alertsView: {
 				type: Array,
 				value: function() { return []; }
@@ -604,7 +604,7 @@ class MyCoursesContent extends mixinBehaviors([
 			this._fetchRoot();
 		} else {
 			setTimeout(() => {
-				// Force redraw of course tiles.
+				// Force redraw of course cards
 				window.dispatchEvent(new Event('resize'));
 			}, 10);
 		}
