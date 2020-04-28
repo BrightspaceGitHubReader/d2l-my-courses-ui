@@ -420,7 +420,7 @@ class MyCoursesContent extends mixinBehaviors([
 			this._onEnrollmentsEntityChange(this._nextEnrollmentEntityUrl);
 		}
 
-		this._onResize();
+		this._getCardGrid().onResize();
 	}
 	_fetchEnrollmentCardStatus(url, enrollmentCollectionEntity) {
 		if (!url || !enrollmentCollectionEntity) {
@@ -567,7 +567,7 @@ class MyCoursesContent extends mixinBehaviors([
 		}
 
 		if (removalIndex === insertIndex) {
-			this._onResize();
+			this._getCardGrid().onResize();
 			return;
 		}
 
@@ -585,7 +585,7 @@ class MyCoursesContent extends mixinBehaviors([
 			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
 		}
 
-		this._onResize();
+		this._getCardGrid().onResize();
 	}
 	_onTabSelected(e) {
 		// Only handle if tab selected corresponds to this panel
