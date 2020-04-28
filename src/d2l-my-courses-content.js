@@ -7,14 +7,12 @@ import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-alert/d2l-alert.js';
-import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import 'd2l-image-selector/d2l-basic-image-selector.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import './card-grid/d2l-card-grid-behavior.js';
-import './card-grid/d2l-card-grid-styles.js';
 import './d2l-alert-behavior.js';
 import './d2l-all-courses.js';
+import './d2l-my-courses-card-grid.js';
 import './d2l-utility-behavior.js';
 
 import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js';
@@ -29,8 +27,7 @@ import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
 
 class MyCoursesContent extends mixinBehaviors([
 	D2L.MyCourses.AlertBehavior,
-	D2L.MyCourses.UtilityBehavior,
-	D2L.MyCourses.CardGridBehavior
+	D2L.MyCourses.UtilityBehavior
 ], StatusMixin(MyCoursesLocalizeBehavior(PolymerElement))) {
 
 	static get is() { return 'd2l-my-courses-content'; }
@@ -216,7 +213,7 @@ class MyCoursesContent extends mixinBehaviors([
 
 	static get template() {
 		return html`
-		<style include="d2l-card-grid-styles">
+		<style>
 			:host {
 				display: block;
 			}
@@ -252,32 +249,30 @@ class MyCoursesContent extends mixinBehaviors([
 		</div>
 
 		<div hidden$="[[!_showContent]]" class="my-courses-content">
-			<d2l-alert hidden$="[[!_hasOnlyPastCourses]]" type="call-to-action">
-				[[localize('onlyPastCoursesMessage')]]
-			</d2l-alert>
+			<d2l-my-courses-card-grid
+				filtered-enrollments="[[_enrollments]]"
+				token="[[token]]"
+				show-organization-code="[[_showOrganizationCode]]"
+				show-semester-name="[[_showSemesterName]]"
+				show-dropbox-unread-feedback="[[_showDropboxUnreadFeedback]]"
+				show-unattempted-quizzes="[[_showUnattemptedQuizzes]]"
+				show-ungraded-quiz-attempts="[[_showUngradedQuizAttempts]]"
+				show-unread-discussion-messages="[[_showUnreadDiscussionMessages]]"
+				show-unread-dropbox-submissions="[[_showUnreadDropboxSubmissions]]"
+				hide-course-start-date="[[_hideCourseStartDate]]"
+				hide-course-end-date="[[_hideCourseEndDate]]">
 
-			<template is="dom-repeat" items="[[_alertsView]]">
-				<d2l-alert type="[[item.alertType]]">
-					[[item.alertMessage]]
+				<d2l-alert hidden$="[[!_hasOnlyPastCourses]]" type="call-to-action">
+					[[localize('onlyPastCoursesMessage')]]
 				</d2l-alert>
-			</template>
-			<div class="course-card-grid">
-				<template is="dom-repeat" items="[[_enrollments]]">
-					<d2l-enrollment-card
-						href="[[item]]"
-						token="[[token]]"
-						show-organization-code="[[_showOrganizationCode]]"
-						show-semester-name="[[_showSemesterName]]"
-						show-dropbox-unread-feedback="[[_showDropboxUnreadFeedback]]"
-						show-unattempted-quizzes="[[_showUnattemptedQuizzes]]"
-						show-ungraded-quiz-attempts="[[_showUngradedQuizAttempts]]"
-						show-unread-discussion-messages="[[_showUnreadDiscussionMessages]]"
-						show-unread-dropbox-submissions="[[_showUnreadDropboxSubmissions]]"
-						hide-course-start-date="[[_hideCourseStartDate]]"
-						hide-course-end-date="[[_hideCourseEndDate]]">
-					</d2l-enrollment-card>
+
+				<template is="dom-repeat" items="[[_alertsView]]">
+					<d2l-alert type="[[item.alertType]]">
+						[[item.alertMessage]]
+					</d2l-alert>
 				</template>
-			</div>
+			</d2l-my-courses-card-grid>
+
 			<d2l-link id="viewAllCourses"
 				hidden$="[[!_numberOfEnrollments]]"
 				href="javascript:void(0);"
