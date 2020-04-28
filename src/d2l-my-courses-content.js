@@ -24,6 +24,7 @@ import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
 import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntity.js';
 import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status';
 
 class MyCoursesContent extends mixinBehaviors([
 	D2L.MyCourses.AlertBehavior,
@@ -196,6 +197,10 @@ class MyCoursesContent extends mixinBehaviors([
 				value: 12
 			},
 			_hidePastCourses: {
+				type: Boolean,
+				value: false
+			},
+			_isAllCoursesOverlayOpen: {
 				type: Boolean,
 				value: false
 			}
@@ -624,15 +629,35 @@ class MyCoursesContent extends mixinBehaviors([
 			};
 		});
 	}
-	_onSimpleOverlayClosed() {
+	_onSimpleOverlayClosed(e) {
 		this._removeAlert('setCourseImageFailure');
 
-		if (this._isRefetchNeeded) {
-			this._handleEnrollmentsRefetch();
-		}
+		if (e.composedPath()[0].id === 'all-courses') {
+			this._isAllCoursesOverlayOpen = false;
 
-		document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
-		this._hasEnrollmentsChanged = false;
+			if (this._isRefetchNeeded) {
+				this._handleEnrollmentsRefetch();
+			}
+
+			document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
+			this._hasEnrollmentsChanged = false;
+
+		} else if (e.composedPath()[0].id === 'basic-image-selector-overlay') {
+			afterNextRender(() => {
+				const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
+
+				if (allCourses && this._isAllCoursesOverlayOpen) {
+					if (allCourses.focusCardDropdown(this._setImageOrg)) {
+						return;
+					}
+				} else {
+					if (this._getCardGrid().focusCardDropdown(this._setImageOrg)) {
+						return;
+					}
+				}
+				this.$.viewAllCourses.focus();
+			});
+		}
 	}
 	_onOpenChangeImageView(e) {
 		if (e.detail.organization) {
@@ -796,6 +821,7 @@ class MyCoursesContent extends mixinBehaviors([
 		allCourses.showUnreadDropboxSubmissions = this._showUnreadDropboxSubmissions;
 
 		allCourses.open();
+		this._isAllCoursesOverlayOpen = true;
 
 		e.preventDefault();
 		e.stopPropagation();
