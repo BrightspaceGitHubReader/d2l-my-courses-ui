@@ -273,51 +273,19 @@ describe('d2l-my-courses-content', () => {
 			setTimeout(done, 300);
 		});
 
-		it('should set the columns-"n" class on the correct card grid on resize', done => {
-			const listener = () => {
-				window.removeEventListener('resize', listener);
+		it('should call refreshCardGridImages on the card gird in courseImageUploadCompleted', () => {
+			const courseGrid = component.shadowRoot.querySelector('d2l-my-courses-card-grid');
 
-				setTimeout(() => {
-					const courseTileGrid = component.shadowRoot.querySelector('.course-card-grid');
-					expect(courseTileGrid.classList.toString()).to.contain('columns-');
-					done();
-				}, 500);
-			};
-
-			window.addEventListener('resize', listener);
-
-			window.dispatchEvent(new Event('resize'));
-		});
-
-		it('should call refreshImage on each course image card in courseImageUploadCompleted', () => {
-			let courseTiles;
-			if (component.shadowRoot) {
-				courseTiles = component.shadowRoot.querySelectorAll('d2l-enrollment-card');
-			} else {
-				courseTiles = component.querySelectorAll('d2l-enrollment-card');
-			}
-			const stub1 = sandbox.stub(courseTiles[0], 'refreshImage');
-			//var stub2 = sandbox.stub(courseTiles[1], 'refreshImage');
+			const stub = sandbox.stub(courseGrid, 'refreshCardGridImages');
 
 			component.courseImageUploadCompleted(true);
 
-			expect(stub1).to.have.been.called;
-			//expect(stub2).to.have.been.called;
+			expect(stub).to.have.been.called;
 		});
 
-		it('should call focus on the correct card grid when focus is called', () => {
-			const courseTileGrid = component.shadowRoot.querySelector('.course-card-grid');
-			const spy = sandbox.spy(courseTileGrid, 'focus');
-
-			component.focus();
-
-			expect(spy).to.have.been.called;
-		});
-
-		it('should add the hide-past-attributes to the correct card grid in _populateEnrollments', () => {
-			const spy = sandbox.spy(component.shadowRoot.querySelector('.course-card-grid'), 'setAttribute');
+		it('should add the hide-past-courses attribute to the card grid in _populateEnrollments', () => {
 			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity));
-			expect(spy).to.have.been.calledWith('hide-past-courses', '');
+			expect(component.shadowRoot.querySelector('d2l-my-courses-card-grid').hidePastCourses).to.be.true;
 		});
 
 	});
@@ -326,10 +294,6 @@ describe('d2l-my-courses-content', () => {
 
 		it('should implement courseImageUploadCompleted', () => {
 			expect(component.courseImageUploadCompleted).to.be.a('function');
-		});
-
-		it('should implement focus', () => {
-			expect(component.focus).to.be.a('function');
 		});
 
 		it('should implement getLastOrgUnitId', () => {
@@ -447,19 +411,6 @@ describe('d2l-my-courses-content', () => {
 
 			});
 
-			it('should focus on course grid when focus called after course interacted with', done => {
-				const tileGridFocusSpy = sandbox.spy(component.shadowRoot.querySelector('.course-card-grid'), 'focus');
-
-				component.addEventListener('open-change-image-view', function() {
-					expect(tileGridFocusSpy.called);
-					done();
-				});
-
-				component.dispatchEvent(event);
-				component.focus();
-
-			});
-
 			it('should return undefined for org unit id initally', () => {
 				expect(component.getLastOrgUnitId()).to.equal(undefined);
 			});
@@ -541,6 +492,21 @@ describe('d2l-my-courses-content', () => {
 				});
 			});
 
+			it('should focus on correct card if image selector is closed', done => {
+				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'focusCardDropdown');
+
+				const event = {
+					type: 'd2l-simple-overlay-closed',
+					composedPath: function() { return [{ id: 'basic-image-selector-overlay' }]; }
+				};
+
+				component._onSimpleOverlayClosed(event);
+
+				setTimeout(() => {
+					expect(stub).to.have.been.calledOnce;
+					done();
+				}, 100);
+			});
 		});
 
 		describe('course-tile-organization', () => {

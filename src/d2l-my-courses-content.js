@@ -646,7 +646,7 @@ class MyCoursesContent extends mixinBehaviors([
 			this._hasEnrollmentsChanged = false;
 
 		} else if (e.composedPath()[0].id === 'basic-image-selector-overlay') {
-			afterNextRender(() => {
+			afterNextRender(this, () => {
 				const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
 
 				if (allCourses && this._isAllCoursesOverlayOpen) {
