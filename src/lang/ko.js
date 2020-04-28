@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "정렬: 기본값",
 	"sorting.sortEnrollmentDate": "정렬: 등록 날짜",
 	"sorting.sortLastAccessed": "정렬: 최종 접속",
-	"startedInactiveAlert": "시작했지만 비활성으로 설정된 강의가 있습니다. 사용자가 해당 강의를 이용하지 못할 수도 있습니다.",
 	"viewAllCourses": "모든 강의 보기"
 };

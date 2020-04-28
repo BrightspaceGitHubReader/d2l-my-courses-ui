@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "Tri : par défaut",
 	"sorting.sortEnrollmentDate": "Tri : date d’inscription",
 	"sorting.sortLastAccessed": "Tri : dernière connexion",
-	"startedInactiveAlert": "Certains de vos cours ont commencé, mais ils sont définis comme inactifs. Il est possible que les utilisateurs n’aient pas accès à ces cours.",
 	"viewAllCourses": "Afficher tous les cours"
 };

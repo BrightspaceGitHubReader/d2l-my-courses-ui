@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "Sort: Default",
 	"sorting.sortEnrollmentDate": "Sort: Enrollment Date",
 	"sorting.sortLastAccessed": "Sorter: Sist åpnet",
-	"startedInactiveAlert": "You have courses that have started but are set as inactive. Users may not be able to access these courses.",
 	"viewAllCourses": "Vis alle undervisningsenheter"
 };

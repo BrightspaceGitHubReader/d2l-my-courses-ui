@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "Sorteren op: standaard",
 	"sorting.sortEnrollmentDate": "Sorteren op: inschrijvingsdatum",
 	"sorting.sortLastAccessed": "Sorteren op: laatst geopend",
-	"startedInactiveAlert": "U hebt cursussen die zijn begonnen maar zijn ingesteld als inactief. Gebruikers kunnen mogelijk geen toegang krijgen tot deze cursussen.",
 	"viewAllCourses": "Alle cursussen weergeven"
 };

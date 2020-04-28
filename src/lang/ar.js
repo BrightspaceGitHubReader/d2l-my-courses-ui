@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "الفرز: افتراضي",
 	"sorting.sortEnrollmentDate": "الفرز: تاريخ التسجيل",
 	"sorting.sortLastAccessed": "الفرز: آخر وصول",
-	"startedInactiveAlert": "You have courses that have started but are set as inactive. Users may not be able to access these courses.",
 	"viewAllCourses": "عرض كل المقررات التعليمية"
 };

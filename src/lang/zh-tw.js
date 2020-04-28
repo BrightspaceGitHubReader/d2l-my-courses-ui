@@ -39,6 +39,5 @@ export default {
 	"sorting.sortDefault": "排序：預設",
 	"sorting.sortEnrollmentDate": "排序：註冊日期",
 	"sorting.sortLastAccessed": "排序：上次存取時間",
-	"startedInactiveAlert": "您有已開始但設定為停用的課程。使用者可能無法存取這些課程。",
 	"viewAllCourses": "檢視所有課程"
 };
