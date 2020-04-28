@@ -233,10 +233,6 @@ class MyCoursesContent extends mixinBehaviors([
 				clear: both;
 			}
 
-			.course-card-grid d2l-enrollment-card:nth-of-type(n+13):not([pinned]),
-			.course-card-grid[hide-past-courses] d2l-enrollment-card[closed]:not([pinned]) {
-				display: none;
-			}
 			.d2l-body-standard {
 				@apply --d2l-body-standard-text;
 				margin: 0;
@@ -251,7 +247,9 @@ class MyCoursesContent extends mixinBehaviors([
 		<div hidden$="[[!_showContent]]" class="my-courses-content">
 			<d2l-my-courses-card-grid
 				filtered-enrollments="[[_enrollments]]"
+				hide-past-courses="[[_hidePastCourses]]"
 				token="[[token]]"
+				widget-view
 				show-organization-code="[[_showOrganizationCode]]"
 				show-semester-name="[[_showSemesterName]]"
 				show-dropbox-unread-feedback="[[_showDropboxUnreadFeedback]]"
@@ -886,9 +884,8 @@ class MyCoursesContent extends mixinBehaviors([
 				&& this.tabSearchType.toLowerCase() === 'bysemester'
 			)
 		) {
-			// This is needed for hiding a closed course that was just unpinned
-			this._getTileGrid().setAttribute('hide-past-courses', '');
-			// This is needed for removing closed courses initially
+			// This is needed for removing closed courses initially, and to tell the course grid to hide
+			// pinned closed courses that were just unpinned
 			this._hidePastCourses = true;
 		}
 

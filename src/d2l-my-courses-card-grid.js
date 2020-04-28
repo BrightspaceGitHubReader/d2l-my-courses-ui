@@ -15,8 +15,21 @@ class MyCoursesCardGrid extends PolymerElement {
 		return {
 			// Array of courses to show
 			filteredEnrollments: Array,
+			// If true, will hide courses that are "closed" (only needed if a closed course was just unpinned,
+			// since we remove closed courses from the filteredEnrollments array on load)
+			hidePastCourses: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true
+			},
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
 			token: String,
+			// Limit the number of cards shown to 12 (unless more than 12 are pinned)
+			widgetView: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true
+			},
 			showOrganizationCode: {
 				type: Boolean,
 				value: false
@@ -97,6 +110,11 @@ class MyCoursesCardGrid extends PolymerElement {
 				height: 100%;
 				padding-bottom: 0.75rem;
 				--course-image-height: var(--course-image-card-height);
+			}
+
+			:host([widget-view]) .course-card-grid d2l-enrollment-card:nth-of-type(n+13):not([pinned]),
+			:host([hide-past-courses]) .course-card-grid d2l-enrollment-card[closed]:not([pinned]) {
+				display: none;
 			}
 		</style>
 		<slot></slot>
