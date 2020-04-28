@@ -506,6 +506,9 @@ class MyCoursesContent extends mixinBehaviors([
 		if (this._courseTileOrganizationEventCount === this._initiallyVisibleCourseTileCount) {
 			// Only show content once the last visible organization has loaded, to reduce jank
 			this._showContent = true;
+			requestAnimationFrame(() => {
+				this._getCardGrid().onResize();
+			});
 			this.performanceMark('d2l.my-courses.visible-organizations-complete');
 			this.performanceMeasure(
 				'd2l.my-courses.meaningful.visible',
@@ -857,6 +860,9 @@ class MyCoursesContent extends mixinBehaviors([
 	_enrollmentsRootResponse(entity) {
 		const showContent = function() {
 			this._showContent = true;
+			requestAnimationFrame(() => {
+				this._getCardGrid().onResize();
+			});
 		}.bind(this);
 
 		const tabSelected = this._rootTabSelected;
