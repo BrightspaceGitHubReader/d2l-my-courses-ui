@@ -584,7 +584,6 @@ class AllCourses extends mixinBehaviors([
 		this._isSearched = !!e.detail.searchValue;
 		this._updateFilteredEnrollments(e.detail.searchResponse, false);
 		this._myEnrollmentsEntity = e.detail.searchResponse;
-		this.fire('recalculate-columns');
 
 		this._showContent = true;
 		this._showTabContent = true;

@@ -705,13 +705,6 @@ describe('d2l-my-courses-content', () => {
 			});
 		});
 
-		it('should rescale the course tile grid on search response', () => {
-			const spy = sandbox.spy(component, 'fire');
-
-			component._populateEnrollments(new EnrollmentCollectionEntity(enrollmentsRootEntity));
-			expect(spy).to.have.been.calledWith('recalculate-columns');
-		});
-
 		it('should display the appropriate alert when there are no enrollments', () => {
 			fetchStub.restore();
 			component._enrollments = [];

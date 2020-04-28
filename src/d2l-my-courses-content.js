@@ -917,8 +917,6 @@ class MyCoursesContent extends mixinBehaviors([
 			this._showContent = true;
 		}
 
-		this.fire('recalculate-columns');
-
 		const lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
 		if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._nextEnrollmentEntityUrl) {
 			this._onEnrollmentsEntityChange(this._nextEnrollmentEntityUrl);
