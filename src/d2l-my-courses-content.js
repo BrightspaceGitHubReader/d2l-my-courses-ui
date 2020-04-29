@@ -847,6 +847,9 @@ class MyCoursesContent extends mixinBehaviors([
 	_enrollmentRefetchResponse(entity) {
 		const completeFetch = function() {
 			this._showContent = true;
+			requestAnimationFrame(() => {
+				this._getCardGrid().onResize();
+			});
 		}.bind(this);
 
 		try {
@@ -928,6 +931,7 @@ class MyCoursesContent extends mixinBehaviors([
 		if (this._enrollments.length === 0) {
 			// Normally we'd wait until the visible organization requests have finished,
 			// but this user has no enrollments, so we won't hit that case.
+			// No need to resize here
 			this._showContent = true;
 		}
 

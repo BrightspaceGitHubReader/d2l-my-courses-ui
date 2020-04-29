@@ -96,7 +96,7 @@ describe('d2l-my-courses-card-grid', function() {
 			expect(stub3).to.have.not.been.called;
 		});
 
-		it('focusCardDropdown should return false if the org does not match and cards', () => {
+		it('focusCardDropdown should return false if the org does not match any cards', () => {
 			const courseCards = widget.shadowRoot.querySelectorAll('d2l-enrollment-card');
 
 			const stub1 = sandbox.stub(courseCards[0], 'focusDropdownOpener');
