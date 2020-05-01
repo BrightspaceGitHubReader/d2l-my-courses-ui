@@ -596,7 +596,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onSimpleOverlayOpening() {
-		if (this._enrollmentsSearchAction) {
+		if (this._enrollmentsSearchAction && this._enrollmentsSearchAction.hasFieldByName) {
 			if (this._enrollmentsSearchAction.hasFieldByName('search')) {
 				this._enrollmentsSearchAction.getFieldByName('search').value = '';
 			}
