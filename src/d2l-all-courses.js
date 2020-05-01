@@ -604,7 +604,7 @@ class AllCourses extends mixinBehaviors([
 				this._enrollmentsSearchAction.getFieldByName('sort').value = 'Current';
 			}
 		}
-		
+
 		this._removeAlert('setCourseImageFailure');
 		this._clearSearchWidget();
 		this.$.filterMenu.clearFilters();
