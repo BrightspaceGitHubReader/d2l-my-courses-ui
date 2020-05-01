@@ -848,7 +848,7 @@ describe('d2l-my-courses-content', () => {
 			const onUserActivityUsageChangeStub = sinon.stub();
 			const onEnrollmentEntityChangeStub = sinon.stub();
 			const onOrganizationChangeStub = sinon.stub();
-			const processedDateStub = sinon.stub();
+			const isAfterEndDateStub = sinon.stub();
 			_enrollmentCollectionEntity = {
 				_entity: oneEnrollmentSearchEntity,
 				getEnrollmentEntities: function() { return [
@@ -875,15 +875,13 @@ describe('d2l-my-courses-content', () => {
 
 			const organizationEntity = {
 				_entity: {},
-				processedDate: processedDateStub
+				isAfterEndDate: isAfterEndDateStub
 			};
 
 			onEnrollmentEntityChangeStub.callsArgWith(1, _enrollmentEntity);
 			onUserActivityUsageChangeStub.callsArgWith(0, userActivityUsageEntity);
 			onOrganizationChangeStub.callsArgWith(0, organizationEntity);
-			processedDateStub.returns({
-				afterEndDate: false
-			});
+			isAfterEndDateStub.returns(false);
 
 			component = fixture('d2l-my-courses-content-fixture');
 			component.token = 'fake';
