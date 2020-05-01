@@ -7,19 +7,18 @@ import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-alert/d2l-alert.js';
-import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import 'd2l-image-selector/d2l-basic-image-selector.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import './card-grid/d2l-card-grid-behavior.js';
-import './card-grid/d2l-card-grid-styles.js';
 import './d2l-alert-behavior.js';
 import './d2l-all-courses.js';
+import './d2l-my-courses-card-grid.js';
 import './d2l-utility-behavior.js';
 
 import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
@@ -29,8 +28,7 @@ import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
 
 class MyCoursesContent extends mixinBehaviors([
 	D2L.MyCourses.AlertBehavior,
-	D2L.MyCourses.UtilityBehavior,
-	D2L.MyCourses.CardGridBehavior
+	D2L.MyCourses.UtilityBehavior
 ], StatusMixin(MyCoursesLocalizeBehavior(PolymerElement))) {
 
 	static get is() { return 'd2l-my-courses-content'; }
@@ -104,7 +102,7 @@ class MyCoursesContent extends mixinBehaviors([
 				value: false
 			},
 
-			// Alerts to display in widget, above course tiles
+			// Alerts to display in course grid, above the course cards
 			_alertsView: {
 				type: Array,
 				value: function() { return []; }
@@ -201,6 +199,10 @@ class MyCoursesContent extends mixinBehaviors([
 			_hidePastCourses: {
 				type: Boolean,
 				value: false
+			},
+			_isAllCoursesOverlayOpen: {
+				type: Boolean,
+				value: false
 			}
 		};
 	}
@@ -216,7 +218,7 @@ class MyCoursesContent extends mixinBehaviors([
 
 	static get template() {
 		return html`
-		<style include="d2l-card-grid-styles">
+		<style>
 			:host {
 				display: block;
 			}
@@ -236,10 +238,6 @@ class MyCoursesContent extends mixinBehaviors([
 				clear: both;
 			}
 
-			.course-card-grid d2l-enrollment-card:nth-of-type(n+13):not([pinned]),
-			.course-card-grid[hide-past-courses] d2l-enrollment-card[closed]:not([pinned]) {
-				display: none;
-			}
 			.d2l-body-standard {
 				@apply --d2l-body-standard-text;
 				margin: 0;
@@ -252,32 +250,32 @@ class MyCoursesContent extends mixinBehaviors([
 		</div>
 
 		<div hidden$="[[!_showContent]]" class="my-courses-content">
-			<d2l-alert hidden$="[[!_hasOnlyPastCourses]]" type="call-to-action">
-				[[localize('onlyPastCoursesMessage')]]
-			</d2l-alert>
+			<d2l-my-courses-card-grid
+				filtered-enrollments="[[_enrollments]]"
+				hide-past-courses="[[_hidePastCourses]]"
+				token="[[token]]"
+				widget-view
+				show-organization-code="[[_showOrganizationCode]]"
+				show-semester-name="[[_showSemesterName]]"
+				show-dropbox-unread-feedback="[[_showDropboxUnreadFeedback]]"
+				show-unattempted-quizzes="[[_showUnattemptedQuizzes]]"
+				show-ungraded-quiz-attempts="[[_showUngradedQuizAttempts]]"
+				show-unread-discussion-messages="[[_showUnreadDiscussionMessages]]"
+				show-unread-dropbox-submissions="[[_showUnreadDropboxSubmissions]]"
+				hide-course-start-date="[[_hideCourseStartDate]]"
+				hide-course-end-date="[[_hideCourseEndDate]]">
 
-			<template is="dom-repeat" items="[[_alertsView]]">
-				<d2l-alert type="[[item.alertType]]">
-					[[item.alertMessage]]
+				<d2l-alert hidden$="[[!_hasOnlyPastCourses]]" type="call-to-action">
+					[[localize('onlyPastCoursesMessage')]]
 				</d2l-alert>
-			</template>
-			<div class="course-card-grid">
-				<template is="dom-repeat" items="[[_enrollments]]">
-					<d2l-enrollment-card
-						href="[[item]]"
-						token="[[token]]"
-						show-organization-code="[[_showOrganizationCode]]"
-						show-semester-name="[[_showSemesterName]]"
-						show-dropbox-unread-feedback="[[_showDropboxUnreadFeedback]]"
-						show-unattempted-quizzes="[[_showUnattemptedQuizzes]]"
-						show-ungraded-quiz-attempts="[[_showUngradedQuizAttempts]]"
-						show-unread-discussion-messages="[[_showUnreadDiscussionMessages]]"
-						show-unread-dropbox-submissions="[[_showUnreadDropboxSubmissions]]"
-						hide-course-start-date="[[_hideCourseStartDate]]"
-						hide-course-end-date="[[_hideCourseEndDate]]">
-					</d2l-enrollment-card>
+
+				<template is="dom-repeat" items="[[_alertsView]]">
+					<d2l-alert type="[[item.alertType]]">
+						[[item.alertMessage]]
+					</d2l-alert>
 				</template>
-			</div>
+			</d2l-my-courses-card-grid>
+
 			<d2l-link id="viewAllCourses"
 				hidden$="[[!_numberOfEnrollments]]"
 				href="javascript:void(0);"
@@ -353,25 +351,24 @@ class MyCoursesContent extends mixinBehaviors([
 	/*
 	* Public API functions
 	*/
-
+	// This is called by the LE, but only when it's a user-uploaded image
+	// If it's a catalog image this is handled by the enrollment card
 	courseImageUploadCompleted(success) {
 		if (success) {
 			this.$['basic-image-selector-overlay'].close();
-			this._refreshTileGridImages();
+			this._getCardGrid().refreshCardGridImages(this._setImageOrg);
 		}
-		this.focus();
 	}
-	focus() {
-		if (this._getTileGrid().focus(this._setImageOrg)) {
-			return;
-		}
-		this.$.viewAllCourses.focus();
-	}
+	// This is called by the LE, but only when it's a user-uploaded image
 	getLastOrgUnitId() {
 		if (!this._setImageOrg.links) {
 			return;
 		}
 		return this._getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
+	}
+
+	_getCardGrid() {
+		return this.shadowRoot.querySelector('d2l-my-courses-card-grid');
 	}
 	_enrollmentsChanged(viewAbleLength, totalLength) {
 		this._removeAlert('noCourses');
@@ -396,15 +393,6 @@ class MyCoursesContent extends mixinBehaviors([
 		return this._hidePastCourses
 			&& this._numberOfEnrollments !== 0
 			&& this._enrollments.length === 0;
-	}
-	_getTileGrid() {
-		return this.shadowRoot.querySelector('.course-card-grid');
-	}
-	_refreshTileGridImages() {
-		const courseTiles = this._getTileGrid().querySelectorAll('d2l-enrollment-card');
-		for (let i = 0; i < courseTiles.length; i++) {
-			courseTiles[i].refreshImage(this._setImageOrg);
-		}
 	}
 	_insertToOrgUnitIdMap(url, enrollmentCollectionEntity) {
 		if (!url || !enrollmentCollectionEntity) {
@@ -432,7 +420,7 @@ class MyCoursesContent extends mixinBehaviors([
 			this._onEnrollmentsEntityChange(this._nextEnrollmentEntityUrl);
 		}
 
-		this._onResize();
+		this._getCardGrid().onResize();
 	}
 	_fetchEnrollmentCardStatus(url, enrollmentCollectionEntity) {
 		if (!url || !enrollmentCollectionEntity) {
@@ -518,6 +506,9 @@ class MyCoursesContent extends mixinBehaviors([
 		if (this._courseTileOrganizationEventCount === this._initiallyVisibleCourseTileCount) {
 			// Only show content once the last visible organization has loaded, to reduce jank
 			this._showContent = true;
+			requestAnimationFrame(() => {
+				this._getCardGrid().onResize();
+			});
 			this.performanceMark('d2l.my-courses.visible-organizations-complete');
 			this.performanceMeasure(
 				'd2l.my-courses.meaningful.visible',
@@ -579,7 +570,7 @@ class MyCoursesContent extends mixinBehaviors([
 		}
 
 		if (removalIndex === insertIndex) {
-			this._onResize();
+			this._getCardGrid().onResize();
 			return;
 		}
 
@@ -597,7 +588,7 @@ class MyCoursesContent extends mixinBehaviors([
 			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
 		}
 
-		this._onResize();
+		this._getCardGrid().onResize();
 	}
 	_onTabSelected(e) {
 		// Only handle if tab selected corresponds to this panel
@@ -616,7 +607,7 @@ class MyCoursesContent extends mixinBehaviors([
 			this._fetchRoot();
 		} else {
 			setTimeout(() => {
-				// Force redraw of course tiles.
+				// Force redraw of course cards
 				window.dispatchEvent(new Event('resize'));
 			}, 10);
 		}
@@ -641,15 +632,35 @@ class MyCoursesContent extends mixinBehaviors([
 			};
 		});
 	}
-	_onSimpleOverlayClosed() {
+	_onSimpleOverlayClosed(e) {
 		this._removeAlert('setCourseImageFailure');
 
-		if (this._isRefetchNeeded) {
-			this._handleEnrollmentsRefetch();
-		}
+		if (e.composedPath()[0].id === 'all-courses') {
+			this._isAllCoursesOverlayOpen = false;
 
-		document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
-		this._hasEnrollmentsChanged = false;
+			if (this._isRefetchNeeded) {
+				this._handleEnrollmentsRefetch();
+			}
+
+			document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
+			this._hasEnrollmentsChanged = false;
+
+		} else if (e.composedPath()[0].id === 'basic-image-selector-overlay') {
+			afterNextRender(this, () => {
+				const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
+
+				if (allCourses && this._isAllCoursesOverlayOpen) {
+					if (allCourses.focusCardDropdown(this._setImageOrg)) {
+						return;
+					}
+				} else {
+					if (this._getCardGrid().focusCardDropdown(this._setImageOrg)) {
+						return;
+					}
+				}
+				this.$.viewAllCourses.focus();
+			});
+		}
 	}
 	_onOpenChangeImageView(e) {
 		if (e.detail.organization) {
@@ -813,6 +824,7 @@ class MyCoursesContent extends mixinBehaviors([
 		allCourses.showUnreadDropboxSubmissions = this._showUnreadDropboxSubmissions;
 
 		allCourses.open();
+		this._isAllCoursesOverlayOpen = true;
 
 		e.preventDefault();
 		e.stopPropagation();
@@ -835,6 +847,9 @@ class MyCoursesContent extends mixinBehaviors([
 	_enrollmentRefetchResponse(entity) {
 		const completeFetch = function() {
 			this._showContent = true;
+			requestAnimationFrame(() => {
+				this._getCardGrid().onResize();
+			});
 		}.bind(this);
 
 		try {
@@ -848,6 +863,9 @@ class MyCoursesContent extends mixinBehaviors([
 	_enrollmentsRootResponse(entity) {
 		const showContent = function() {
 			this._showContent = true;
+			requestAnimationFrame(() => {
+				this._getCardGrid().onResize();
+			});
 		}.bind(this);
 
 		const tabSelected = this._rootTabSelected;
@@ -891,9 +909,8 @@ class MyCoursesContent extends mixinBehaviors([
 				&& this.tabSearchType.toLowerCase() === 'bysemester'
 			)
 		) {
-			// This is needed for hiding a closed course that was just unpinned
-			this._getTileGrid().setAttribute('hide-past-courses', '');
-			// This is needed for removing closed courses initially
+			// This is needed for removing closed courses initially, and to tell the course grid to hide
+			// pinned closed courses that were just unpinned
 			this._hidePastCourses = true;
 		}
 
@@ -914,10 +931,9 @@ class MyCoursesContent extends mixinBehaviors([
 		if (this._enrollments.length === 0) {
 			// Normally we'd wait until the visible organization requests have finished,
 			// but this user has no enrollments, so we won't hit that case.
+			// No need to resize here
 			this._showContent = true;
 		}
-
-		this.fire('recalculate-columns');
 
 		const lastEnrollment = enrollmentEntities[enrollmentEntities.length - 1];
 		if (lastEnrollment && lastEnrollment.hasClass('pinned') && this._nextEnrollmentEntityUrl) {
