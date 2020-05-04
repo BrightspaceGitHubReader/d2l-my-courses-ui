@@ -612,6 +612,7 @@ class AllCourses extends mixinBehaviors([
 			if (this._enrollmentsSearchAction.hasFieldByName('sort')) {
 				this._enrollmentsSearchAction.getFieldByName('sort').value = 'Current';
 			}
+			this._sortParameter = 'Current';
 		}
 
 		this._removeAlert('setCourseImageFailure');
@@ -793,7 +794,6 @@ class AllCourses extends mixinBehaviors([
 
 	_resetSortDropdown() {
 		this._selectSortOption(this._defaultSortValue);
-		this._sortParameter = 'Current';
 
 		const content = this.$.sortDropdown.__getContentElement();
 		if (content) {
