@@ -169,6 +169,49 @@ class AllCourses extends mixinBehaviors([
 			_infoMessageText: {
 				type: String,
 				value: null
+			},
+			_sortMap: {
+				type: Object,
+				value: function() {
+					return [
+						{
+							name: 'Default',
+							action: 'Current',
+							langterm: 'sorting.sortDefault',
+							promotePins: true
+						},
+						{
+							name: 'OrgUnitName',
+							action: 'OrgUnitName,OrgUnitId',
+							langterm: 'sorting.sortCourseName',
+							promotePins: false
+						},
+						{
+							name: 'OrgUnitCode',
+							action: 'OrgUnitCode,OrgUnitId',
+							langterm: 'sorting.sortCourseCode',
+							promotePins: false
+						},
+						{
+							name: 'PinDate',
+							action: '-PinDate,OrgUnitId',
+							langterm: 'sorting.sortDatePinned',
+							promotePins: true
+						},
+						{
+							name: 'LastAccessed',
+							action: 'LastAccessed',
+							langterm: 'sorting.sortLastAccessed',
+							promotePins: false
+						},
+						{
+							name: 'EnrollmentDate',
+							action: '-LastModifiedDate,OrgUnitId',
+							langterm: 'sorting.sortEnrollmentDate',
+							promotePins: false
+						}
+					];
+				} 
 			}
 		};
 	}
@@ -543,49 +586,17 @@ class AllCourses extends mixinBehaviors([
 		let sortParameter, langterm;
 		let promotePins = false;
 
-		switch (e.detail.value) {
-			case 'OrgUnitName':
-				langterm = 'sorting.sortCourseName';
-				sortParameter = 'OrgUnitName,OrgUnitId';
-				break;
-			case 'OrgUnitCode':
-				langterm = 'sorting.sortCourseCode';
-				sortParameter = 'OrgUnitCode,OrgUnitId';
-				break;
-			case 'PinDate':
-				langterm = 'sorting.sortDatePinned';
-				sortParameter = '-PinDate,OrgUnitId';
-				promotePins = true;
-				break;
-			case 'LastAccessed':
-				langterm = 'sorting.sortLastAccessed';
-				sortParameter = 'LastAccessed';
-				break;
-			case 'EnrollmentDate':
-				langterm = 'sorting.sortEnrollmentDate';
-				sortParameter = '-LastModifiedDate,OrgUnitId';
-				break;
-			case 'Default':
-				langterm = 'sorting.sortDefault';
-				sortParameter = 'Current';
-				promotePins = true;
-				break;
-			default:
-				langterm = 'sorting.sortDefault';
-				sortParameter =  'Current';
-				promotePins = true;
-				break;
-		}
+		var sortData = this._mapSortOption(e.detail.value, 'name');
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this._enrollmentsSearchAction, {
-				sort: sortParameter,
+				sort: sortData.action,
 				orgUnitTypeId: this.orgUnitTypeIds,
-				promotePins: promotePins
+				promotePins: sortData.promotePins
 			})
 		);
 
-		this.$.sortText.textContent = this.localize(langterm || '');
+		this.$.sortText.textContent = this.localize(sortData.langterm || '');
 		this.$.sortDropdown.toggleOpen();
 	}
 
@@ -712,41 +723,10 @@ class AllCourses extends mixinBehaviors([
 				return;
 			}
 
-			const sortMap = {
-				'OrgUnitName,OrgUnitId': {
-					name: 'OrgUnitName',
-					langterm: 'sorting.sortCourseName'
-				},
-				'OrgUnitCode,OrgUnitId': {
-					name: 'OrgUnitCode',
-					langterm: 'sorting.sortCourseCode'
-				},
-				'-PinDate,OrgUnitId': {
-					name: 'PinDate',
-					langterm: 'sorting.sortDatePinned'
-				},
-				'LastAccessed': {
-					name: 'LastAccessed',
-					langterm: 'sorting.sortLastAccessed'
-				},
-				'-LastModifiedDate,OrgUnitId': {
-					name: 'EnrollmentDate',
-					langterm: 'sorting.sortEnrollmentDate'
-				},
-				'Current': {
-					name: 'Default',
-					langterm: 'sorting.sortDefault'
-				}
-			};
+			var sortData = this._mapSortOption(sortParameter, 'action');
 
-			const sort = sortMap[sortParameter];
-			if (sort) {
-				this.$.sortText.textContent = this.localize(sort.langterm || '');
-				this._selectSortOption(sort.name);
-			} else {
-				this.$.sortText.textContent = this.localize('sorting.sortDefault');
-				this._selectSortOption(this._defaultSortValue);
-			}
+			this.$.sortText.textContent = this.localize(sortData.langterm || '');
+			this._selectSortOption(sortData.name);
 		}
 	}
 
@@ -792,6 +772,17 @@ class AllCourses extends mixinBehaviors([
 
 	_computeShowGroupByTabs(groups) {
 		return groups.length > 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
+	}
+	
+	_mapSortOption(identifier, identifierName) {
+		var i = 0;
+		for (i = 0; i < this._sortMap.length; i+= 1) {
+			if (this._sortMap[i][identifierName] === identifier) {
+				return this._sortMap[i];
+			}
+		}
+
+		return this._sortMap[0];
 	}
 
 	_resetSortDropdown() {
