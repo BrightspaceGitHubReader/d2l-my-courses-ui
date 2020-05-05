@@ -82,11 +82,6 @@ class AllCourses extends mixinBehaviors([
 			},
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
-			// Default option in Sort menu
-			_defaultSortValue: {
-				type: String,
-				value: 'Default'
-			},
 			// Standard Department OU Type name to be displayed in the filter dropdown
 			filterStandardDepartmentName: String,
 			// Standard Semester OU Type name to be displayed in the filter dropdown
@@ -484,13 +479,16 @@ class AllCourses extends mixinBehaviors([
 		if (!this.enrollmentsSearchAction) {
 			return;
 		}
+
+		const sortData = this._mapSortOption('Default', 'name');
+
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this.enrollmentsSearchAction, {
 				autoPinCourses: false,
 				orgUnitTypeId: this.orgUnitTypeIds,
 				embedDepth: 0,
-				sort: this._sortMap[0].action,
-				promotePins: this._sortMap[0].promotePins
+				sort: sortData.action,
+				promotePins: sortData.promotePins
 			})
 		);
 	}
@@ -655,19 +653,18 @@ class AllCourses extends mixinBehaviors([
 			this._enrollmentsSearchAction.getFieldByName('search').value : '';
 
 		const sort = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('sort') ?
-			this._enrollmentsSearchAction.getFieldByName('sort').value : this._sortMap[0].action;
+			this._enrollmentsSearchAction.getFieldByName('sort').value : '';
 
-		const promotePins = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('promotePins') ?
-			this._enrollmentsSearchAction.getFieldByName('promotePins').value : this._sortMap[0].promotePins;
+		const sortData = this._mapSortOption(sort, 'action');
 
 		this._showTabContent = false;
 		const params = {
 			search: search,
 			orgUnitTypeId: this.orgUnitTypeIds,
 			autoPinCourses: false,
-			sort: sort,
+			sort: sortData.action,
 			embedDepth: 0,
-			promotePins: promotePins
+			promotePins: sortData.promotePins
 		};
 		if ((this._filterCounts.departments > 0 || this._filterCounts.semesters > 0) && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('parentOrganizations')) {
 			params.parentOrganizations =  this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value;
@@ -791,7 +788,8 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_resetSortDropdown() {
-		this._selectSortOption(this._defaultSortValue);
+		const sortData = this._mapSortOption('Default', 'name');
+		this._selectSortOption(sortData.name);
 
 		const content = this.$.sortDropdown.__getContentElement();
 		if (content) {
