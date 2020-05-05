@@ -585,7 +585,6 @@ class AllCourses extends mixinBehaviors([
 			})
 		);
 
-		this._sortParameter = sortParameter;
 		this.$.sortText.textContent = this.localize(langterm || '');
 		this.$.sortDropdown.toggleOpen();
 	}
@@ -612,7 +611,6 @@ class AllCourses extends mixinBehaviors([
 			if (this._enrollmentsSearchAction.hasFieldByName('sort')) {
 				this._enrollmentsSearchAction.getFieldByName('sort').value = 'Current';
 			}
-			this._sortParameter = 'Current';
 		}
 
 		this._removeAlert('setCourseImageFailure');
@@ -636,18 +634,23 @@ class AllCourses extends mixinBehaviors([
 				break;
 			}
 		}
-		const search = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('search') ?
-			this._enrollmentsSearchAction.getFieldByName('search').value : '';
+
 		if (!tabAction) {
 			return;
 		}
+
+		const search = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('search') ?
+			this._enrollmentsSearchAction.getFieldByName('search').value : '';
+
+		const sort = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('sort') ?
+			this._enrollmentsSearchAction.getFieldByName('sort').value : 'Current';
 
 		this._showTabContent = false;
 		const params = {
 			search: search,
 			orgUnitTypeId: this.orgUnitTypeIds,
 			autoPinCourses: false,
-			sort: this._sortParameter || 'Current',
+			sort: sort,
 			embedDepth: 0
 		};
 		if ((this._filterCounts.departments > 0 || this._filterCounts.semesters > 0) && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('parentOrganizations')) {
@@ -740,7 +743,6 @@ class AllCourses extends mixinBehaviors([
 			if (sort) {
 				this.$.sortText.textContent = this.localize(sort.langterm || '');
 				this._selectSortOption(sort.name);
-				this._sortParameter = sortParameter;
 			} else {
 				this.$.sortText.textContent = this.localize('sorting.sortDefault');
 				this._selectSortOption(this._defaultSortValue);
