@@ -211,7 +211,7 @@ class AllCourses extends mixinBehaviors([
 							promotePins: false
 						}
 					];
-				} 
+				}
 			}
 		};
 	}
@@ -584,7 +584,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onSortOrderChanged(e) {
-		var sortData = this._mapSortOption(e.detail.value, 'name');
+		const sortData = this._mapSortOption(e.detail.value, 'name');
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this._enrollmentsSearchAction, {
@@ -728,7 +728,7 @@ class AllCourses extends mixinBehaviors([
 				return;
 			}
 
-			var sortData = this._mapSortOption(sortParameter, 'action');
+			const sortData = this._mapSortOption(sortParameter, 'action');
 
 			this.$.sortText.textContent = this.localize(sortData.langterm || '');
 			this._selectSortOption(sortData.name);
@@ -778,10 +778,10 @@ class AllCourses extends mixinBehaviors([
 	_computeShowGroupByTabs(groups) {
 		return groups.length > 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
 	}
-	
+
 	_mapSortOption(identifier, identifierName) {
-		var i = 0;
-		for (i = 0; i < this._sortMap.length; i+= 1) {
+		let i = 0;
+		for (i = 0; i < this._sortMap.length; i += 1) {
 			if (this._sortMap[i][identifierName] === identifier) {
 				return this._sortMap[i];
 			}
