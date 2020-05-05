@@ -489,7 +489,8 @@ class AllCourses extends mixinBehaviors([
 				autoPinCourses: false,
 				orgUnitTypeId: this.orgUnitTypeIds,
 				embedDepth: 0,
-				sort: 'Current'
+				sort: this._sortMap[0].action,
+				promotePins: this._sortMap[0].promotePins
 			})
 		);
 	}
@@ -583,9 +584,6 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onSortOrderChanged(e) {
-		let sortParameter, langterm;
-		let promotePins = false;
-
 		var sortData = this._mapSortOption(e.detail.value, 'name');
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
@@ -620,7 +618,10 @@ class AllCourses extends mixinBehaviors([
 				this._enrollmentsSearchAction.getFieldByName('search').value = '';
 			}
 			if (this._enrollmentsSearchAction.hasFieldByName('sort')) {
-				this._enrollmentsSearchAction.getFieldByName('sort').value = 'Current';
+				this._enrollmentsSearchAction.getFieldByName('sort').value = this._sortMap[0].action;
+			}
+			if (this._enrollmentsSearchAction.hasFieldByName('promotePins')) {
+				this._enrollmentsSearchAction.getFieldByName('promotePins').value = this._sortMap[0].promotePins;
 			}
 		}
 
@@ -654,7 +655,10 @@ class AllCourses extends mixinBehaviors([
 			this._enrollmentsSearchAction.getFieldByName('search').value : '';
 
 		const sort = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('sort') ?
-			this._enrollmentsSearchAction.getFieldByName('sort').value : 'Current';
+			this._enrollmentsSearchAction.getFieldByName('sort').value : this._sortMap[0].action;
+
+		const promotePins = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('promotePins') ?
+			this._enrollmentsSearchAction.getFieldByName('promotePins').value : this._sortMap[0].promotePins;
 
 		this._showTabContent = false;
 		const params = {
@@ -662,7 +666,8 @@ class AllCourses extends mixinBehaviors([
 			orgUnitTypeId: this.orgUnitTypeIds,
 			autoPinCourses: false,
 			sort: sort,
-			embedDepth: 0
+			embedDepth: 0,
+			promotePins: promotePins
 		};
 		if ((this._filterCounts.departments > 0 || this._filterCounts.semesters > 0) && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('parentOrganizations')) {
 			params.parentOrganizations =  this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value;
