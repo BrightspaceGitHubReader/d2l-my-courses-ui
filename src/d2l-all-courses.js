@@ -446,7 +446,7 @@ class AllCourses extends mixinBehaviors([
 				autoPinCourses: false,
 				orgUnitTypeId: this.orgUnitTypeIds,
 				embedDepth: 0,
-				sort: this._sortParameter || 'Current'
+				sort: 'Current'
 			})
 		);
 	}
@@ -605,6 +605,16 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onSimpleOverlayOpening() {
+		if (this._enrollmentsSearchAction && this._enrollmentsSearchAction.hasFieldByName) {
+			if (this._enrollmentsSearchAction.hasFieldByName('search')) {
+				this._enrollmentsSearchAction.getFieldByName('search').value = '';
+			}
+			if (this._enrollmentsSearchAction.hasFieldByName('sort')) {
+				this._enrollmentsSearchAction.getFieldByName('sort').value = 'Current';
+			}
+			this._sortParameter = 'Current';
+		}
+
 		this._removeAlert('setCourseImageFailure');
 		this._clearSearchWidget();
 		this.$.filterMenu.clearFilters();
