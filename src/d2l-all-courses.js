@@ -480,15 +480,13 @@ class AllCourses extends mixinBehaviors([
 			return;
 		}
 
-		const sortData = this._mapSortOption(this._sortMap[0].name, 'name');
-
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this.enrollmentsSearchAction, {
 				autoPinCourses: false,
 				orgUnitTypeId: this.orgUnitTypeIds,
 				embedDepth: 0,
-				sort: sortData.action,
-				promotePins: sortData.promotePins
+				sort: this._sortMap[0].action,
+				promotePins: this._sortMap[0].promotePins
 			})
 		);
 	}
@@ -788,8 +786,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_resetSortDropdown() {
-		const sortData = this._mapSortOption(this._sortMap[0].name, 'name');
-		this._selectSortOption(sortData.name);
+		this._selectSortOption(this._sortMap[0].name);
 
 		const content = this.$.sortDropdown.__getContentElement();
 		if (content) {
