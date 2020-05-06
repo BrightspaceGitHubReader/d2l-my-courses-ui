@@ -480,7 +480,7 @@ class AllCourses extends mixinBehaviors([
 			return;
 		}
 
-		const sortData = this._mapSortOption('Default', 'name');
+		const sortData = this._mapSortOption(this._sortMap[0].name, 'name');
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this.enrollmentsSearchAction, {
@@ -653,7 +653,7 @@ class AllCourses extends mixinBehaviors([
 			this._enrollmentsSearchAction.getFieldByName('search').value : '';
 
 		const sort = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('sort') ?
-			this._enrollmentsSearchAction.getFieldByName('sort').value : '';
+			this._enrollmentsSearchAction.getFieldByName('sort').value : this._sortMap[0].action;
 
 		const sortData = this._mapSortOption(sort, 'action');
 
@@ -788,7 +788,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_resetSortDropdown() {
-		const sortData = this._mapSortOption('Default', 'name');
+		const sortData = this._mapSortOption(this._sortMap[0].name, 'name');
 		this._selectSortOption(sortData.name);
 
 		const content = this.$.sortDropdown.__getContentElement();
