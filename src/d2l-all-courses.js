@@ -82,11 +82,6 @@ class AllCourses extends mixinBehaviors([
 			},
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
-			// Default option in Sort menu
-			_defaultSortValue: {
-				type: String,
-				value: 'Default'
-			},
 			// Standard Department OU Type name to be displayed in the filter dropdown
 			filterStandardDepartmentName: String,
 			// Standard Semester OU Type name to be displayed in the filter dropdown
@@ -169,6 +164,49 @@ class AllCourses extends mixinBehaviors([
 			_infoMessageText: {
 				type: String,
 				value: null
+			},
+			_sortMap: {
+				type: Object,
+				value: function() {
+					return [
+						{
+							name: 'Default',
+							action: 'Current',
+							langterm: 'sorting.sortDefault',
+							promotePins: true
+						},
+						{
+							name: 'OrgUnitName',
+							action: 'OrgUnitName,OrgUnitId',
+							langterm: 'sorting.sortCourseName',
+							promotePins: false
+						},
+						{
+							name: 'OrgUnitCode',
+							action: 'OrgUnitCode,OrgUnitId',
+							langterm: 'sorting.sortCourseCode',
+							promotePins: false
+						},
+						{
+							name: 'PinDate',
+							action: '-PinDate,OrgUnitId',
+							langterm: 'sorting.sortDatePinned',
+							promotePins: true
+						},
+						{
+							name: 'LastAccessed',
+							action: 'LastAccessed',
+							langterm: 'sorting.sortLastAccessed',
+							promotePins: false
+						},
+						{
+							name: 'EnrollmentDate',
+							action: '-LastModifiedDate,OrgUnitId',
+							langterm: 'sorting.sortEnrollmentDate',
+							promotePins: false
+						}
+					];
+				}
 			}
 		};
 	}
@@ -441,12 +479,14 @@ class AllCourses extends mixinBehaviors([
 		if (!this.enrollmentsSearchAction) {
 			return;
 		}
+
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this.enrollmentsSearchAction, {
 				autoPinCourses: false,
 				orgUnitTypeId: this.orgUnitTypeIds,
 				embedDepth: 0,
-				sort: 'Current'
+				sort: this._sortMap[0].action,
+				promotePins: this._sortMap[0].promotePins
 			})
 		);
 	}
@@ -540,53 +580,17 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onSortOrderChanged(e) {
-		let sortParameter, langterm;
-		let promotePins = false;
-
-		switch (e.detail.value) {
-			case 'OrgUnitName':
-				langterm = 'sorting.sortCourseName';
-				sortParameter = 'OrgUnitName,OrgUnitId';
-				break;
-			case 'OrgUnitCode':
-				langterm = 'sorting.sortCourseCode';
-				sortParameter = 'OrgUnitCode,OrgUnitId';
-				break;
-			case 'PinDate':
-				langterm = 'sorting.sortDatePinned';
-				sortParameter = '-PinDate,OrgUnitId';
-				promotePins = true;
-				break;
-			case 'LastAccessed':
-				langterm = 'sorting.sortLastAccessed';
-				sortParameter = 'LastAccessed';
-				break;
-			case 'EnrollmentDate':
-				langterm = 'sorting.sortEnrollmentDate';
-				sortParameter = '-LastModifiedDate,OrgUnitId';
-				break;
-			case 'Default':
-				langterm = 'sorting.sortDefault';
-				sortParameter = 'Current';
-				promotePins = true;
-				break;
-			default:
-				langterm = 'sorting.sortDefault';
-				sortParameter =  'Current';
-				promotePins = true;
-				break;
-		}
+		const sortData = this._mapSortOption(e.detail.value, 'name');
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(this._enrollmentsSearchAction, {
-				sort: sortParameter,
+				sort: sortData.action,
 				orgUnitTypeId: this.orgUnitTypeIds,
-				promotePins: promotePins
+				promotePins: sortData.promotePins
 			})
 		);
 
-		this._sortParameter = sortParameter;
-		this.$.sortText.textContent = this.localize(langterm || '');
+		this.$.sortText.textContent = this.localize(sortData.langterm || '');
 		this.$.sortDropdown.toggleOpen();
 	}
 
@@ -610,9 +614,11 @@ class AllCourses extends mixinBehaviors([
 				this._enrollmentsSearchAction.getFieldByName('search').value = '';
 			}
 			if (this._enrollmentsSearchAction.hasFieldByName('sort')) {
-				this._enrollmentsSearchAction.getFieldByName('sort').value = 'Current';
+				this._enrollmentsSearchAction.getFieldByName('sort').value = this._sortMap[0].action;
 			}
-			this._sortParameter = 'Current';
+			if (this._enrollmentsSearchAction.hasFieldByName('promotePins')) {
+				this._enrollmentsSearchAction.getFieldByName('promotePins').value = this._sortMap[0].promotePins;
+			}
 		}
 
 		this._removeAlert('setCourseImageFailure');
@@ -636,19 +642,27 @@ class AllCourses extends mixinBehaviors([
 				break;
 			}
 		}
-		const search = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('search') ?
-			this._enrollmentsSearchAction.getFieldByName('search').value : '';
+
 		if (!tabAction) {
 			return;
 		}
+
+		const search = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('search') ?
+			this._enrollmentsSearchAction.getFieldByName('search').value : '';
+
+		const sort = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('sort') ?
+			this._enrollmentsSearchAction.getFieldByName('sort').value : this._sortMap[0].action;
+
+		const sortData = this._mapSortOption(sort, 'action');
 
 		this._showTabContent = false;
 		const params = {
 			search: search,
 			orgUnitTypeId: this.orgUnitTypeIds,
 			autoPinCourses: false,
-			sort: this._sortParameter || 'Current',
-			embedDepth: 0
+			sort: sortData.action,
+			embedDepth: 0,
+			promotePins: sortData.promotePins
 		};
 		if ((this._filterCounts.departments > 0 || this._filterCounts.semesters > 0) && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('parentOrganizations')) {
 			params.parentOrganizations =  this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value;
@@ -709,42 +723,10 @@ class AllCourses extends mixinBehaviors([
 				return;
 			}
 
-			const sortMap = {
-				'OrgUnitName,OrgUnitId': {
-					name: 'OrgUnitName',
-					langterm: 'sorting.sortCourseName'
-				},
-				'OrgUnitCode,OrgUnitId': {
-					name: 'OrgUnitCode',
-					langterm: 'sorting.sortCourseCode'
-				},
-				'-PinDate,OrgUnitId': {
-					name: 'PinDate',
-					langterm: 'sorting.sortDatePinned'
-				},
-				'LastAccessed': {
-					name: 'LastAccessed',
-					langterm: 'sorting.sortLastAccessed'
-				},
-				'-LastModifiedDate,OrgUnitId': {
-					name: 'EnrollmentDate',
-					langterm: 'sorting.sortEnrollmentDate'
-				},
-				'Current': {
-					name: 'Default',
-					langterm: 'sorting.sortDefault'
-				}
-			};
+			const sortData = this._mapSortOption(sortParameter, 'action');
 
-			const sort = sortMap[sortParameter];
-			if (sort) {
-				this.$.sortText.textContent = this.localize(sort.langterm || '');
-				this._selectSortOption(sort.name);
-				this._sortParameter = sortParameter;
-			} else {
-				this.$.sortText.textContent = this.localize('sorting.sortDefault');
-				this._selectSortOption(this._defaultSortValue);
-			}
+			this.$.sortText.textContent = this.localize(sortData.langterm || '');
+			this._selectSortOption(sortData.name);
 		}
 	}
 
@@ -792,8 +774,19 @@ class AllCourses extends mixinBehaviors([
 		return groups.length > 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
 	}
 
+	_mapSortOption(identifier, identifierName) {
+		let i = 0;
+		for (i = 0; i < this._sortMap.length; i += 1) {
+			if (this._sortMap[i][identifierName] === identifier) {
+				return this._sortMap[i];
+			}
+		}
+
+		return this._sortMap[0];
+	}
+
 	_resetSortDropdown() {
-		this._selectSortOption(this._defaultSortValue);
+		this._selectSortOption(this._sortMap[0].name);
 
 		const content = this.$.sortDropdown.__getContentElement();
 		if (content) {

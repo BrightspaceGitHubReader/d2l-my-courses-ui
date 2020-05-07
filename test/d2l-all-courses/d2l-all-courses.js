@@ -365,13 +365,11 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should set the _searchUrl based on the selected tab\'s action', function() {
-			widget._sortParameter = 'SortOrder';
 
 			widget.dispatchEvent(new CustomEvent(
 				'd2l-tab-panel-selected', { bubbles: true, composed: true }
 			));
-
-			expect(widget._searchUrl.indexOf('/example/foo?autoPinCourses=false&embedDepth=0&sort=SortOrder&search=&bustCache=') !== -1).to.be.true;
+			expect(widget._searchUrl.indexOf('/example/foo?autoPinCourses=false&embedDepth=0&sort=Current&search=&bustCache=') !== -1).to.be.true;
 		});
 	});
 
