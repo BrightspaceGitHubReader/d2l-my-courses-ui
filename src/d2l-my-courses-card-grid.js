@@ -6,6 +6,8 @@ Polymer-based web component for the grid of enrollment cards.
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
+import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntity.js';
 
 class MyCoursesCardGrid extends PolymerElement {
 
@@ -24,49 +26,60 @@ class MyCoursesCardGrid extends PolymerElement {
 			},
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
 			token: String,
+			// URL to fetch widget settings
+			presentationUrl: String,
 			// Limit the number of cards shown to 12 (unless more than 12 are pinned)
 			widgetView: {
 				type: Boolean,
 				value: false,
 				reflectToAttribute: true
 			},
-			showOrganizationCode: {
+			/*
+			* Presentation Attributes
+			*/
+			_hideCourseStartDate: {
 				type: Boolean,
 				value: false
 			},
-			showSemesterName: {
+			_hideCourseEndDate: {
 				type: Boolean,
 				value: false
 			},
-			hideCourseStartDate: {
+			_showOrganizationCode: {
 				type: Boolean,
 				value: false
 			},
-			hideCourseEndDate: {
+			_showSemesterName: {
 				type: Boolean,
 				value: false
 			},
-			showDropboxUnreadFeedback: {
+			_showDropboxUnreadFeedback: {
 				type: Boolean,
 				value: false
 			},
-			showUnattemptedQuizzes: {
+			_showUnattemptedQuizzes: {
 				type: Boolean,
 				value: false
 			},
-			showUngradedQuizAttempts: {
+			_showUngradedQuizAttempts: {
 				type: Boolean,
 				value: false
 			},
-			showUnreadDiscussionMessages: {
+			_showUnreadDiscussionMessages: {
 				type: Boolean,
 				value: false
 			},
-			showUnreadDropboxSubmissions: {
+			_showUnreadDropboxSubmissions: {
 				type: Boolean,
 				value: false
 			}
 		};
+	}
+
+	static get observers() {
+		return [
+			'_onPresentationEntityChange(presentationUrl)'
+		];
 	}
 
 	static get template() {
@@ -123,15 +136,15 @@ class MyCoursesCardGrid extends PolymerElement {
 				<d2l-enrollment-card
 					href="[[item]]"
 					token="[[token]]"
-					show-organization-code="[[showOrganizationCode]]"
-					show-semester-name="[[showSemesterName]]"
-					show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
-					show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
-					show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
-					show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
-					show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
-					hide-course-start-date="[[hideCourseStartDate]]"
-					hide-course-end-date="[[hideCourseEndDate]]">
+					hide-course-start-date="[[_hideCourseStartDate]]"
+					hide-course-end-date="[[_hideCourseEndDate]]"
+					show-organization-code="[[_showOrganizationCode]]"
+					show-semester-name="[[_showSemesterName]]"
+					show-dropbox-unread-feedback="[[_showDropboxUnreadFeedback]]"
+					show-unattempted-quizzes="[[_showUnattemptedQuizzes]]"
+					show-ungraded-quiz-attempts="[[_showUngradedQuizAttempts]]"
+					show-unread-discussion-messages="[[_showUnreadDiscussionMessages]]"
+					show-unread-dropbox-submissions="[[_showUnreadDropboxSubmissions]]">
 				</d2l-enrollment-card>
 			</template>
 		</div>`;
@@ -229,6 +242,20 @@ class MyCoursesCardGrid extends PolymerElement {
 			}
 		}
 		return false;
+	}
+
+	_onPresentationEntityChange(url) {
+		entityFactory(PresentationEntity, url, this.token, entity => {
+			this._hideCourseStartDate = entity.hideCourseStartDate();
+			this._hideCourseEndDate = entity.hideCourseEndDate();
+			this._showOrganizationCode = entity.showOrganizationCode();
+			this._showSemesterName = entity.showSemesterName();
+			this._showDropboxUnreadFeedback = entity.showDropboxUnreadFeedback();
+			this._showUnattemptedQuizzes = entity.showUnattemptedQuizzes();
+			this._showUngradedQuizAttempts = entity.showUngradedQuizAttempts();
+			this._showUnreadDiscussionMessages = entity.showUnreadDiscussionMessages();
+			this._showUnreadDropboxSubmissions = entity.showUnreadDropboxSubmissions();
+		});
 	}
 
 }
