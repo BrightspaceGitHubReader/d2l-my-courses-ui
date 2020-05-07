@@ -440,9 +440,8 @@ class MyCoursesContent extends mixinBehaviors([
 			});
 
 			enrollmentEntity.onOrganizationChange((org) => {
-				const enrollmentDate = org.processedDate(this._hideCourseStartDate, this._hideCourseEndDate);
 				const enrollmentCardStatusDetails = {
-					status: {closed: enrollmentDate && enrollmentDate.afterEndDate},
+					status: {closed: org && org.isAfterEndDate()},
 					enrollmentUrl: url
 				};
 				this._setEnrollmentCardStatus(enrollmentCardStatusDetails);
