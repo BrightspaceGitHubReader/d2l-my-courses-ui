@@ -505,7 +505,7 @@ describe('d2l-my-courses-content', () => {
 				setTimeout(() => {
 					expect(stub).to.have.been.calledOnce;
 					done();
-				}, 100);
+				}, 200);
 			});
 		});
 
