@@ -301,6 +301,22 @@ class MyCoursesContent extends mixinBehaviors([
 	/*
 	* Public API functions
 	*/
+
+	// After the image selector is closed, this is called to set focus back to the correct card
+	focusCardDropdown(imageOrg) {
+		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
+
+		if (allCourses && this._isAllCoursesOverlayOpen) {
+			if (allCourses.focusCardDropdown(imageOrg)) {
+				return;
+			}
+		} else {
+			if (this._getCardGrid().focusCardDropdown(imageOrg)) {
+				return;
+			}
+		}
+		this.$.viewAllCourses.focus();
+	}
 	// This is called by the LE, but only when it's a user-uploaded image
 	// If it's a catalog image this is handled by the enrollment card
 	courseImageUploadCompleted(success) {
@@ -596,18 +612,7 @@ class MyCoursesContent extends mixinBehaviors([
 
 		} else if (e.composedPath()[0].id === 'basic-image-selector-overlay') {
 			afterNextRender(this, () => {
-				const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-
-				if (allCourses && this._isAllCoursesOverlayOpen) {
-					if (allCourses.focusCardDropdown(this._setImageOrg)) {
-						return;
-					}
-				} else {
-					if (this._getCardGrid().focusCardDropdown(this._setImageOrg)) {
-						return;
-					}
-				}
-				this.$.viewAllCourses.focus();
+				this.focusCardDropdown(this._setImageOrg);
 			});
 		}
 	}
