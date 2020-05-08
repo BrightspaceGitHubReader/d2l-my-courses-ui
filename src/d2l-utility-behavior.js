@@ -60,6 +60,14 @@ D2L.MyCourses.UtilityBehavior = {
 		const selfLink = entity.getLinkByRel('self');
 		return selfLink.href;
 	},
+	getOrgUnitIdFromHref(organizationHref) {
+		const match = /[0-9]+$/.exec(organizationHref);
+
+		if (!match) {
+			return;
+		}
+		return match[0];
+	},
 	parseEntity: function(entity) {
 		return SirenParse(entity);
 	},

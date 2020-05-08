@@ -314,7 +314,7 @@ class MyCoursesContent extends mixinBehaviors([
 		if (!this._setImageOrg.links) {
 			return;
 		}
-		return this._getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
+		return this.getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
 	}
 
 	_getCardGrid() {
@@ -349,7 +349,7 @@ class MyCoursesContent extends mixinBehaviors([
 			return;
 		}
 		enrollmentCollectionEntity.onEnrollmentEntityChange(url, (enrollmentEntity) => {
-			const orgUnitId = this._getOrgUnitIdFromHref(enrollmentEntity.organizationHref());
+			const orgUnitId = this.getOrgUnitIdFromHref(enrollmentEntity.organizationHref());
 			this._orgUnitIdMap[orgUnitId] = url;
 		});
 	}
@@ -489,7 +489,7 @@ class MyCoursesContent extends mixinBehaviors([
 				updateEntity(enrollmentHref, this.token);
 			}
 		} else {
-			orgUnitId = this._getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
+			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
 		}
 		// Only want to move pinned/unpinned enrollment if it exists in the panel
 		const changedEnrollmentId = orgUnitId && this._orgUnitIdMap[orgUnitId];
@@ -708,14 +708,6 @@ class MyCoursesContent extends mixinBehaviors([
 		);
 
 		this._enrollmentsRootResponse(enrollmentsEntity);
-	}
-	_getOrgUnitIdFromHref(organizationHref) {
-		const match = /[0-9]+$/.exec(organizationHref);
-
-		if (!match) {
-			return;
-		}
-		return match[0];
 	}
 	_getViewAllCoursesText(hasMoreEnrollments, enrollmentsLength) {
 		const viewAllCourses = this.localize('viewAllCourses');
