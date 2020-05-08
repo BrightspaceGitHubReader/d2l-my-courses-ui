@@ -280,9 +280,7 @@ class AllCourses extends mixinBehaviors([
 			<d2l-simple-overlay
 				id="all-courses"
 				title-name="[[localize('allCourses')]]"
-				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
-				with-backdrop=""
-				restore-focus-on-close="">
+				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]">
 
 				<div hidden$="[[!_showContent]]">
 					<iron-scroll-threshold id="all-courses-scroll-threshold" on-lower-threshold="_onAllCoursesLowerThreshold">
