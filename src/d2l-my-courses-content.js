@@ -333,6 +333,34 @@ class MyCoursesContent extends mixinBehaviors([
 		return this.getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
 	}
 
+	/*
+	* Changing Course Image Functions
+	*/
+	_onChangeImageLowerThreshold() {
+		this.shadowRoot.querySelector('d2l-basic-image-selector').loadMore(this.$['image-selector-threshold']);
+	}
+	_onClearImageScrollThreshold() {
+		this.$['image-selector-threshold'].clearTriggers();
+	}
+	_onOpenChangeImageView(e) {
+		if (e.detail.organization) {
+			this._setImageOrg = this.parseEntity(e.detail.organization);
+		}
+
+		this.$['basic-image-selector-overlay'].open();
+	}
+	_onSetCourseImage(e) {
+		this.$['basic-image-selector-overlay'].close();
+		this._removeAlert('setCourseImageFailure');
+		if (e && e.detail) {
+			if (e.detail.status === 'failure') {
+				setTimeout(() => {
+					this._addAlert('warning', 'setCourseImageFailure', this.localize('error.settingImage'));
+				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
+			}
+		}
+	}
+
 	_getCardGrid() {
 		return this.shadowRoot.querySelector('d2l-my-courses-card-grid');
 	}
@@ -428,12 +456,6 @@ class MyCoursesContent extends mixinBehaviors([
 			message = 'newEnrollmentMultiple';
 		}
 		this._addAlert('call-to-action', message, this.localize(message));
-	}
-	_onChangeImageLowerThreshold() {
-		this.shadowRoot.querySelector('d2l-basic-image-selector').loadMore(this.$['image-selector-threshold']);
-	}
-	_onClearImageScrollThreshold() {
-		this.$['image-selector-threshold'].clearTriggers();
 	}
 	_onCourseImageLoaded() {
 		this._courseImagesLoadedEventCount++;
@@ -614,24 +636,6 @@ class MyCoursesContent extends mixinBehaviors([
 			afterNextRender(this, () => {
 				this.focusCardDropdown(this._setImageOrg);
 			});
-		}
-	}
-	_onOpenChangeImageView(e) {
-		if (e.detail.organization) {
-			this._setImageOrg = this.parseEntity(e.detail.organization);
-		}
-
-		this.$['basic-image-selector-overlay'].open();
-	}
-	_onSetCourseImage(e) {
-		this.$['basic-image-selector-overlay'].close();
-		this._removeAlert('setCourseImageFailure');
-		if (e && e.detail) {
-			if (e.detail.status === 'failure') {
-				setTimeout(() => {
-					this._addAlert('warning', 'setCourseImageFailure', this.localize('error.settingImage'));
-				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
-			}
 		}
 	}
 
