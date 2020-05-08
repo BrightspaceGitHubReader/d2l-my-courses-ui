@@ -428,8 +428,8 @@ describe('d2l-my-courses-content', () => {
 			});
 
 			it('should return correct org unit id from various href', () => {
-				expect(component._getOrgUnitIdFromHref('/organizations/671')).to.equal('671');
-				expect(component._getOrgUnitIdFromHref('/some/other/route/8798734534')).to.equal('8798734534');
+				expect(component.getOrgUnitIdFromHref('/organizations/671')).to.equal('671');
+				expect(component.getOrgUnitIdFromHref('/some/other/route/8798734534')).to.equal('8798734534');
 			});
 
 		});
@@ -483,8 +483,11 @@ describe('d2l-my-courses-content', () => {
 			it('should remove any existing set-course-image-failure alerts', done => {
 				const spy = sandbox.spy(component, '_removeAlert');
 
-				const event = new CustomEvent('d2l-simple-overlay-closed');
-				component.dispatchEvent(event);
+				const event = {
+					type: 'd2l-simple-overlay-closed',
+					composedPath: function() { return [{ id: 'all-courses' }]; }
+				};
+				component._onSimpleOverlayClosed(event);
 
 				setTimeout(() => {
 					expect(spy).to.have.been.calledWith('setCourseImageFailure');
