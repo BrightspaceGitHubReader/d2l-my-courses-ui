@@ -598,9 +598,9 @@ class MyCoursesContent extends mixinBehaviors([
 		});
 	}
 	_onSimpleOverlayClosed(e) {
-		this._removeAlert('setCourseImageFailure');
 
 		if (e.composedPath()[0].id === 'all-courses') {
+			this._removeAlert('setCourseImageFailure');
 			this._isAllCoursesOverlayOpen = false;
 
 			if (this._isRefetchNeeded) {
