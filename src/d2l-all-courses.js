@@ -44,42 +44,7 @@ class AllCourses extends mixinBehaviors([
 			/*
 			* Public Polymer properties
 			*/
-			showOrganizationCode: {
-				type: Boolean,
-				value: false
-			},
-			showSemesterName: {
-				type: Boolean,
-				value: false
-			},
-			hideCourseStartDate: {
-				type: Boolean,
-				value: false
-			},
-			hideCourseEndDate: {
-				type: Boolean,
-				value: false
-			},
-			showDropboxUnreadFeedback: {
-				type: Boolean,
-				value: false
-			},
-			showUnattemptedQuizzes: {
-				type: Boolean,
-				value: false
-			},
-			showUngradedQuizAttempts: {
-				type: Boolean,
-				value: false
-			},
-			showUnreadDiscussionMessages: {
-				type: Boolean,
-				value: false
-			},
-			showUnreadDropboxSubmissions: {
-				type: Boolean,
-				value: false
-			},
+
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
 			// Standard Department OU Type name to be displayed in the filter dropdown
@@ -95,6 +60,8 @@ class AllCourses extends mixinBehaviors([
 				observer: '_myEnrollmentsEntityChanged'
 			},
 			orgUnitTypeIds: Array,
+			// URL to fetch widget settings
+			presentationUrl: String,
 			// Siren Actions corresponding to each tab that is displayed
 			tabSearchActions: {
 				type: Array,
@@ -385,17 +352,7 @@ class AllCourses extends mixinBehaviors([
 							<template items="[[tabSearchActions]]" is="dom-repeat">
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
-										<d2l-my-courses-card-grid
-											token="[[token]]"
-											show-organization-code="[[showOrganizationCode]]"
-											show-semester-name="[[showSemesterName]]"
-											show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
-											show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
-											show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
-											show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
-											show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
-											hide-course-start-date="[[hideCourseStartDate]]"
-											hide-course-end-date="[[hideCourseEndDate]]">
+										<d2l-my-courses-card-grid token="[[token]]" presentation-url="[[presentationUrl]]">
 											<span id="infoMessage" hidden$="[[!_infoMessageText]]">
 												[[_infoMessageText]]
 											</span>
@@ -408,17 +365,7 @@ class AllCourses extends mixinBehaviors([
 						</d2l-tabs>
 					</template>
 					<template is="dom-if" if="[[!_showGroupByTabs]]">
-						<d2l-my-courses-card-grid
-							token="[[token]]"
-							show-organization-code="[[showOrganizationCode]]"
-							show-semester-name="[[showSemesterName]]"
-							show-dropbox-unread-feedback="[[showDropboxUnreadFeedback]]"
-							show-unattempted-quizzes="[[showUnattemptedQuizzes]]"
-							show-ungraded-quiz-attempts="[[showUngradedQuizAttempts]]"
-							show-unread-discussion-messages="[[showUnreadDiscussionMessages]]"
-							show-unread-dropbox-submissions="[[showUnreadDropboxSubmissions]]"
-							hide-course-start-date="[[hideCourseStartDate]]"
-							hide-course-end-date="[[hideCourseEndDate]]">
+						<d2l-my-courses-card-grid token="[[token]]" presentation-url="[[presentationUrl]]">
 							<span id="infoMessage" hidden$="[[!_infoMessageText]]">
 								[[_infoMessageText]]
 							</span>

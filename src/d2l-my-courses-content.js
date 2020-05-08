@@ -23,7 +23,6 @@ import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/Enrollment
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
-import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntity.js';
 import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
 
 class MyCoursesContent extends mixinBehaviors([
@@ -62,45 +61,6 @@ class MyCoursesContent extends mixinBehaviors([
 			presentationUrl: String,
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
 			token: String,
-			/*
-			* Presentation Attributes
-			*/
-			_showOrganizationCode: {
-				type: Boolean,
-				value: false
-			},
-			_showSemesterName: {
-				type: Boolean,
-				value: false
-			},
-			_hideCourseStartDate: {
-				type: Boolean,
-				value: false
-			},
-			_hideCourseEndDate: {
-				type: Boolean,
-				value: false
-			},
-			_showDropboxUnreadFeedback: {
-				type: Boolean,
-				value: false
-			},
-			_showUnattemptedQuizzes: {
-				type: Boolean,
-				value: false
-			},
-			_showUngradedQuizAttempts: {
-				type: Boolean,
-				value: false
-			},
-			_showUnreadDiscussionMessages: {
-				type: Boolean,
-				value: false
-			},
-			_showUnreadDropboxSubmissions: {
-				type: Boolean,
-				value: false
-			},
 
 			// Alerts to display in course grid, above the course cards
 			_alertsView: {
@@ -211,8 +171,7 @@ class MyCoursesContent extends mixinBehaviors([
 		return [
 			'_enrollmentsChanged(_enrollments.length, _numberOfEnrollments)',
 			'_enrollmentSearchActionChanged(enrollmentsSearchAction)',
-			'_onCourseEnrollmentChange(changedCourseEnrollment)',
-			'_onPresentationEntityChange(presentationUrl)'
+			'_onCourseEnrollmentChange(changedCourseEnrollment)'
 		];
 	}
 
@@ -254,16 +213,8 @@ class MyCoursesContent extends mixinBehaviors([
 				filtered-enrollments="[[_enrollments]]"
 				hide-past-courses="[[_hidePastCourses]]"
 				token="[[token]]"
-				widget-view
-				show-organization-code="[[_showOrganizationCode]]"
-				show-semester-name="[[_showSemesterName]]"
-				show-dropbox-unread-feedback="[[_showDropboxUnreadFeedback]]"
-				show-unattempted-quizzes="[[_showUnattemptedQuizzes]]"
-				show-ungraded-quiz-attempts="[[_showUngradedQuizAttempts]]"
-				show-unread-discussion-messages="[[_showUnreadDiscussionMessages]]"
-				show-unread-dropbox-submissions="[[_showUnreadDropboxSubmissions]]"
-				hide-course-start-date="[[_hideCourseStartDate]]"
-				hide-course-end-date="[[_hideCourseEndDate]]">
+				presentation-url="[[presentationUrl]]"
+				widget-view>
 
 				<d2l-alert hidden$="[[!_hasOnlyPastCourses]]" type="call-to-action">
 					[[localize('onlyPastCoursesMessage')]]
@@ -679,19 +630,7 @@ class MyCoursesContent extends mixinBehaviors([
 			}
 		}
 	}
-	_onPresentationEntityChange(url) {
-		entityFactory(PresentationEntity, url, this.token, entity => {
-			this._hideCourseStartDate = entity.hideCourseStartDate();
-			this._hideCourseEndDate = entity.hideCourseEndDate();
-			this._showOrganizationCode = entity.showOrganizationCode();
-			this._showSemesterName = entity.showSemesterName();
-			this._showDropboxUnreadFeedback = entity.showDropboxUnreadFeedback();
-			this._showUnattemptedQuizzes = entity.showUnattemptedQuizzes();
-			this._showUngradedQuizAttempts = entity.showUngradedQuizAttempts();
-			this._showUnreadDiscussionMessages = entity.showUnreadDiscussionMessages();
-			this._showUnreadDropboxSubmissions = entity.showUnreadDropboxSubmissions();
-		});
-	}
+
 	_onCourseEnrollmentChange(newValue) {
 		if (!newValue) {
 			return;
@@ -812,15 +751,7 @@ class MyCoursesContent extends mixinBehaviors([
 		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
 
 		allCourses.token = this.token;
-		allCourses.hideCourseStartDate = this._hideCourseStartDate;
-		allCourses.hideCourseEndDate = this._hideCourseEndDate;
-		allCourses.showOrganizationCode = this._showOrganizationCode;
-		allCourses.showSemesterName = this._showSemesterName;
-		allCourses.showDropboxUnreadFeedback = this._showDropboxUnreadFeedback;
-		allCourses.showUnattemptedQuizzes = this._showUnattemptedQuizzes;
-		allCourses.showUngradedQuizAttempts = this._showUngradedQuizAttempts;
-		allCourses.showUnreadDiscussionMessages = this._showUnreadDiscussionMessages;
-		allCourses.showUnreadDropboxSubmissions = this._showUnreadDropboxSubmissions;
+		allCourses.presentationUrl = this.presentationUrl;
 
 		allCourses.open();
 		this._isAllCoursesOverlayOpen = true;
