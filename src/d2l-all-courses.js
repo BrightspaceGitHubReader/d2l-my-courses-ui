@@ -17,7 +17,6 @@ import 'd2l-alert/d2l-alert.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-tabs/d2l-tabs.js';
-import './d2l-alert-behavior.js';
 import './d2l-my-courses-card-grid.js';
 import './d2l-utility-behavior.js';
 import './search-filter/d2l-filter-menu.js';
@@ -33,7 +32,6 @@ import SirenParse from 'siren-parser';
 
 class AllCourses extends mixinBehaviors([
 	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
-	D2L.MyCourses.AlertBehavior,
 	D2L.MyCourses.UtilityBehavior
 ], MyCoursesLocalizeBehavior(PolymerElement)) {
 
@@ -62,6 +60,11 @@ class AllCourses extends mixinBehaviors([
 			orgUnitTypeIds: Array,
 			// URL to fetch widget settings
 			presentationUrl: String,
+			// Set by the image selector when it experiences an error trying to set a new course image
+			showImageError: {
+				type: Boolean,
+				value: false
+			},
 			// Siren Actions corresponding to each tab that is displayed
 			tabSearchActions: {
 				type: Array,
@@ -339,11 +342,9 @@ class AllCourses extends mixinBehaviors([
 						</div>
 					</div>
 
-					<template is="dom-repeat" items="[[_alertsView]]">
-						<d2l-alert type="[[item.alertType]]">
-							[[item.alertMessage]]
-						</d2l-alert>
-					</template>
+					<d2l-alert hidden$="[[!showImageError]]" type="warning">
+						[[localize('error.settingImage')]]
+					</d2l-alert>
 
 					<template is="dom-if" if="[[_showGroupByTabs]]">
 						<d2l-tabs>
@@ -458,12 +459,12 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onSetCourseImage(details) {
-		this._removeAlert('setCourseImageFailure');
+		this.showImageError = false;
 
 		if (details && details.detail) {
 			if (details.detail.status === 'failure') {
 				setTimeout(() => {
-					this._addAlert('warning', 'setCourseImageFailure', this.localize('error.settingImage'));
+					this.showImageError = true;
 				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
 			}
 		}
@@ -566,7 +567,7 @@ class AllCourses extends mixinBehaviors([
 			}
 		}
 
-		this._removeAlert('setCourseImageFailure');
+		this.showImageError = false;
 		this._clearSearchWidget();
 		this.$.filterMenu.clearFilters();
 		this._filterText = this.localize('filtering.filter');
