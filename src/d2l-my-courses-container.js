@@ -239,7 +239,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		this._currentTabId = `panel-${e.detail.tabId}`;
 	}
 	_tokenChanged(token) {
-		if ( token && this.enrollmentsUrl && this.userSettingsUrl ) {
+		if (token && this.enrollmentsUrl && this.userSettingsUrl) {
 			this._setEnrollmentCollectionEntity(this.enrollmentsUrl);
 			this._setUserSettingsEntity(this.userSettingsUrl);
 		}
