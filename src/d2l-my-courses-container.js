@@ -46,7 +46,10 @@ class MyCoursesContainer extends mixinBehaviors([
 			// URL to fetch a user's settings (e.g. default tab to select)
 			userSettingsUrl: String,
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
-			token: String,
+			token: {
+				type: String,
+				observer: '_tokenChanged'
+			},
 			// URL to fetch widget settings
 			_presentationUrl: String,
 			_currentTabId: String,
@@ -135,13 +138,6 @@ class MyCoursesContainer extends mixinBehaviors([
 			this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
 			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
 		});
-
-		if (!this.enrollmentsUrl || !this.userSettingsUrl) {
-			return;
-		}
-
-		this._setEnrollmentCollectionEntity(this.enrollmentsUrl);
-		this._setUserSettingsEntity(this.userSettingsUrl);
 	}
 
 	_onEnrollmentAndUserSettingsEntityChange() {
@@ -241,6 +237,12 @@ class MyCoursesContainer extends mixinBehaviors([
 	}
 	_tabSelectedChanged(e) {
 		this._currentTabId = `panel-${e.detail.tabId}`;
+	}
+	_tokenChanged(token) {
+		if ( token && this.enrollmentsUrl && this.userSettingsUrl ) {
+			this._setEnrollmentCollectionEntity(this.enrollmentsUrl);
+			this._setUserSettingsEntity(this.userSettingsUrl);
+		}
 	}
 	courseImageUploadCompleted(success) {
 		return this._fetchContentComponent().courseImageUploadCompleted(success);
