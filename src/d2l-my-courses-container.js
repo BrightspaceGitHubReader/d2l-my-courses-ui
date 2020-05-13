@@ -74,6 +74,12 @@ class MyCoursesContainer extends mixinBehaviors([
 		};
 	}
 
+	static get observers() {
+		return [
+			'_tokenChanged(token, enrollmentsUrl, userSettingsUrl)'
+		];
+	}
+
 	static get template() {
 		return html`
 			<style>
@@ -135,13 +141,6 @@ class MyCoursesContainer extends mixinBehaviors([
 			this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
 			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
 		});
-
-		if (!this.enrollmentsUrl || !this.userSettingsUrl) {
-			return;
-		}
-
-		this._setEnrollmentCollectionEntity(this.enrollmentsUrl);
-		this._setUserSettingsEntity(this.userSettingsUrl);
 	}
 
 	_onEnrollmentAndUserSettingsEntityChange() {
@@ -241,6 +240,12 @@ class MyCoursesContainer extends mixinBehaviors([
 	}
 	_tabSelectedChanged(e) {
 		this._currentTabId = `panel-${e.detail.tabId}`;
+	}
+	_tokenChanged(token, enrollmentsUrl, userSettingsUrl) {
+		if (token && enrollmentsUrl && userSettingsUrl) {
+			this._setEnrollmentCollectionEntity(enrollmentsUrl);
+			this._setUserSettingsEntity(userSettingsUrl);
+		}
 	}
 	courseImageUploadCompleted(success) {
 		return this._fetchContentComponent().courseImageUploadCompleted(success);
