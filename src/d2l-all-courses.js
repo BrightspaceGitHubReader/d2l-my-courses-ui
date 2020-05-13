@@ -281,7 +281,8 @@ class AllCourses extends mixinBehaviors([
 				id="all-courses"
 				title-name="[[localize('allCourses')]]"
 				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
-				with-backdrop>
+				with-backdrop
+				restore-focus-on-close>
 
 				<div hidden$="[[!_showContent]]">
 					<iron-scroll-threshold id="all-courses-scroll-threshold" on-lower-threshold="_onAllCoursesLowerThreshold">
