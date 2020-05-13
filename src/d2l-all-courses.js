@@ -449,7 +449,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	focusCardDropdown(organization) {
-		this._getCardGrid().focusCardDropdown(organization);
+		return this._getCardGrid().focusCardDropdown(organization);
 	}
 
 	_getCardGrid() {
