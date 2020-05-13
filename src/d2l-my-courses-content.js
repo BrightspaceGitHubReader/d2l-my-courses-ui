@@ -244,7 +244,8 @@ class MyCoursesContent extends mixinBehaviors([
 
 		<d2l-simple-overlay id="basic-image-selector-overlay"
 			title-name="[[localize('changeImage')]]"
-			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]">
+			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
+			with-backdrop>
 			<iron-scroll-threshold
 				id="image-selector-threshold"
 				on-lower-threshold="_onChangeImageLowerThreshold">
