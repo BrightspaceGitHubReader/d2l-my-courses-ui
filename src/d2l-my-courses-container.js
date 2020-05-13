@@ -132,6 +132,12 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>`;
 	}
 
+	static get observers() {
+		return [
+			'_tokenChanged(token, enrollmentsUrl, userSettingsUrl)'
+		];
+	}
+
 	connectedCallback() {
 		super.connectedCallback();
 		afterNextRender(this, () => {
@@ -238,10 +244,10 @@ class MyCoursesContainer extends mixinBehaviors([
 	_tabSelectedChanged(e) {
 		this._currentTabId = `panel-${e.detail.tabId}`;
 	}
-	_tokenChanged(token) {
-		if (token && this.enrollmentsUrl && this.userSettingsUrl) {
-			this._setEnrollmentCollectionEntity(this.enrollmentsUrl);
-			this._setUserSettingsEntity(this.userSettingsUrl);
+	_tokenChanged(token, enrollmentsUrl, userSettingsUrl) {
+		if (token && enrollmentsUrl && userSettingsUrl) {
+			this._setEnrollmentCollectionEntity(enrollmentsUrl);
+			this._setUserSettingsEntity(userSettingsUrl);
 		}
 	}
 	courseImageUploadCompleted(success) {
