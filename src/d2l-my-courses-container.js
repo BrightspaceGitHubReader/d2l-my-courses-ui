@@ -46,10 +46,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			// URL to fetch a user's settings (e.g. default tab to select)
 			userSettingsUrl: String,
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
-			token: {
-				type: String,
-				observer: '_tokenChanged'
-			},
+			token: String,
 			// URL to fetch widget settings
 			_presentationUrl: String,
 			_currentTabId: String,
@@ -75,6 +72,12 @@ class MyCoursesContainer extends mixinBehaviors([
 				value: false
 			}
 		};
+	}
+
+	static get observers() {
+		return [
+			'_tokenChanged(token, enrollmentsUrl, userSettingsUrl)'
+		];
 	}
 
 	static get template() {
@@ -130,12 +133,6 @@ class MyCoursesContainer extends mixinBehaviors([
 					standard-semester-name="[[standardSemesterName]]">
 				</d2l-my-courses-content>
 			</template>`;
-	}
-
-	static get observers() {
-		return [
-			'_tokenChanged(token, enrollmentsUrl, userSettingsUrl)'
-		];
 	}
 
 	connectedCallback() {
