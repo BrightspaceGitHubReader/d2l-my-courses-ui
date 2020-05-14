@@ -284,8 +284,8 @@ class AllCourses extends mixinBehaviors([
 				id="all-courses"
 				title-name="[[localize('allCourses')]]"
 				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
-				with-backdrop
-				restore-focus-on-close>
+				restore-focus-on-close
+				with-backdrop>
 
 				<div hidden$="[[!_showContent]]">
 					<iron-scroll-threshold id="all-courses-scroll-threshold" on-lower-threshold="_onAllCoursesLowerThreshold">
@@ -448,10 +448,6 @@ class AllCourses extends mixinBehaviors([
 
 		this.shadowRoot.querySelector('#all-courses').open();
 		this.load();
-	}
-
-	focusCardDropdown(organization) {
-		return this._getCardGrid().focusCardDropdown(organization);
 	}
 
 	_getCardGrid() {
