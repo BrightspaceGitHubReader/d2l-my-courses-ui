@@ -79,39 +79,5 @@ describe('d2l-my-courses-card-grid', function() {
 			expect(stub3).to.have.been.calledOnce;
 		});
 
-		it('focusCardDropdown should call focusDropdownOpener until the correct card is focused and return true', () => {
-			const courseCards = widget.shadowRoot.querySelectorAll('d2l-enrollment-card');
-
-			const stub1 = sandbox.stub(courseCards[0], 'focusDropdownOpener');
-			stub1.withArgs('org2').returns(false);
-			const stub2 = sandbox.stub(courseCards[1], 'focusDropdownOpener');
-			stub2.withArgs('org2').returns(true);
-			const stub3 = sandbox.stub(courseCards[2], 'focusDropdownOpener');
-
-			const response = widget.focusCardDropdown('org2');
-
-			expect(response).to.be.true;
-			expect(stub1).to.have.been.calledOnce;
-			expect(stub2).to.have.been.calledOnce;
-			expect(stub3).to.have.not.been.called;
-		});
-
-		it('focusCardDropdown should return false if the org does not match any cards', () => {
-			const courseCards = widget.shadowRoot.querySelectorAll('d2l-enrollment-card');
-
-			const stub1 = sandbox.stub(courseCards[0], 'focusDropdownOpener');
-			stub1.withArgs('org4').returns(false);
-			const stub2 = sandbox.stub(courseCards[1], 'focusDropdownOpener');
-			stub2.withArgs('org4').returns(false);
-			const stub3 = sandbox.stub(courseCards[2], 'focusDropdownOpener');
-			stub3.withArgs('org4').returns(false);
-
-			const response = widget.focusCardDropdown('org4');
-
-			expect(response).to.be.false;
-			expect(stub1).to.have.been.calledOnce;
-			expect(stub2).to.have.been.calledOnce;
-			expect(stub3).to.have.been.calledOnce;
-		});
 	});
 });
