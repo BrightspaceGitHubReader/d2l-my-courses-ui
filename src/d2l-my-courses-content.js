@@ -18,7 +18,6 @@ import './d2l-utility-behavior.js';
 import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
