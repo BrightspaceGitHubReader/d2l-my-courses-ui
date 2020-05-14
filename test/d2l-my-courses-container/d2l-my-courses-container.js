@@ -17,7 +17,7 @@ describe('d2l-my-courses', () => {
 		promotedSearchHref = '/promoted-search-url',
 		lastSearchHref = 'homepages/components/1/user-settings/169';
 
-	beforeEach(() => {
+	beforeEach(done => {
 		sandbox = sinon.sandbox.create();
 
 		searchAction = {
@@ -119,6 +119,10 @@ describe('d2l-my-courses', () => {
 		component._userSettingsEntity = new UserSettingsEntity(lastSearchResponse);
 		component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchResponse);
 		component._enrollmentCollectionEntity = new EnrollmentCollectionEntity(enrollmentsSearchResponse);
+
+		setTimeout(() => {
+			done();
+		});
 	});
 
 	afterEach(function() {
