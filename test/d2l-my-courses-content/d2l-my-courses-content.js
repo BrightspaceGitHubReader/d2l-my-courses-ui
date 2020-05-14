@@ -280,30 +280,32 @@ describe('d2l-my-courses-content', () => {
 
 	describe('Public API', () => {
 
-		it('refreshCardGridImages should refresh cards in both card grids if all courses intialized', done => {
-			component._createAllCourses();
-			flush(() => {
-				const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
-				const stub2 = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'refreshCardGridImages');
+		describe('refreshCardGridImages', () => {
 
-				component.refreshCardGridImages();
-				expect(stub1).to.have.been.called;
-				expect(stub2).to.have.been.called;
-				done();
+			it('should refresh cards in both card grids if all courses intialized', done => {
+				component._createAllCourses();
+				flush(() => {
+					const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
+					const stub2 = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'refreshCardGridImages');
+
+					component.refreshCardGridImages();
+					expect(stub1).to.have.been.called;
+					expect(stub2).to.have.been.called;
+					done();
+				});
+			});
+
+			it('should refresh cards in just the widget view if all courses not intialized', done => {
+				flush(() => {
+					const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
+
+					component.refreshCardGridImages();
+					expect(component.shadowRoot.querySelector('d2l-all-courses')).to.be.null;
+					expect(stub1).to.have.been.called;
+					done();
+				});
 			});
 		});
-
-		it('refreshCardGridImages should refresh cards in just the widget view if all courses not intialized', done => {
-			flush(() => {
-				const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
-
-				component.refreshCardGridImages();
-				expect(component.shadowRoot.querySelector('d2l-all-courses')).to.be.null;
-				expect(stub1).to.have.been.called;
-				done();
-			});
-		});
-
 	});
 
 	describe('Alerts', function() {

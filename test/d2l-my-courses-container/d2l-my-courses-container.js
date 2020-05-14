@@ -201,62 +201,66 @@ describe('d2l-my-courses', () => {
 	});
 
 	describe('Public API', () => {
-		it('If image setting was not a success, do nothing in courseImageUploadCompleted', done => {
-			component._showGroupByTabs = false;
-			flush(() => {
-				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'refreshCardGridImages');
-				component.courseImageUploadCompleted(false);
-				expect(stub).to.not.have.been.called;
-				done();
+
+		describe('courseImageUploadCompleted', () => {
+			it('should do nothing if image setting was not a success', done => {
+				component._showGroupByTabs = false;
+				flush(() => {
+					const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'refreshCardGridImages');
+					component.courseImageUploadCompleted(false);
+					expect(stub).to.not.have.been.called;
+					done();
+				});
 			});
-		});
-		it('In courseImageUploadCompleted when not grouped by tab, should call refreshCardGridImages on card grid', done => {
-			component._showGroupByTabs = false;
-			flush(() => {
-				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'refreshCardGridImages');
-				component.courseImageUploadCompleted(true);
-				expect(stub).to.have.been.called;
-				done();
+			it('should call refreshCardGridImages on the content (not grouped by tab), ', done => {
+				component._showGroupByTabs = false;
+				flush(() => {
+					const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'refreshCardGridImages');
+					component.courseImageUploadCompleted(true);
+					expect(stub).to.have.been.called;
+					done();
+				});
+			});
+			it('should call refreshCardGridImages on the content (grouped by tab)', done => {
+				component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
+				component._onPromotedSearchEntityChange();
+				component._currentTabId = '6607';
+				flush(() => {
+					const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'refreshCardGridImages');
+					component.courseImageUploadCompleted(true);
+					expect(stub).to.have.been.called;
+					done();
+				});
 			});
 		});
 
-		it('In getLastOrgUnitId when not grouped by tab, should call getOrgUnitIdFromHref', done => {
-			component._showGroupByTabs = false;
-			component._setImageOrg.links = [];
-			flush(() => {
-				const stub1 = sandbox.stub(component, 'getOrgUnitIdFromHref');
-				const stub2 = sandbox.stub(component, 'getEntityIdentifier');
-				component.getLastOrgUnitId();
-				expect(stub1).to.have.been.called;
-				expect(stub2).to.have.been.called;
-				done();
+		describe('getLastOrgUnitId', () => {
+			it('should call getOrgUnitIdFromHref (not grouped by tab)', done => {
+				component._showGroupByTabs = false;
+				component._setImageOrg.links = [];
+				flush(() => {
+					const stub1 = sandbox.stub(component, 'getOrgUnitIdFromHref');
+					const stub2 = sandbox.stub(component, 'getEntityIdentifier');
+					component.getLastOrgUnitId();
+					expect(stub1).to.have.been.called;
+					expect(stub2).to.have.been.called;
+					done();
+				});
 			});
-		});
 
-		it('In getLastOrgUnitId when grouped by tab, should call getOrgUnitIdFromHref', done => {
-			component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
-			component._onPromotedSearchEntityChange();
-			component._currentTabId = '6607';
-			component._setImageOrg.links = [];
-			flush(() => {
-				const stub1 = sandbox.stub(component, 'getOrgUnitIdFromHref');
-				const stub2 = sandbox.stub(component, 'getEntityIdentifier');
-				component.getLastOrgUnitId();
-				expect(stub1).to.have.been.called;
-				expect(stub2).to.have.been.called;
-				done();
-			});
-		});
-
-		it('In courseImageUploadCompleted when grouped by tab, should call refreshCardGridImages on card grid', done => {
-			component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
-			component._onPromotedSearchEntityChange();
-			component._currentTabId = '6607';
-			flush(() => {
-				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'refreshCardGridImages');
-				component.courseImageUploadCompleted(true);
-				expect(stub).to.have.been.called;
-				done();
+			it('should call getOrgUnitIdFromHref (grouped by tab)', done => {
+				component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
+				component._onPromotedSearchEntityChange();
+				component._currentTabId = '6607';
+				component._setImageOrg.links = [];
+				flush(() => {
+					const stub1 = sandbox.stub(component, 'getOrgUnitIdFromHref');
+					const stub2 = sandbox.stub(component, 'getEntityIdentifier');
+					component.getLastOrgUnitId();
+					expect(stub1).to.have.been.called;
+					expect(stub2).to.have.been.called;
+					done();
+				});
 			});
 		});
 	});
