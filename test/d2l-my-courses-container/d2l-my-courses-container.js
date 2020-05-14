@@ -370,15 +370,18 @@ describe('d2l-my-courses', () => {
 		describe('clear-image-scroll-threshold', () => {
 
 			it('should clear triggers on the image-selector-threshold', (done) => {
-				const threshold = component.shadowRoot.querySelector('#image-selector-threshold');
-				const spy = sandbox.spy(threshold, 'clearTriggers');
+				flush(() => {
+					const threshold = component.shadowRoot.querySelector('#image-selector-threshold');
+					const spy = sandbox.spy(threshold, 'clearTriggers');
 
-				const event = new CustomEvent('clear-image-scroll-threshold');
-				component.dispatchEvent(event);
-				requestAnimationFrame(() => {
-					expect(spy).to.have.been.called;
-					done();
+					const event = new CustomEvent('clear-image-scroll-threshold');
+					component.dispatchEvent(event);
+					requestAnimationFrame(() => {
+						expect(spy).to.have.been.calledOnce;
+						done();
+					});
 				});
+
 			});
 
 		});
