@@ -3,12 +3,9 @@
 Polymer-based web component for the my-courses content.
 */
 
-import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-alert/d2l-alert.js';
-import 'd2l-image-selector/d2l-basic-image-selector.js';
-import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-alert-behavior.js';
 import './d2l-all-courses.js';
@@ -40,7 +37,8 @@ class MyCoursesContent extends mixinBehaviors([
 			// Set by the image selector when it experiences an error trying to set a new course image
 			showImageError: {
 				type: Boolean,
-				value: false
+				value: false,
+				observer: '_setAllCoursesImageError'
 			},
 			tabSearchActions: {
 				type: Array,
@@ -51,10 +49,6 @@ class MyCoursesContent extends mixinBehaviors([
 			changedCourseEnrollment: Object,
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
-			// Callback for upload in image-selector
-			courseImageUploadCb: Function,
-			// URL that is called by the widget to fetch results from the course image catalog
-			imageCatalogLocation: String,
 			// Standard Semester OU Type name to be displayed in the all-courses filter dropdown
 			standardDepartmentName: String,
 			// Standard Department OU Type name to be displayed in the all-courses filter dropdown
@@ -107,11 +101,6 @@ class MyCoursesContent extends mixinBehaviors([
 			_lastPinnedIndex: {
 				type: Number,
 				value: -1
-			},
-			// The organization which the user is selecting the image of
-			_setImageOrg: {
-				type: Object,
-				value: function() { return {}; }
 			},
 			// Hides loading spinner and shows content when true
 			_showContent: {
@@ -243,29 +232,12 @@ class MyCoursesContent extends mixinBehaviors([
 		</div>
 
 		<div id="allCoursesPlaceholder">
-		</div>
-
-		<d2l-simple-overlay id="basic-image-selector-overlay"
-			title-name="[[localize('changeImage')]]"
-			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
-			restore-focus-on-close
-			with-backdrop>
-			<iron-scroll-threshold
-				id="image-selector-threshold"
-				on-lower-threshold="_onChangeImageLowerThreshold">
-			</iron-scroll-threshold>
-			<d2l-basic-image-selector
-				image-catalog-location="[[imageCatalogLocation]]"
-				organization="[[_setImageOrg]]"
-				course-image-upload-cb="[[courseImageUploadCb]]">
-			</d2l-basic-image-selector>
-		</d2l-simple-overlay>`;
+		</div>`;
 	}
 
 	ready() {
 		super.ready();
 		this._onEnrollmentPinnedMessage = this._onEnrollmentPinnedMessage.bind(this);
-		this._onSetCourseImage = this._onSetCourseImage.bind(this);
 		this._onTabSelected = this._onTabSelected.bind(this);
 	}
 
@@ -274,18 +246,13 @@ class MyCoursesContent extends mixinBehaviors([
 		this.performanceMark('d2l.my-courses.attached');
 
 		document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
-		document.body.addEventListener('set-course-image', this._onSetCourseImage);
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
 
-		this.addEventListener('clear-image-scroll-threshold', this._onClearImageScrollThreshold);
 		this.addEventListener('course-tile-organization', this._onCourseTileOrganization);
 		this.addEventListener('course-image-loaded', this._onCourseImageLoaded);
 		this.addEventListener('d2l-enrollment-new', this._onD2lEnrollmentNew);
 		this.addEventListener('d2l-simple-overlay-closed', this._onSimpleOverlayClosed);
 		this.addEventListener('initially-visible-course-tile', this._onInitiallyVisibleCourseTile);
-		this.addEventListener('open-change-image-view', this._onOpenChangeImageView);
-
-		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
 
 		let ouTypeIds = []; //default value
 		try {
@@ -299,7 +266,6 @@ class MyCoursesContent extends mixinBehaviors([
 	disconnectedCallback() {
 		super.disconnectedCallback();
 		document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
-		document.body.removeEventListener('set-course-image', this._onSetCourseImage);
 		document.body.removeEventListener('d2l-tab-panel-selected', this._onTabSelected);
 	}
 
@@ -307,47 +273,13 @@ class MyCoursesContent extends mixinBehaviors([
 	* Public API functions
 	*/
 
-	// This is called by the LE, but only when it's a user-uploaded image
-	// If it's a catalog image this is handled by the enrollment card
-	courseImageUploadCompleted(success) {
-		if (success) {
-			this.$['basic-image-selector-overlay'].close();
-			this._getCardGrid().refreshCardGridImages(this._setImageOrg);
-		}
-	}
-	// This is called by the LE, but only when it's a user-uploaded image
-	getLastOrgUnitId() {
-		if (!this._setImageOrg.links) {
-			return;
-		}
-		return this.getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
-	}
+	// After a user-uploaded image is set, this is called to try to update the image
+	refreshCardGridImages(imageOrg) {
+		this._getCardGrid().refreshCardGridImages(imageOrg);
 
-	/*
-	* Changing Course Image Functions
-	*/
-	_onChangeImageLowerThreshold() {
-		this.shadowRoot.querySelector('d2l-basic-image-selector').loadMore(this.$['image-selector-threshold']);
-	}
-	_onClearImageScrollThreshold() {
-		this.$['image-selector-threshold'].clearTriggers();
-	}
-	_onOpenChangeImageView(e) {
-		if (e.detail.organization) {
-			this._setImageOrg = this.parseEntity(e.detail.organization);
-		}
-
-		this.$['basic-image-selector-overlay'].open();
-	}
-	_onSetCourseImage(e) {
-		this.$['basic-image-selector-overlay'].close();
-		this.showImageError = false;
-		if (e && e.detail) {
-			if (e.detail.status === 'failure') {
-				setTimeout(() => {
-					this.showImageError = true;
-				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
-			}
+		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
+		if (allCourses) {
+			allCourses.refreshCardGridImages(imageOrg);
 		}
 	}
 
@@ -612,7 +544,7 @@ class MyCoursesContent extends mixinBehaviors([
 	_onSimpleOverlayClosed(e) {
 
 		if (e.composedPath()[0].id === 'all-courses') {
-			this.showImageError = false;
+			this.showImageError = false; // Clear image error when opening and closing the all courses overlay
 
 			if (this._isRefetchNeeded) {
 				this._handleEnrollmentsRefetch();
@@ -739,8 +671,17 @@ class MyCoursesContent extends mixinBehaviors([
 
 		allCourses.open();
 
+		this.showImageError = false; // Clear image error when opening and closing the all courses overlay
+
 		e.preventDefault();
 		e.stopPropagation();
+	}
+	_setAllCoursesImageError(newValue) {
+		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
+
+		if (allCourses) {
+			allCourses.showImageError = newValue;
+		}
 	}
 	_onEnrollmentsEntityChange(url) {
 		entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
