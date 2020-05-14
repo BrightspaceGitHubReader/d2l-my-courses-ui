@@ -319,7 +319,7 @@ describe('d2l-my-courses-content', () => {
 			expect(alert.hidden).to.be.true;
 		});
 
-		it('should hide the course image failure alert when the all courses overlay is opened', function() {
+		it('should hide the course image failure alert when the all courses overlay is opened', function(done) {
 			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
 			component.showImageError = true;
 
@@ -327,9 +327,13 @@ describe('d2l-my-courses-content', () => {
 			expect(alert.hidden).to.be.false;
 			expect(alert.type).to.equal('warning');
 			expect(alert.innerText).to.include(alertMessage);
-			component._openAllCoursesView(new CustomEvent('event'));
-			expect(alert.hidden).to.be.true;
-			expect(component.showImageError).to.be.false;
+			component._createAllCourses();
+			flush(() => {
+				component._openAllCoursesView(new CustomEvent('event'));
+				expect(alert.hidden).to.be.true;
+				expect(component.showImageError).to.be.false;
+				done();
+			});
 		});
 
 		it('should hide the course image failure alert when the all courses overlay is closed', function() {
