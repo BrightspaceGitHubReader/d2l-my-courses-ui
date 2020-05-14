@@ -18,7 +18,6 @@ import './d2l-utility-behavior.js';
 import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
@@ -164,10 +163,6 @@ class MyCoursesContent extends mixinBehaviors([
 			_hidePastCourses: {
 				type: Boolean,
 				value: false
-			},
-			_isAllCoursesOverlayOpen: {
-				type: Boolean,
-				value: false
 			}
 		};
 	}
@@ -253,6 +248,7 @@ class MyCoursesContent extends mixinBehaviors([
 		<d2l-simple-overlay id="basic-image-selector-overlay"
 			title-name="[[localize('changeImage')]]"
 			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
+			restore-focus-on-close
 			with-backdrop>
 			<iron-scroll-threshold
 				id="image-selector-threshold"
@@ -311,21 +307,6 @@ class MyCoursesContent extends mixinBehaviors([
 	* Public API functions
 	*/
 
-	// After the image selector is closed, this is called to set focus back to the correct card
-	focusCardDropdown(imageOrg) {
-		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-
-		if (allCourses && this._isAllCoursesOverlayOpen) {
-			if (allCourses.focusCardDropdown(imageOrg)) {
-				return;
-			}
-		} else {
-			if (this._getCardGrid().focusCardDropdown(imageOrg)) {
-				return;
-			}
-		}
-		this.$.viewAllCourses.focus();
-	}
 	// This is called by the LE, but only when it's a user-uploaded image
 	// If it's a catalog image this is handled by the enrollment card
 	courseImageUploadCompleted(success) {
@@ -632,7 +613,6 @@ class MyCoursesContent extends mixinBehaviors([
 
 		if (e.composedPath()[0].id === 'all-courses') {
 			this.showImageError = false;
-			this._isAllCoursesOverlayOpen = false;
 
 			if (this._isRefetchNeeded) {
 				this._handleEnrollmentsRefetch();
@@ -640,11 +620,6 @@ class MyCoursesContent extends mixinBehaviors([
 
 			document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
 			this._hasEnrollmentsChanged = false;
-
-		} else if (e.composedPath()[0].id === 'basic-image-selector-overlay') {
-			afterNextRender(this, () => {
-				this.focusCardDropdown(this._setImageOrg);
-			});
 		}
 	}
 
@@ -763,7 +738,6 @@ class MyCoursesContent extends mixinBehaviors([
 		allCourses.presentationUrl = this.presentationUrl;
 
 		allCourses.open();
-		this._isAllCoursesOverlayOpen = true;
 
 		e.preventDefault();
 		e.stopPropagation();

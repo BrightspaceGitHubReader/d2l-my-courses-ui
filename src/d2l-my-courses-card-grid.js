@@ -234,16 +234,6 @@ class MyCoursesCardGrid extends PolymerElement {
 		}
 	}
 
-	focusCardDropdown(organization) {
-		const courseCards = this.shadowRoot.querySelectorAll('d2l-enrollment-card');
-		for (let i = 0; i < courseCards.length; i++) {
-			if (courseCards[i].focusDropdownOpener(organization)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	_onPresentationEntityChange(url) {
 		entityFactory(PresentationEntity, url, this.token, entity => {
 			this._hideCourseStartDate = entity.hideCourseStartDate();

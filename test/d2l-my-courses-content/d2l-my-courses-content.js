@@ -501,22 +501,6 @@ describe('d2l-my-courses-content', () => {
 					done();
 				});
 			});
-
-			it('should focus on correct card if image selector is closed', done => {
-				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'focusCardDropdown');
-
-				const event = {
-					type: 'd2l-simple-overlay-closed',
-					composedPath: function() { return [{ id: 'basic-image-selector-overlay' }]; }
-				};
-
-				component._onSimpleOverlayClosed(event);
-
-				setTimeout(() => {
-					expect(stub).to.have.been.calledOnce;
-					done();
-				}, 200);
-			});
 		});
 
 		describe('course-tile-organization', () => {
