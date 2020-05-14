@@ -38,6 +38,11 @@ class MyCoursesContent extends mixinBehaviors([
 			* Public Polymer properties
 			*/
 			enrollmentsSearchAction: Object,
+			// Set by the image selector when it experiences an error trying to set a new course image
+			showImageError: {
+				type: Boolean,
+				value: false
+			},
 			tabSearchActions: {
 				type: Array,
 				value: function() { return []; }
@@ -219,6 +224,9 @@ class MyCoursesContent extends mixinBehaviors([
 				<d2l-alert hidden$="[[!_hasOnlyPastCourses]]" type="call-to-action">
 					[[localize('onlyPastCoursesMessage')]]
 				</d2l-alert>
+				<d2l-alert id="imageErrorAlert" hidden$="[[!showImageError]]" type="warning">
+					[[localize('error.settingImage')]]
+				</d2l-alert>
 
 				<template is="dom-repeat" items="[[_alertsView]]">
 					<d2l-alert type="[[item.alertType]]">
@@ -352,11 +360,11 @@ class MyCoursesContent extends mixinBehaviors([
 	}
 	_onSetCourseImage(e) {
 		this.$['basic-image-selector-overlay'].close();
-		this._removeAlert('setCourseImageFailure');
+		this.showImageError = false;
 		if (e && e.detail) {
 			if (e.detail.status === 'failure') {
 				setTimeout(() => {
-					this._addAlert('warning', 'setCourseImageFailure', this.localize('error.settingImage'));
+					this.showImageError = true;
 				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
 			}
 		}
@@ -623,7 +631,7 @@ class MyCoursesContent extends mixinBehaviors([
 	_onSimpleOverlayClosed(e) {
 
 		if (e.composedPath()[0].id === 'all-courses') {
-			this._removeAlert('setCourseImageFailure');
+			this.showImageError = false;
 			this._isAllCoursesOverlayOpen = false;
 
 			if (this._isRefetchNeeded) {

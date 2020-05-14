@@ -480,8 +480,14 @@ describe('d2l-my-courses-content', () => {
 
 		describe('d2l-simple-overlay-closed', () => {
 
-			it('should remove any existing set-course-image-failure alerts', done => {
-				const spy = sandbox.spy(component, '_removeAlert');
+			it('should remove an existing course image failure alert', done => {
+				const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
+				component.showImageError = true;
+
+				const alert = component.shadowRoot.querySelector('#imageErrorAlert');
+				expect(alert.hidden).to.be.false;
+				expect(alert.type).to.equal('warning');
+				expect(alert.innerText).to.include(alertMessage);
 
 				const event = {
 					type: 'd2l-simple-overlay-closed',
@@ -490,7 +496,8 @@ describe('d2l-my-courses-content', () => {
 				component._onSimpleOverlayClosed(event);
 
 				setTimeout(() => {
-					expect(spy).to.have.been.calledWith('setCourseImageFailure');
+					expect(component.showImageError).to.be.false;
+					expect(alert.hidden).to.be.true;
 					done();
 				});
 			});
@@ -735,29 +742,30 @@ describe('d2l-my-courses-content', () => {
 			expect(component._numberOfEnrollments).not.to.equal(0);
 		});
 
-		it('should add a setCourseImageFailure warning alert when a request to set the image fails', () => {
+		it('should add the course image failure warning alert when a request to set the image fails', () => {
 			clock = sinon.useFakeTimers();
 			const setCourseImageEvent = { detail: { status: 'failure'} };
 			component._onSetCourseImage(setCourseImageEvent);
 			clock.tick(1001);
-			expect(component._alertsView).to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' });
+			expect(component.showImageError).to.be.true;
 		});
 
-		it('should not add a setCourseImageFailure warning alert when a request to set the image succeeds', () => {
+		it('should not add the course image failure warning alert when a request to set the image succeeds', () => {
+			component.showImageError = true;
 			const setCourseImageEvent = { detail: { status: 'success'} };
 			component._onSetCourseImage(setCourseImageEvent);
-			expect(component._alertsView).not.to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' });
+			expect(component.showImageError).to.be.false;
 		});
 
-		it('should remove a setCourseImageFailure warning alert when a request to set the image is made', () => {
+		it('should remove the course image failure warning alert when a request to set the image is made', () => {
 			clock = sinon.useFakeTimers();
 			let setCourseImageEvent = { detail: { status: 'failure'} };
 			component._onSetCourseImage(setCourseImageEvent);
 			clock.tick(1001);
-			expect(component._alertsView).to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' });
+			expect(component.showImageError).to.be.true;
 			setCourseImageEvent = { detail: { status: 'set'} };
 			component._onSetCourseImage(setCourseImageEvent);
-			expect(component._alertsView).not.to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' });
+			expect(component.showImageError).to.be.false;
 		});
 
 		it('should show the number of enrollments when there are no new pages of enrollments with the View All Courses link', () => {

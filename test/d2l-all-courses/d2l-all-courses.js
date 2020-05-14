@@ -87,44 +87,47 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('Alerts', function() {
-		const setCourseImageFailureAlert = { alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'Sorry, we\'re unable to change your image right now. Please try again later.' };
+		it('should remove the course image failure alert when the overlay is opened', function() {
+			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
+			widget.showImageError = true;
 
-		it('should remove a setCourseImageFailure alert when the overlay is opened', function() {
-			widget._addAlert('warning', 'setCourseImageFailure', 'failed to do that thing it should do');
-			expect(widget._alertsView).to.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'failed to do that thing it should do' });
+			const alert = widget.shadowRoot.querySelector('d2l-alert');
+			expect(alert.hidden).to.be.false;
+			expect(alert.type).to.equal('warning');
+			expect(alert.innerText).to.include(alertMessage);
 			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
-			expect(widget._alertsView).to.not.include({ alertName: 'setCourseImageFailure', alertType: 'warning', alertMessage: 'failed to do that thing it should do' });
+			expect(alert.hidden).to.be.true;
 		});
 
-		it('should remove and course image failure alerts before adding and new ones', function() {
-			const removeAlertSpy = sandbox.spy(widget, '_removeAlert');
+		it('should remove the course image failure alert before determining if it needs to add it back', function() {
+			widget.showImageError = true;
 			widget._onSetCourseImage();
-			expect(removeAlertSpy.called);
+			expect(widget.showImageError).to.be.false;
 		});
 
-		it('should add an alert after setting the course image results in failure (after a timeout)', function() {
+		it('should add the course image alert after receiving a failure result (after a timeout)', function() {
 			clock = sinon.useFakeTimers();
 			const setCourseImageEvent = { detail: { status: 'failure'} };
 			widget._onSetCourseImage(setCourseImageEvent);
 			clock.tick(1001);
-			expect(widget._alertsView).to.include(setCourseImageFailureAlert);
+			expect(widget.showImageError).to.be.true;
 		});
 
-		it('should not add a setCourseImageFailure warning alert when a request to set the image succeeds', function() {
+		it('should not add a course image failure alert when a request to set the image succeeds', function() {
 			const setCourseImageEvent = { detail: { status: 'success'} };
 			widget._onSetCourseImage(setCourseImageEvent);
-			expect(widget._alertsView).not.to.include(setCourseImageFailureAlert);
+			expect(widget.showImageError).to.be.false;
 		});
 
-		it('should remove a setCourseImageFailure warning alert when a request to set the image is made', function() {
+		it('should remove a course image failure alert when a request to set the image is made', function() {
 			clock = sinon.useFakeTimers();
 			let setCourseImageEvent = { detail: { status: 'failure'} };
 			widget._onSetCourseImage(setCourseImageEvent);
 			clock.tick(1001);
-			expect(widget._alertsView).to.include(setCourseImageFailureAlert);
+			expect(widget.showImageError).to.be.true;
 			setCourseImageEvent = { detail: { status: 'set'} };
 			widget._onSetCourseImage(setCourseImageEvent);
-			expect(widget._alertsView).not.to.include(setCourseImageFailureAlert);
+			expect(widget.showImageError).to.be.false;
 		});
 	});
 
