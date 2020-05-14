@@ -189,15 +189,13 @@ describe('d2l-my-courses-content', () => {
 		sandbox.restore();
 	});
 
-	it('should properly implement d2l-my-courses-content-behavior', () => {
+	it('should properly implement a random assortment of properties', () => {
 		expect(component).to.exist;
 		expect(component._alertsView).to.be.an.instanceof(Array);
 		expect(component._existingEnrollmentsMap).to.be.an('object');
 		expect(component._nextEnrollmentEntityUrl).to.be.null;
 		expect(component._orgUnitIdMap).to.be.an('object');
-		expect(component._setImageOrg).to.be.an('object');
 		expect(component._showContent).to.exist;
-		expect(component.getLastOrgUnitId).to.be.a('function');
 	});
 
 	it('should reset enrollments related properties', () => {
@@ -273,16 +271,6 @@ describe('d2l-my-courses-content', () => {
 			setTimeout(done, 300);
 		});
 
-		it('should call refreshCardGridImages on the card gird in courseImageUploadCompleted', () => {
-			const courseGrid = component.shadowRoot.querySelector('d2l-my-courses-card-grid');
-
-			const stub = sandbox.stub(courseGrid, 'refreshCardGridImages');
-
-			component.courseImageUploadCompleted(true);
-
-			expect(stub).to.have.been.called;
-		});
-
 		it('should add the hide-past-courses attribute to the card grid in _populateEnrollments', () => {
 			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity));
 			expect(component.shadowRoot.querySelector('d2l-my-courses-card-grid').hidePastCourses).to.be.true;
@@ -292,14 +280,81 @@ describe('d2l-my-courses-content', () => {
 
 	describe('Public API', () => {
 
-		it('should implement courseImageUploadCompleted', () => {
-			expect(component.courseImageUploadCompleted).to.be.a('function');
+		describe('refreshCardGridImages', () => {
+
+			it('should refresh cards in both card grids if all courses intialized', done => {
+				component._createAllCourses();
+				flush(() => {
+					const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
+					const stub2 = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'refreshCardGridImages');
+
+					component.refreshCardGridImages();
+					expect(stub1).to.have.been.called;
+					expect(stub2).to.have.been.called;
+					done();
+				});
+			});
+
+			it('should refresh cards in just the widget view if all courses not intialized', done => {
+				flush(() => {
+					const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
+
+					component.refreshCardGridImages();
+					expect(component.shadowRoot.querySelector('d2l-all-courses')).to.be.null;
+					expect(stub1).to.have.been.called;
+					done();
+				});
+			});
+		});
+	});
+
+	describe('Alerts', function() {
+		it('should show and hide the course image failure alert depending on the value of showImageError', function() {
+			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
+			component.showImageError = true;
+
+			const alert = component.shadowRoot.querySelector('#imageErrorAlert');
+			expect(alert.hidden).to.be.false;
+			expect(alert.type).to.equal('warning');
+			expect(alert.innerText).to.include(alertMessage);
+			component.showImageError = false;
+			expect(alert.hidden).to.be.true;
 		});
 
-		it('should implement getLastOrgUnitId', () => {
-			expect(component.getLastOrgUnitId).to.be.a('function');
+		it('should hide the course image failure alert when the all courses overlay is opened', function(done) {
+			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
+			component.showImageError = true;
+
+			const alert = component.shadowRoot.querySelector('#imageErrorAlert');
+			expect(alert.hidden).to.be.false;
+			expect(alert.type).to.equal('warning');
+			expect(alert.innerText).to.include(alertMessage);
+			component._createAllCourses();
+			flush(() => {
+				component._openAllCoursesView(new CustomEvent('event'));
+				expect(alert.hidden).to.be.true;
+				expect(component.showImageError).to.be.false;
+				done();
+			});
 		});
 
+		it('should hide the course image failure alert when the all courses overlay is closed', function() {
+			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
+			component.showImageError = true;
+
+			const alert = component.shadowRoot.querySelector('#imageErrorAlert');
+			expect(alert.hidden).to.be.false;
+			expect(alert.type).to.equal('warning');
+			expect(alert.innerText).to.include(alertMessage);
+
+			const event = {
+				type: 'd2l-simple-overlay-closed',
+				composedPath: function() { return [{ id: 'all-courses' }]; }
+			};
+			component._onSimpleOverlayClosed(event);
+			expect(alert.hidden).to.be.true;
+			expect(component.showImageError).to.be.false;
+		});
 	});
 
 	describe('Events', () => {
@@ -370,84 +425,6 @@ describe('d2l-my-courses-content', () => {
 					expect(component._isRefetchNeeded).to.be.false;
 				});
 			});
-		});
-
-		describe('open-change-image-view', () => {
-			let event;
-
-			beforeEach(() => {
-				// Prevents the _searchPath of the image selector from being null
-				component.imageCatalogLocation = '/foo';
-				SetupFetchStub('/foo', {});
-				event = new CustomEvent('open-change-image-view', {
-					detail: {
-						organization: organizationEntity
-					}
-				});
-			});
-
-			it('should update _setImageOrg', done => {
-
-				component.addEventListener('open-change-image-view', function() {
-					expect(component._setImageOrg.properties.name).to.equal('Course One');
-					done();
-				});
-
-				component.dispatchEvent(event);
-
-			});
-
-			it('should open the course image overlay', done => {
-				const spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'open');
-
-				component.addEventListener('open-change-image-view', function() {
-					requestAnimationFrame(() => {
-						expect(spy).to.have.been.called;
-						done();
-					});
-				});
-
-				component.dispatchEvent(event);
-
-			});
-
-			it('should return undefined for org unit id initally', () => {
-				expect(component.getLastOrgUnitId()).to.equal(undefined);
-			});
-
-			it('should return correct org unit id if course tile used', done => {
-
-				component.addEventListener('open-change-image-view', function() {
-					requestAnimationFrame(() => {
-						expect(component.getLastOrgUnitId()).to.equal('1');
-						done();
-					});
-				});
-
-				component.dispatchEvent(event);
-			});
-
-			it('should return correct org unit id from various href', () => {
-				expect(component.getOrgUnitIdFromHref('/organizations/671')).to.equal('671');
-				expect(component.getOrgUnitIdFromHref('/some/other/route/8798734534')).to.equal('8798734534');
-			});
-
-		});
-
-		describe('clear-image-scroll-threshold', () => {
-
-			it('should clear triggers on the image-selector-threshold', (done) => {
-				const threshold = component.shadowRoot.querySelector('#image-selector-threshold');
-				const spy = sandbox.spy(threshold, 'clearTriggers');
-
-				const event = new CustomEvent('clear-image-scroll-threshold');
-				component.dispatchEvent(event);
-				requestAnimationFrame(() => {
-					expect(spy).to.have.been.calledOnce;
-					done();
-				});
-			});
-
 		});
 
 		describe('d2l-course-pinned-change', () => {
@@ -547,20 +524,6 @@ describe('d2l-my-courses-content', () => {
 
 		});
 
-		describe('set-course-image', () => {
-
-			it('should close the image-selector overlay', done => {
-				const spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'close');
-
-				const event = new CustomEvent('set-course-image');
-				document.body.dispatchEvent(event);
-
-				setTimeout(() => {
-					expect(spy).to.have.been.called;
-					done();
-				});
-			});
-		});
 	});
 
 	describe('Performance measures', () => {
@@ -724,32 +687,6 @@ describe('d2l-my-courses-content', () => {
 
 			component._populateEnrollments(new EnrollmentCollectionEntity(oneEnrollmentSearchEntity));
 			expect(component._numberOfEnrollments).not.to.equal(0);
-		});
-
-		it('should add the course image failure warning alert when a request to set the image fails', () => {
-			clock = sinon.useFakeTimers();
-			const setCourseImageEvent = { detail: { status: 'failure'} };
-			component._onSetCourseImage(setCourseImageEvent);
-			clock.tick(1001);
-			expect(component.showImageError).to.be.true;
-		});
-
-		it('should not add the course image failure warning alert when a request to set the image succeeds', () => {
-			component.showImageError = true;
-			const setCourseImageEvent = { detail: { status: 'success'} };
-			component._onSetCourseImage(setCourseImageEvent);
-			expect(component.showImageError).to.be.false;
-		});
-
-		it('should remove the course image failure warning alert when a request to set the image is made', () => {
-			clock = sinon.useFakeTimers();
-			let setCourseImageEvent = { detail: { status: 'failure'} };
-			component._onSetCourseImage(setCourseImageEvent);
-			clock.tick(1001);
-			expect(component.showImageError).to.be.true;
-			setCourseImageEvent = { detail: { status: 'set'} };
-			component._onSetCourseImage(setCourseImageEvent);
-			expect(component.showImageError).to.be.false;
 		});
 
 		it('should show the number of enrollments when there are no new pages of enrollments with the View All Courses link', () => {

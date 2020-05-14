@@ -7,6 +7,9 @@ Component for when the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config varia
 */
 
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
+import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
+import 'd2l-image-selector/d2l-basic-image-selector.js';
+import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-tabs/d2l-tabs.js';
 import './d2l-my-courses-content.js';
 import './d2l-utility-behavior.js';
@@ -66,8 +69,18 @@ class MyCoursesContainer extends mixinBehaviors([
 			_enrollmentCollectionEntity: Object,
 			_userSettingsEntity: Object,
 			_promotedSearchEntity: Object,
+			// The organization which the user is changing the course image of
+			_setImageOrg: {
+				type: Object,
+				value: function() { return {}; }
+			},
 			// Hides loading spinner and shows tabs when true
 			_showContent: {
+				type: Boolean,
+				value: false
+			},
+			// Set by the image-selector, controls whether to show a course image update error
+			_showImageError: {
 				type: Boolean,
 				value: false
 			}
@@ -103,11 +116,10 @@ class MyCoursesContainer extends mixinBehaviors([
 						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 							<d2l-my-courses-content
 								presentation-url="[[_presentationUrl]]"
+								show-image-error="[[_showImageError]]"
 								token="[[token]]"
 								advanced-search-url="[[advancedSearchUrl]]"
-								course-image-upload-cb="[[courseImageUploadCb]]"
 								enrollments-search-action="[[item.enrollmentsSearchAction]]"
-								image-catalog-location="[[imageCatalogLocation]]"
 								standard-department-name="[[standardDepartmentName]]"
 								standard-semester-name="[[standardSemesterName]]"
 								org-unit-type-ids="[[orgUnitTypeIds]]"
@@ -123,16 +135,31 @@ class MyCoursesContainer extends mixinBehaviors([
 			<template is="dom-if" if="[[!_showGroupByTabs]]">
 				<d2l-my-courses-content
 					presentation-url="[[_presentationUrl]]"
+					show-image-error="[[_showImageError]]"
 					token="[[token]]"
 					advanced-search-url="[[advancedSearchUrl]]"
 					org-unit-type-ids="[[orgUnitTypeIds]]"
-					course-image-upload-cb="[[courseImageUploadCb]]"
 					enrollments-search-action="[[_enrollmentsSearchAction]]"
-					image-catalog-location="[[imageCatalogLocation]]"
 					standard-department-name="[[standardDepartmentName]]"
 					standard-semester-name="[[standardSemesterName]]">
 				</d2l-my-courses-content>
-			</template>`;
+			</template>
+			
+			<d2l-simple-overlay id="basic-image-selector-overlay"
+				title-name="[[localize('changeImage')]]"
+				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
+				with-backdrop
+				restore-focus-on-close>
+				<iron-scroll-threshold
+					id="image-selector-threshold"
+					on-lower-threshold="_onChangeImageLowerThreshold">
+				</iron-scroll-threshold>
+				<d2l-basic-image-selector
+					image-catalog-location="[[imageCatalogLocation]]"
+					organization="[[_setImageOrg]]"
+					course-image-upload-cb="[[courseImageUploadCb]]">
+				</d2l-basic-image-selector>
+			</d2l-simple-overlay>`;
 	}
 
 	connectedCallback() {
@@ -141,6 +168,63 @@ class MyCoursesContainer extends mixinBehaviors([
 			this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
 			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
 		});
+
+		this.addEventListener('open-change-image-view', this._onOpenChangeImageView);
+		this.addEventListener('set-course-image', this._onSetCourseImage);
+		this.addEventListener('clear-image-scroll-threshold', this._onClearImageScrollThreshold);
+
+		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
+	}
+
+	// This is called by the LE, but only when it's a user-uploaded image
+	// If it's a catalog image this is handled by the enrollment card
+	courseImageUploadCompleted(success) {
+		if (success) {
+			this.$['basic-image-selector-overlay'].close();
+
+			this._fetchContentComponent().refreshCardGridImages(this._setImageOrg);
+		}
+	}
+	// This is called by the LE, but only when it's a user-uploaded image
+	getLastOrgUnitId() {
+		if (!this._setImageOrg.links) {
+			return;
+		}
+		return this.getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
+	}
+
+	/*
+	* Changing Course Image Functions
+	*/
+	_onChangeImageLowerThreshold() {
+		this.shadowRoot.querySelector('d2l-basic-image-selector').loadMore(this.$['image-selector-threshold']);
+	}
+	_onClearImageScrollThreshold() {
+		this.$['image-selector-threshold'].clearTriggers();
+	}
+	_onOpenChangeImageView(e) {
+		if (e.detail.organization) {
+			this._setImageOrg = this.parseEntity(e.detail.organization);
+		}
+
+		this.$['basic-image-selector-overlay'].open();
+	}
+	_onSetCourseImage(e) {
+		this.$['basic-image-selector-overlay'].close();
+		this._showImageError = false;
+		if (e && e.detail) {
+			if (e.detail.status === 'failure') {
+				setTimeout(() => {
+					this._showImageError = true;
+				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
+			}
+		}
+	}
+
+	_fetchContentComponent() {
+		return this._showGroupByTabs === false || !this._currentTabId
+			? this.shadowRoot.querySelector('d2l-my-courses-content')
+			: this.shadowRoot.querySelector(`#${this._currentTabId} d2l-my-courses-content`);
 	}
 
 	_onEnrollmentAndUserSettingsEntityChange() {
@@ -246,17 +330,6 @@ class MyCoursesContainer extends mixinBehaviors([
 			this._setEnrollmentCollectionEntity(enrollmentsUrl);
 			this._setUserSettingsEntity(userSettingsUrl);
 		}
-	}
-	courseImageUploadCompleted(success) {
-		return this._fetchContentComponent().courseImageUploadCompleted(success);
-	}
-	getLastOrgUnitId() {
-		return this._fetchContentComponent().getLastOrgUnitId();
-	}
-	_fetchContentComponent() {
-		return this._showGroupByTabs === false || !this._currentTabId
-			? this.shadowRoot.querySelector('d2l-my-courses-content')
-			: this.shadowRoot.querySelector(`#${this._currentTabId} d2l-my-courses-content`);
 	}
 	_getPinTabAndAllTabActions(lastEnrollmentsSearchName) {
 		const actions = [];

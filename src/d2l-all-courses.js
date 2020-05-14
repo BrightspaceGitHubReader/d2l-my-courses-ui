@@ -387,7 +387,6 @@ class AllCourses extends mixinBehaviors([
 		this._onFilterDropdownClose = this._onFilterDropdownClose.bind(this);
 		this._onFilterChanged = this._onFilterChanged.bind(this);
 		this._onSearchResultsChanged = this._onSearchResultsChanged.bind(this);
-		this._onSetCourseImage = this._onSetCourseImage.bind(this);
 	}
 
 	connectedCallback() {
@@ -402,14 +401,7 @@ class AllCourses extends mixinBehaviors([
 			this.shadowRoot.querySelector('#filterDropdownContent').addEventListener('d2l-dropdown-close', this._onFilterDropdownClose);
 			this.shadowRoot.querySelector('#filterMenu').addEventListener('d2l-filter-menu-change', this._onFilterChanged);
 			this.shadowRoot.querySelector('#search-widget').addEventListener('d2l-search-widget-results-changed', this._onSearchResultsChanged);
-
-			document.body.addEventListener('set-course-image', this._onSetCourseImage);
 		});
-	}
-
-	disconnectedCallback() {
-		super.disconnectedCallback();
-		document.body.removeEventListener('set-course-image', this._onSetCourseImage);
 	}
 
 	/*
@@ -450,22 +442,14 @@ class AllCourses extends mixinBehaviors([
 		this.load();
 	}
 
+	refreshCardGridImages(organization) {
+		this._getCardGrid().refreshCardGridImages(organization);
+	}
+
 	_getCardGrid() {
 		return this._showGroupByTabs
 			? this.shadowRoot.querySelector(`#${this._selectedTabId} d2l-my-courses-card-grid`)
 			: this.shadowRoot.querySelector('d2l-my-courses-card-grid');
-	}
-
-	_onSetCourseImage(details) {
-		this.showImageError = false;
-
-		if (details && details.detail) {
-			if (details.detail.status === 'failure') {
-				setTimeout(() => {
-					this.showImageError = true;
-				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
-			}
-		}
 	}
 
 	/*
@@ -565,7 +549,6 @@ class AllCourses extends mixinBehaviors([
 			}
 		}
 
-		this.showImageError = false;
 		this._clearSearchWidget();
 		this.$.filterMenu.clearFilters();
 		this._filterText = this.localize('filtering.filter');

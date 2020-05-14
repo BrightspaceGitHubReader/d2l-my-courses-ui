@@ -87,7 +87,7 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('Alerts', function() {
-		it('should remove the course image failure alert when the overlay is opened', function() {
+		it('should show and hide the course image failure alert depending on the value of showImageError', function() {
 			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
 			widget.showImageError = true;
 
@@ -95,39 +95,8 @@ describe('d2l-all-courses', function() {
 			expect(alert.hidden).to.be.false;
 			expect(alert.type).to.equal('warning');
 			expect(alert.innerText).to.include(alertMessage);
-			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
+			widget.showImageError = false;
 			expect(alert.hidden).to.be.true;
-		});
-
-		it('should remove the course image failure alert before determining if it needs to add it back', function() {
-			widget.showImageError = true;
-			widget._onSetCourseImage();
-			expect(widget.showImageError).to.be.false;
-		});
-
-		it('should add the course image alert after receiving a failure result (after a timeout)', function() {
-			clock = sinon.useFakeTimers();
-			const setCourseImageEvent = { detail: { status: 'failure'} };
-			widget._onSetCourseImage(setCourseImageEvent);
-			clock.tick(1001);
-			expect(widget.showImageError).to.be.true;
-		});
-
-		it('should not add a course image failure alert when a request to set the image succeeds', function() {
-			const setCourseImageEvent = { detail: { status: 'success'} };
-			widget._onSetCourseImage(setCourseImageEvent);
-			expect(widget.showImageError).to.be.false;
-		});
-
-		it('should remove a course image failure alert when a request to set the image is made', function() {
-			clock = sinon.useFakeTimers();
-			let setCourseImageEvent = { detail: { status: 'failure'} };
-			widget._onSetCourseImage(setCourseImageEvent);
-			clock.tick(1001);
-			expect(widget.showImageError).to.be.true;
-			setCourseImageEvent = { detail: { status: 'set'} };
-			widget._onSetCourseImage(setCourseImageEvent);
-			expect(widget.showImageError).to.be.false;
 		});
 	});
 
