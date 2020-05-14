@@ -60,9 +60,18 @@ D2L.MyCourses.UtilityBehavior = {
 		const selfLink = entity.getLinkByRel('self');
 		return selfLink.href;
 	},
+	getOrgUnitIdFromHref(organizationHref) {
+		const match = /[0-9]+$/.exec(organizationHref);
+
+		if (!match) {
+			return;
+		}
+		return match[0];
+	},
 	parseEntity: function(entity) {
 		return SirenParse(entity);
 	},
+	// This is only used by the filter menu and can hopefully be removed after that is moved to the shared component
 	fetchSirenEntity: function(url, clearCache) {
 		if (!url) {
 			return;
@@ -81,12 +90,6 @@ D2L.MyCourses.UtilityBehavior = {
 				headers: headers
 			}))
 			.then(this.responseToSirenEntity.bind(this));
-	},
-	sirenEntityStoreFetch: function(url, token, clearCache) {
-		if (!url) {
-			return;
-		}
-		return window.D2L.Siren.EntityStore.fetch(url, token, clearCache);
 	},
 	performanceMark: function(name) {
 		if (window.performance && window.performance.mark) {
@@ -108,20 +111,7 @@ D2L.MyCourses.UtilityBehavior = {
 			}
 		}
 	},
-	submitForm: function(url, formParameters) {
-		const formData = new FormData();
-		for (const formKey in formParameters) {
-			if (formParameters.hasOwnProperty(formKey)) {
-				formData.append(formKey, formParameters[formKey]);
-			}
-		}
-
-		return window.d2lfetch
-			.fetch(new Request(url, {
-				method: 'PUT',
-				body: formData
-			}));
-	},
+	// This is only used by fetchSirenEntity above and can be removed once that function is removed
 	responseToSirenEntity: function(response) {
 		if (response.ok) {
 			return response

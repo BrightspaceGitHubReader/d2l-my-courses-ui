@@ -245,7 +245,7 @@ class MyCoursesContent extends mixinBehaviors([
 		<d2l-simple-overlay id="basic-image-selector-overlay"
 			title-name="[[localize('changeImage')]]"
 			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
-			with-backdrop="">
+			with-backdrop>
 			<iron-scroll-threshold
 				id="image-selector-threshold"
 				on-lower-threshold="_onChangeImageLowerThreshold">
@@ -302,6 +302,22 @@ class MyCoursesContent extends mixinBehaviors([
 	/*
 	* Public API functions
 	*/
+
+	// After the image selector is closed, this is called to set focus back to the correct card
+	focusCardDropdown(imageOrg) {
+		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
+
+		if (allCourses && this._isAllCoursesOverlayOpen) {
+			if (allCourses.focusCardDropdown(imageOrg)) {
+				return;
+			}
+		} else {
+			if (this._getCardGrid().focusCardDropdown(imageOrg)) {
+				return;
+			}
+		}
+		this.$.viewAllCourses.focus();
+	}
 	// This is called by the LE, but only when it's a user-uploaded image
 	// If it's a catalog image this is handled by the enrollment card
 	courseImageUploadCompleted(success) {
@@ -315,7 +331,35 @@ class MyCoursesContent extends mixinBehaviors([
 		if (!this._setImageOrg.links) {
 			return;
 		}
-		return this._getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
+		return this.getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
+	}
+
+	/*
+	* Changing Course Image Functions
+	*/
+	_onChangeImageLowerThreshold() {
+		this.shadowRoot.querySelector('d2l-basic-image-selector').loadMore(this.$['image-selector-threshold']);
+	}
+	_onClearImageScrollThreshold() {
+		this.$['image-selector-threshold'].clearTriggers();
+	}
+	_onOpenChangeImageView(e) {
+		if (e.detail.organization) {
+			this._setImageOrg = this.parseEntity(e.detail.organization);
+		}
+
+		this.$['basic-image-selector-overlay'].open();
+	}
+	_onSetCourseImage(e) {
+		this.$['basic-image-selector-overlay'].close();
+		this._removeAlert('setCourseImageFailure');
+		if (e && e.detail) {
+			if (e.detail.status === 'failure') {
+				setTimeout(() => {
+					this._addAlert('warning', 'setCourseImageFailure', this.localize('error.settingImage'));
+				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
+			}
+		}
 	}
 
 	_getCardGrid() {
@@ -350,7 +394,7 @@ class MyCoursesContent extends mixinBehaviors([
 			return;
 		}
 		enrollmentCollectionEntity.onEnrollmentEntityChange(url, (enrollmentEntity) => {
-			const orgUnitId = this._getOrgUnitIdFromHref(enrollmentEntity.organizationHref());
+			const orgUnitId = this.getOrgUnitIdFromHref(enrollmentEntity.organizationHref());
 			this._orgUnitIdMap[orgUnitId] = url;
 		});
 	}
@@ -413,12 +457,6 @@ class MyCoursesContent extends mixinBehaviors([
 			message = 'newEnrollmentMultiple';
 		}
 		this._addAlert('call-to-action', message, this.localize(message));
-	}
-	_onChangeImageLowerThreshold() {
-		this.shadowRoot.querySelector('d2l-basic-image-selector').loadMore(this.$['image-selector-threshold']);
-	}
-	_onClearImageScrollThreshold() {
-		this.$['image-selector-threshold'].clearTriggers();
 	}
 	_onCourseImageLoaded() {
 		this._courseImagesLoadedEventCount++;
@@ -490,7 +528,7 @@ class MyCoursesContent extends mixinBehaviors([
 				updateEntity(enrollmentHref, this.token);
 			}
 		} else {
-			orgUnitId = this._getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
+			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
 		}
 		// Only want to move pinned/unpinned enrollment if it exists in the panel
 		const changedEnrollmentId = orgUnitId && this._orgUnitIdMap[orgUnitId];
@@ -583,9 +621,9 @@ class MyCoursesContent extends mixinBehaviors([
 		});
 	}
 	_onSimpleOverlayClosed(e) {
-		this._removeAlert('setCourseImageFailure');
 
 		if (e.composedPath()[0].id === 'all-courses') {
+			this._removeAlert('setCourseImageFailure');
 			this._isAllCoursesOverlayOpen = false;
 
 			if (this._isRefetchNeeded) {
@@ -597,37 +635,8 @@ class MyCoursesContent extends mixinBehaviors([
 
 		} else if (e.composedPath()[0].id === 'basic-image-selector-overlay') {
 			afterNextRender(this, () => {
-				const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-
-				if (allCourses && this._isAllCoursesOverlayOpen) {
-					if (allCourses.focusCardDropdown(this._setImageOrg)) {
-						return;
-					}
-				} else {
-					if (this._getCardGrid().focusCardDropdown(this._setImageOrg)) {
-						return;
-					}
-				}
-				this.$.viewAllCourses.focus();
+				this.focusCardDropdown(this._setImageOrg);
 			});
-		}
-	}
-	_onOpenChangeImageView(e) {
-		if (e.detail.organization) {
-			this._setImageOrg = this.parseEntity(e.detail.organization);
-		}
-
-		this.$['basic-image-selector-overlay'].open();
-	}
-	_onSetCourseImage(e) {
-		this.$['basic-image-selector-overlay'].close();
-		this._removeAlert('setCourseImageFailure');
-		if (e && e.detail) {
-			if (e.detail.status === 'failure') {
-				setTimeout(() => {
-					this._addAlert('warning', 'setCourseImageFailure', this.localize('error.settingImage'));
-				}, 1000); // delay until the tile fail icon animation begins to kick in (1 sec delay)
-			}
 		}
 	}
 
@@ -709,14 +718,6 @@ class MyCoursesContent extends mixinBehaviors([
 		);
 
 		this._enrollmentsRootResponse(enrollmentsEntity);
-	}
-	_getOrgUnitIdFromHref(organizationHref) {
-		const match = /[0-9]+$/.exec(organizationHref);
-
-		if (!match) {
-			return;
-		}
-		return match[0];
 	}
 	_getViewAllCoursesText(hasMoreEnrollments, enrollmentsLength) {
 		const viewAllCourses = this.localize('viewAllCourses');
