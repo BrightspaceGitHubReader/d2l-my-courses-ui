@@ -281,29 +281,13 @@ describe('d2l-my-courses-content', () => {
 	describe('Public API', () => {
 
 		describe('refreshCardGridImages', () => {
+			it('should refresh cards in both card grids', () => {
+				const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
+				const stub2 = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'refreshCardGridImages');
 
-			it('should refresh cards in both card grids if all courses intialized', done => {
-				component._createAllCourses();
-				flush(() => {
-					const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
-					const stub2 = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'refreshCardGridImages');
-
-					component.refreshCardGridImages();
-					expect(stub1).to.have.been.called;
-					expect(stub2).to.have.been.called;
-					done();
-				});
-			});
-
-			it('should refresh cards in just the widget view if all courses not intialized', done => {
-				flush(() => {
-					const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
-
-					component.refreshCardGridImages();
-					expect(component.shadowRoot.querySelector('d2l-all-courses')).to.be.null;
-					expect(stub1).to.have.been.called;
-					done();
-				});
+				component.refreshCardGridImages();
+				expect(stub1).to.have.been.called;
+				expect(stub2).to.have.been.called;
 			});
 		});
 	});
@@ -321,7 +305,7 @@ describe('d2l-my-courses-content', () => {
 			expect(alert.hidden).to.be.true;
 		});
 
-		it('should hide the course image failure alert when the all courses overlay is opened', function(done) {
+		it('should hide the course image failure alert when the all courses overlay is opened', function() {
 			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
 			component.showImageError = true;
 
@@ -329,13 +313,10 @@ describe('d2l-my-courses-content', () => {
 			expect(alert.hidden).to.be.false;
 			expect(alert.type).to.equal('warning');
 			expect(alert.innerText).to.include(alertMessage);
-			component._createAllCourses();
-			flush(() => {
-				component._openAllCoursesView(new CustomEvent('event'));
-				expect(alert.hidden).to.be.true;
-				expect(component.showImageError).to.be.false;
-				done();
-			});
+
+			component._openAllCoursesView(new CustomEvent('event'));
+			expect(alert.hidden).to.be.true;
+			expect(component.showImageError).to.be.false;
 		});
 
 		it('should hide the course image failure alert when the all courses overlay is closed', function() {
@@ -362,7 +343,7 @@ describe('d2l-my-courses-content', () => {
 		describe('d2l-tab-panel-selected', () => {
 			let parentComponent;
 
-			beforeEach(() => {
+			beforeEach(done => {
 				parentComponent = fixture('tab-event-fixture');
 				component = parentComponent.querySelector('d2l-my-courses-content');
 				component.token = 'fake';
@@ -371,6 +352,9 @@ describe('d2l-my-courses-content', () => {
 				component._numberOfEnrollments = 1;
 				component.tabSearchActions = [];
 				sandbox.stub(component, '_setLastSearchName');
+				setTimeout(() => {
+					done();
+				});
 			});
 
 			[true, false].forEach(hasEnrollments => {
