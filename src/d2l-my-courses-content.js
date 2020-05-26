@@ -186,6 +186,10 @@ class MyCoursesContent extends mixinBehaviors([
 				clear: both;
 			}
 
+			d2l-link {
+				outline: none;
+			}
+
 			.d2l-body-standard {
 				@apply --d2l-body-standard-text;
 				margin: 0;
