@@ -7,10 +7,11 @@ Component for when the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config varia
 */
 
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
+import '@brightspace-ui/core/components/tabs/tabs.js';
+import '@brightspace-ui/core/components/tabs/tab-panel.js';
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import 'd2l-image-selector/d2l-basic-image-selector.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
-import 'd2l-tabs/d2l-tabs.js';
 import './d2l-my-courses-content.js';
 import './d2l-utility-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
