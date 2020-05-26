@@ -616,9 +616,9 @@ class AllCourses extends mixinBehaviors([
 		if (e.detail.orgUnitId) {
 			orgUnitId = e.detail.orgUnitId;
 		} else if (e.detail.organization) {
-			orgUnitId = this._getOrgUnitIdFromHref(this.getEntityIdentifier(this.parseEntity(e.detail.organization)));
+			orgUnitId = this.getOrgUnitIdFromHref(this.getEntityIdentifier(this.parseEntity(e.detail.organization)));
 		} else if (e.detail.enrollment && e.detail.enrollment.organizationHref()) {
-			orgUnitId = this._getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
+			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
 		}
 
 		this.dispatchEvent(new CustomEvent('d2l-course-enrollment-change', {
@@ -782,16 +782,6 @@ class AllCourses extends mixinBehaviors([
 			}
 		}
 	}
-
-	_getOrgUnitIdFromHref(organizationHref) {
-		const match = /[0-9]+$/.exec(organizationHref);
-
-		if (!match) {
-			return;
-		}
-		return match[0];
-	}
-
 }
 
 window.customElements.define(AllCourses.is, AllCourses);
