@@ -4,6 +4,7 @@ Polymer-based web component for the all courses overlay.
 */
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
+import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/colors/colors.js';
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
@@ -13,7 +14,6 @@ import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/menu/menu.js';
 import '@brightspace-ui/core/components/menu/menu-item-radio.js';
-import 'd2l-alert/d2l-alert.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import 'd2l-tabs/d2l-tabs.js';
