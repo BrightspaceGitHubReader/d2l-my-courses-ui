@@ -133,10 +133,6 @@ class MyCoursesContent extends mixinBehaviors([
 				type: Boolean,
 				value: false
 			},
-			_allCoursesCreated: {
-				type: Boolean,
-				value: false
-			},
 			_courseImagesLoadedEventCount: {
 				type: Number,
 				value: 0
@@ -186,6 +182,10 @@ class MyCoursesContent extends mixinBehaviors([
 				clear: both;
 			}
 
+			d2l-link {
+				outline: none;
+			}
+
 			.d2l-body-standard {
 				@apply --d2l-body-standard-text;
 				margin: 0;
@@ -224,15 +224,22 @@ class MyCoursesContent extends mixinBehaviors([
 				href="javascript:void(0);"
 				on-tap="_openAllCoursesView"
 				on-keypress="_keypressOpenAllCoursesView"
-				on-mouseover="_createAllCourses"
-				on-focus="_createAllCourses"
 				tabindex="0">
 				<h3 class="d2l-body-standard">[[_viewAllCoursesText]]</h3>
 			</d2l-link>
 		</div>
 
-		<div id="allCoursesPlaceholder">
-		</div>`;
+		<d2l-all-courses
+			advanced-search-url="[[advancedSearchUrl]]"
+			enrollments-search-action="[[enrollmentsSearchAction]]"
+			filter-standard-department-name="[[standardDepartmentName]]"
+			filter-standard-semester-name="[[standardSemesterName]]"
+			has-enrollments-changed="[[_hasEnrollmentsChanged]]"
+			org-unit-type-ids="[[orgUnitTypeIds]]"
+			presentation-url="[[presentationUrl]]"
+			tab-search-type="[[tabSearchType]]"
+			token="[[token]]">
+		</d2l-all-courses>`;
 	}
 
 	ready() {
@@ -278,9 +285,7 @@ class MyCoursesContent extends mixinBehaviors([
 		this._getCardGrid().refreshCardGridImages(imageOrg);
 
 		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-		if (allCourses) {
-			allCourses.refreshCardGridImages(imageOrg);
-		}
+		allCourses.refreshCardGridImages(imageOrg);
 	}
 
 	_getCardGrid() {
@@ -592,13 +597,6 @@ class MyCoursesContent extends mixinBehaviors([
 
 		return enrollmentsSearchUrl;
 	}
-	_createAllCourses() {
-		if (!this._allCoursesCreated) {
-			const allCourses = document.createElement('d2l-all-courses');
-			this.$.allCoursesPlaceholder.appendChild(allCourses);
-			this._allCoursesCreated = true;
-		}
-	}
 	_keypressOpenAllCoursesView(e) {
 		if (e.code === 'Space' || e.code === 'Enter') {
 			return this._openAllCoursesView(e);
@@ -653,22 +651,8 @@ class MyCoursesContent extends mixinBehaviors([
 		return enrollmentsLength > 0 ? `${viewAllCourses} (${count})` : viewAllCourses;
 	}
 	_openAllCoursesView(e) {
-		this._createAllCourses();
-
 		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-
-		allCourses.enrollmentsSearchAction = this.enrollmentsSearchAction;
 		allCourses.tabSearchActions = this.tabSearchActions;
-		allCourses.tabSearchType = this.tabSearchType;
-		allCourses.advancedSearchUrl = this.advancedSearchUrl;
-		allCourses.filterStandardSemesterName = this.standardSemesterName;
-		allCourses.filterStandardDepartmentName = this.standardDepartmentName;
-		allCourses.orgUnitTypeIds = this.orgUnitTypeIds;
-		allCourses.hasEnrollmentsChanged = this._hasEnrollmentsChanged;
-
-		allCourses.token = this.token;
-		allCourses.presentationUrl = this.presentationUrl;
-
 		allCourses.open();
 
 		this.showImageError = false; // Clear image error when opening and closing the all courses overlay
