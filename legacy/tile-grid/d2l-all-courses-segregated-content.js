@@ -8,7 +8,7 @@ This is only used if the `d2l.Tools.MyCoursesWidget.UpdatedSortLogic` config var
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import 'd2l-alert/d2l-alert.js';
+import '@brightspace-ui/core/components/alert/alert.js';
 import '../d2l-alert-behavior-legacy.js';
 import '../d2l-all-courses-styles-legacy.js';
 import './d2l-course-tile-grid.js';

@@ -3,9 +3,9 @@
 Polymer-based web component for the my-courses content.
 */
 
+import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
-import 'd2l-alert/d2l-alert.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-alert-behavior.js';
 import './d2l-all-courses.js';

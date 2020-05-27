@@ -8,7 +8,7 @@ TODO: There is still lots of cleanup here to remove UpdatedSortLogic ON logic fr
 import '@polymer/polymer/polymer-legacy.js';
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
-import 'd2l-alert/d2l-alert.js';
+import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-menu.js';
