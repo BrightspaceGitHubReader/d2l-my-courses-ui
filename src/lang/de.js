@@ -29,7 +29,7 @@ export default {
 	"noCoursesMessage": "Sie haben keine Kurse, die angezeigt werden können.",
 	"noSearchResults": "Keine Ergebnisse.",
 	"onlyPastCoursesMessage": "Sie haben keine aktuellen oder zukünftigen angehefteten Kurse. Wählen Sie „Alle Kurse anzeigen“, um Ihre vergangenen Kurse zu durchsuchen.",
-	"pinnedCourses": "Angeheftet",
+	"pinnedCourses": "Angeheftet:",
 	"recentSearches": "Letzte Suchanfragen",
 	"search.searchCourses": "Kurse suchen",
 	"sorting.sortBy": "Sortieren nach",

@@ -29,7 +29,7 @@ export default {
 	"noCoursesMessage": "U hebt geen cursussen om weer te geven.",
 	"noSearchResults": "Geen resultaten.",
 	"onlyPastCoursesMessage": "U hebt nog geen huidige of toekomstige cursussen. Geef alle cursussen weer om door eerdere cursussen te bladeren.",
-	"pinnedCourses": "Vastgepind",
+	"pinnedCourses": "vastgepind",
 	"recentSearches": "Recente zoekopdrachten",
 	"search.searchCourses": "Op cursus zoeken",
 	"sorting.sortBy": "Sorteren op",

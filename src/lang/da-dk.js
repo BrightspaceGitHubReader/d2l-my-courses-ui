@@ -9,7 +9,7 @@ export default {
 	"courseSearchInputPlaceholder": "Find et kursus",
 	"error.settingImage": "Vi kan desværre ikke ændre dit billede lige nu. Prøv igen senere.",
 	"filtering.clear": "Ryd",
-	"filtering.filter": "Filtrér",
+	"filtering.filter": "Filtrer",
 	"filtering.filterBy": "Filtrér efter",
 	"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 	"filtering.filterMultiple": "Filtrér: {num} filtre",
