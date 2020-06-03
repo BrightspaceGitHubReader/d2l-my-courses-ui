@@ -698,7 +698,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_computeShowGroupByTabs(groups) {
-		return groups.length > 2 || (groups.length > 0 && !this._enrollmentsSearchAction);
+		return groups.length > 0;
 	}
 
 	_mapSortOption(identifier, identifierName) {
