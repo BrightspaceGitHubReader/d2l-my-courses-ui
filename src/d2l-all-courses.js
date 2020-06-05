@@ -282,9 +282,10 @@ class AllCourses extends mixinBehaviors([
 
 			<d2l-simple-overlay
 				id="all-courses"
-				title-name="[[localize('allCourses')]]"
+				on-d2l-simple-overlay-opening="_onSimpleOverlayOpening"
 				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
 				restore-focus-on-close
+				title-name="[[localize('allCourses')]]"
 				with-backdrop>
 
 				<div hidden$="[[!_showContent]]">
@@ -295,6 +296,7 @@ class AllCourses extends mixinBehaviors([
 						<div class="search-and-filter-row">
 							<d2l-search-widget-custom
 								id="search-widget"
+								on-d2l-search-widget-results-changed="_onSearchResultsChanged"
 								org-unit-type-ids="[[orgUnitTypeIds]]"
 								search-action="[[_enrollmentsSearchAction]]"
 								search-url="[[_searchUrl]]">
@@ -306,9 +308,17 @@ class AllCourses extends mixinBehaviors([
 										<span id="filterText" class="dropdown-opener-text">[[_filterText]]</span>
 										<d2l-icon icon="tier1:chevron-down" aria-hidden="true"></d2l-icon>
 									</button>
-									<d2l-dropdown-content id="filterDropdownContent" no-padding="" min-width="350" render-content="">
+									<d2l-dropdown-content
+										id="filterDropdownContent"
+										on-d2l-dropdown-open="_onFilterDropdownOpen"
+										on-d2l-dropdown-close="_onFilterDropdownClose"
+										no-padding
+										min-width="350"
+										render-content>
+
 										<d2l-filter-menu
 											id="filterMenu"
+											on-d2l-filter-menu-change="_onFilterChanged"
 											tab-search-type="[[tabSearchType]]"
 											org-unit-type-ids="[[orgUnitTypeIds]]"
 											my-enrollments-entity="[[_myEnrollmentsEntity]]"
@@ -318,7 +328,7 @@ class AllCourses extends mixinBehaviors([
 									</d2l-dropdown-content>
 								</d2l-dropdown>
 
-								<d2l-dropdown id="sortDropdown">
+								<d2l-dropdown id="sortDropdown" on-d2l-menu-item-change="_onSortOrderChanged">
 									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="sortText">
 										<span id="sortText" class="dropdown-opener-text">[[localize('sorting.sortDefault')]]</span>
 										<d2l-icon icon="tier1:chevron-down" aria-hidden="true"></d2l-icon>
@@ -380,28 +390,11 @@ class AllCourses extends mixinBehaviors([
 			</d2l-simple-overlay>`;
 	}
 
-	ready() {
-		super.ready();
-		this._onSortOrderChanged = this._onSortOrderChanged.bind(this);
-		this._onFilterDropdownOpen = this._onFilterDropdownOpen.bind(this);
-		this._onFilterDropdownClose = this._onFilterDropdownClose.bind(this);
-		this._onFilterChanged = this._onFilterChanged.bind(this);
-		this._onSearchResultsChanged = this._onSearchResultsChanged.bind(this);
-	}
-
 	connectedCallback() {
 		super.connectedCallback();
 
-		this.addEventListener('d2l-simple-overlay-opening', this._onSimpleOverlayOpening);
 		this.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
 		this.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinned);
-
-		this.shadowRoot.querySelector('#sortDropdown').addEventListener('d2l-menu-item-change', this._onSortOrderChanged);
-		this.shadowRoot.querySelector('#filterDropdownContent').addEventListener('d2l-dropdown-open', this._onFilterDropdownOpen);
-		this.shadowRoot.querySelector('#filterDropdownContent').addEventListener('d2l-dropdown-close', this._onFilterDropdownClose);
-		this.shadowRoot.querySelector('#filterMenu').addEventListener('d2l-filter-menu-change', this._onFilterChanged);
-		this.shadowRoot.querySelector('#search-widget').addEventListener('d2l-search-widget-results-changed', this._onSearchResultsChanged);
-
 	}
 
 	/*
