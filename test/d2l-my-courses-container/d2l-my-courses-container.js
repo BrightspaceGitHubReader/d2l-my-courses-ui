@@ -126,6 +126,7 @@ describe('d2l-my-courses', () => {
 			clock.restore();
 		}
 		sandbox.restore();
+		component._changedCourseEnrollment = null;
 	});
 
 	it('should hide the only saved search action', () => {
@@ -212,7 +213,7 @@ describe('d2l-my-courses', () => {
 					done();
 				});
 			});
-			it('should call refreshCardGridImages on the content (not grouped by tab), ', done => {
+			it('should call refreshCardGridImages on the content (not grouped by tab)', done => {
 				component._showGroupByTabs = false;
 				flush(() => {
 					const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'refreshCardGridImages');
