@@ -445,6 +445,7 @@ describe('d2l-my-courses', () => {
 
 					expect(component._changedCourseEnrollment.orgUnitId).to.equal('1234');
 					expect(component._changedCourseEnrollment.isPinned).to.equal(true);
+					component._changedCourseEnrollment = null;
 				});
 			});
 
@@ -460,6 +461,7 @@ describe('d2l-my-courses', () => {
 				expect(component._changedCourseEnrollment.orgUnitId).to.equal('1234');
 				expect(component._changedCourseEnrollment.isPinned).to.equal(true);
 				expect(component._changedCourseEnrollment.didNotReplaceObject).to.equal(true);
+				component._changedCourseEnrollment = null;
 			});
 
 		});
