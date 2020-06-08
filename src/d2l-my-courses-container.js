@@ -139,6 +139,7 @@ class MyCoursesContainer extends mixinBehaviors([
 					show-image-error="[[_showImageError]]"
 					token="[[token]]"
 					advanced-search-url="[[advancedSearchUrl]]"
+					changed-course-enrollment="[[_changedCourseEnrollment]]"
 					org-unit-type-ids="[[orgUnitTypeIds]]"
 					enrollments-search-action="[[_enrollmentsSearchAction]]"
 					standard-department-name="[[standardDepartmentName]]"
@@ -163,10 +164,14 @@ class MyCoursesContainer extends mixinBehaviors([
 			</d2l-simple-overlay>`;
 	}
 
+	constructor() {
+		super();
+		this._onCourseEnrollmentChange = this._onCourseEnrollmentChange.bind(this);
+	}
+
 	connectedCallback() {
 		super.connectedCallback();
 		afterNextRender(this, () => {
-			this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
 			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
 		});
 
@@ -174,7 +179,14 @@ class MyCoursesContainer extends mixinBehaviors([
 		this.addEventListener('set-course-image', this._onSetCourseImage);
 		this.addEventListener('clear-image-scroll-threshold', this._onClearImageScrollThreshold);
 
+		document.body.addEventListener('d2l-course-pinned-change', this._onCourseEnrollmentChange);
+
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
+	}
+
+	disconnectedCallback() {
+		document.body.removeEventListener('d2l-course-pinned-change', this._onCourseEnrollmentChange);
+		super.disconnectedCallback();
 	}
 
 	// This is called by the LE, but only when it's a user-uploaded image
@@ -318,10 +330,20 @@ class MyCoursesContainer extends mixinBehaviors([
 		});
 	}
 	_onCourseEnrollmentChange(e) {
-		this._changedCourseEnrollment = {
-			orgUnitId: e.detail.orgUnitId,
-			isPinned: e.detail.isPinned
-		};
+		let orgUnitId;
+		if (e.detail.orgUnitId) { // Pinning was done in the Course Selector
+			orgUnitId = e.detail.orgUnitId;
+		} else { // Pinning was done in the My Courses widget
+			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
+		}
+
+		// Only update the property if something has changed
+		if (!this._changedCourseEnrollment || this._changedCourseEnrollment.orgUnitId !== orgUnitId || this._changedCourseEnrollment.isPinned !== e.detail.isPinned) {
+			this._changedCourseEnrollment = {
+				orgUnitId: orgUnitId,
+				isPinned: e.detail.isPinned
+			};
+		}
 	}
 	_tabSelectedChanged(e) {
 		this._currentTabId = `panel-${e.detail.tabId}`;

@@ -230,6 +230,15 @@ describe('d2l-my-courses-content', () => {
 				href: href,
 				fields: fields
 			};
+			component.tabSearchActions = [{
+				name: 'search-my-enrollments',
+				title: '',
+				selected: false
+			}, {
+				name: 'search-my-pinned-enrollments',
+				title: '',
+				selected: false
+			}];
 		});
 
 		it('should set refetch when course enrollment changed and it is all tab', () => {
@@ -261,6 +270,28 @@ describe('d2l-my-courses-content', () => {
 		it('should not set refetch for other tabs', () => {
 			component._onCourseEnrollmentChange(newValue);
 			expect(component._isRefetchNeeded).to.be.false;
+		});
+
+		it('should immediately rearrange when course enrollment changed and we are on the tab containing that enrollment', () => {
+			const refetchStub = sandbox.stub(component, '_refetchEnrollments');
+			const rearrangeStub = sandbox.stub(component, '_rearrangeAfterPinning');
+
+			component._orgUnitIdMap = { 1234: true };
+			component._thisTabSelected = true;
+			component._onCourseEnrollmentChange(newValue);
+			expect(refetchStub.called).to.be.false;
+			expect(rearrangeStub.called).to.be.true;
+		});
+
+		it('should immediately refetch when course enrollment changed and it is not on the selected tab', () => {
+			const refetchStub = sandbox.stub(component, '_refetchEnrollments');
+			const rearrangeStub = sandbox.stub(component, '_rearrangeAfterPinning');
+
+			component._orgUnitIdMap = {};
+			component._thisTabSelected = true;
+			component._onCourseEnrollmentChange(newValue);
+			expect(refetchStub.called).to.be.true;
+			expect(rearrangeStub.called).to.be.false;
 		});
 	});
 
@@ -371,7 +402,7 @@ describe('d2l-my-courses-content', () => {
 				});
 			});
 
-			it('should update the tabSearchActions to select the currently-active tab', () => {
+			it('should update the tabSearchActions to select the currently-active tab and set itself to the selected tab', () => {
 				component.tabSearchActions = [{
 					name: searchAction.name,
 					title: '',
@@ -384,12 +415,15 @@ describe('d2l-my-courses-content', () => {
 					enrollmentsSearchAction: searchAction
 				}];
 
+				expect(component._thisTabSelected).to.be.false;
+
 				parentComponent.dispatchEvent(new CustomEvent(
 					'd2l-tab-panel-selected', { bubbles: true, composed: true }
 				));
 
 				component.tabSearchActions.forEach(function(action) {
 					expect(action.selected).to.equal(action.name !== 'foo');
+					expect(component._thisTabSelected).to.be.true;
 				});
 			});
 
@@ -409,34 +443,6 @@ describe('d2l-my-courses-content', () => {
 					expect(component._isRefetchNeeded).to.be.false;
 				});
 			});
-		});
-
-		describe('d2l-course-pinned-change', () => {
-
-			it('should refetch enrollments if the new pinned enrollment has not previously been fetched', () => {
-				const _enrollmentEntity = {
-					_entity: {},
-					organizationHref: function() { return 'organizationHref'; },
-				};
-
-				const event = new CustomEvent('d2l-course-pinned-change', {
-					detail: {
-						isPinned: true,
-						enrollment: _enrollmentEntity
-					}
-				});
-
-				component._orgUnitIdMap = {
-					1: enrollmentEntity
-				};
-
-				const refetchSpy = sandbox.spy(component, '_refetchEnrollments');
-				component._onEnrollmentPinnedMessage(event);
-				setTimeout(() => {
-					expect(refetchSpy).to.have.been.called;
-				});
-			});
-
 		});
 
 		describe('d2l-simple-overlay-closed', () => {

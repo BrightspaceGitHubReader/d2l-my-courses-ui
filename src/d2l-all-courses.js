@@ -45,6 +45,7 @@ class AllCourses extends mixinBehaviors([
 
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
+			changedCourseEnrollment: Object,
 			// Standard Department OU Type name to be displayed in the filter dropdown
 			filterStandardDepartmentName: String,
 			// Standard Semester OU Type name to be displayed in the filter dropdown
@@ -72,10 +73,6 @@ class AllCourses extends mixinBehaviors([
 			},
 			// Type of tabs being displayed (BySemester, ByDepartment, ByRoleAlias)
 			tabSearchType: String,
-			hasEnrollmentsChanged: {
-				type: Boolean,
-				value: false
-			},
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
 			token: String,
 			// Initial search action, should combine with _enrollmentsSearchAction
@@ -89,6 +86,10 @@ class AllCourses extends mixinBehaviors([
 			_enrollmentsSearchAction: Object,
 			// Filter dropdown opener text
 			_filterText: String,
+			_hasEnrollmentsChanged: {
+				type: Boolean,
+				value: false
+			},
 			// True when there are more enrollments to fetch (i.e. current page of enrollments has a `next` link)
 			_hasMoreEnrollments: {
 				type: Boolean,
@@ -179,6 +180,12 @@ class AllCourses extends mixinBehaviors([
 				}
 			}
 		};
+	}
+
+	static get observers() {
+		return [
+			'_onCourseEnrollmentChange(changedCourseEnrollment)'
+		];
 	}
 
 	static get template() {
@@ -394,7 +401,6 @@ class AllCourses extends mixinBehaviors([
 		super.connectedCallback();
 
 		this.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
-		this.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinned);
 	}
 
 	/*
@@ -546,13 +552,16 @@ class AllCourses extends mixinBehaviors([
 		this.$.filterMenu.clearFilters();
 		this._filterText = this.localize('filtering.filter');
 		this._resetSortDropdown();
-		if (this.hasEnrollmentsChanged) {
+		if (this._hasEnrollmentsChanged && this._searchUrl) {
+			this._hasEnrollmentsChanged = false;
 			this._bustCacheToken = Math.random();
 			this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
 		}
 	}
 
 	_onTabSelected(e) {
+		e.stopPropagation();
+
 		this._selectedTabId = e.composedPath()[0].id;
 		const actionName = this._selectedTabId.replace('all-courses-tab-', '');
 		let tabAction;
@@ -596,32 +605,16 @@ class AllCourses extends mixinBehaviors([
 		);
 	}
 
-	_onEnrollmentPinned(e) {
-		if (this._showGroupByTabs) {
+	_onCourseEnrollmentChange(newValue) {
+		if (this._showGroupByTabs && this._searchUrl) {
 			this._bustCacheToken = Math.random();
 			const actionName = this._selectedTabId.replace('all-courses-tab-', '');
-			if (!e.detail.isPinned &&  actionName === Actions.enrollments.searchMyPinnedEnrollments) {
+			if (!newValue.isPinned && actionName === Actions.enrollments.searchMyPinnedEnrollments) {
 				this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
 			}
 		}
 
-		let orgUnitId;
-		if (e.detail.orgUnitId) {
-			orgUnitId = e.detail.orgUnitId;
-		} else if (e.detail.organization) {
-			orgUnitId = this.getOrgUnitIdFromHref(this.getEntityIdentifier(this.parseEntity(e.detail.organization)));
-		} else if (e.detail.enrollment && e.detail.enrollment.organizationHref()) {
-			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
-		}
-
-		this.dispatchEvent(new CustomEvent('d2l-course-enrollment-change', {
-			bubbles: true,
-			composed: true,
-			detail: {
-				orgUnitId: orgUnitId,
-				isPinned: e.detail.isPinned
-			}
-		}));
+		this._hasEnrollmentsChanged = true;
 	}
 
 	/*

@@ -411,5 +411,56 @@ describe('d2l-my-courses', () => {
 				});
 			});
 		});
+
+		describe('d2l-course-pinned-change', () => {
+			let _enrollmentEntity,
+				event;
+
+			beforeEach(() => {
+				_enrollmentEntity = {
+					_entity: {},
+					organizationHref: function() { return '1234'; },
+				};
+
+				event = new CustomEvent('d2l-course-pinned-change', {
+					detail: {
+						isPinned: true,
+						enrollment: _enrollmentEntity
+					}
+				});
+
+				component._enrollmentsSearchAction = searchAction;
+				component._onPromotedSearchEntityChange();
+			});
+
+			[
+				{ },
+				{orgUnitId: '1234', isPinned: false },
+				{orgUnitId: '5678', isPinned: true }
+			].forEach(initialChangedCourseEnrollment => {
+				it(`should update the _changedCourseEnrollment property from ${JSON.stringify(initialChangedCourseEnrollment)}, which gets passed to d2l-my-courses-content and d2l-all-courses`, () => {
+					component._changedCourseEnrollment = initialChangedCourseEnrollment;
+					component._onCourseEnrollmentChange(event);
+
+					expect(component._changedCourseEnrollment.orgUnitId).to.equal('1234');
+					expect(component._changedCourseEnrollment.isPinned).to.equal(true);
+				});
+			});
+
+			it('should not update the _changedCourseEnrollment property if nothing has changed', () => {
+				component._changedCourseEnrollment = {
+					orgUnitId: '1234',
+					isPinned: true,
+					didNotReplaceObject: true
+				};
+
+				component._onCourseEnrollmentChange(event);
+
+				expect(component._changedCourseEnrollment.orgUnitId).to.equal('1234');
+				expect(component._changedCourseEnrollment.isPinned).to.equal(true);
+				expect(component._changedCourseEnrollment.didNotReplaceObject).to.equal(true);
+			});
+
+		});
 	});
 });
