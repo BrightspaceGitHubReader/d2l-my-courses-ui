@@ -119,6 +119,7 @@ describe('d2l-my-courses', () => {
 		component._userSettingsEntity = new UserSettingsEntity(lastSearchResponse);
 		component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchResponse);
 		component._enrollmentCollectionEntity = new EnrollmentCollectionEntity(enrollmentsSearchResponse);
+		component._changedCourseEnrollment = null;
 	});
 
 	afterEach(function() {
@@ -126,7 +127,6 @@ describe('d2l-my-courses', () => {
 			clock.restore();
 		}
 		sandbox.restore();
-		component._changedCourseEnrollment = null;
 	});
 
 	it('should hide the only saved search action', () => {
