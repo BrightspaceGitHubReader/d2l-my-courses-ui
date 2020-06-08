@@ -46,7 +46,6 @@ class MyCoursesContent extends mixinBehaviors([
 			},
 			tabSearchType: String,
 			updateUserSettingsAction: Object,
-			changedCourseEnrollment: Object,
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
 			// Standard Semester OU Type name to be displayed in the all-courses filter dropdown
@@ -117,6 +116,10 @@ class MyCoursesContent extends mixinBehaviors([
 				type: Boolean,
 				value: false
 			},
+			_thisTabSelected: {
+				type: Boolean,
+				value: false
+			},
 			_isAllTab: {
 				type: Boolean,
 				computed: '_computeIsAllTab(enrollmentsSearchAction.name)'
@@ -124,10 +127,6 @@ class MyCoursesContent extends mixinBehaviors([
 			_isPinnedTab: {
 				type: Boolean,
 				computed: '_computeIsPinnedTab(enrollmentsSearchAction.name)'
-			},
-			_hasEnrollmentsChanged: {
-				type: Boolean,
-				value: false
 			},
 			_rootTabSelected: {
 				type: Boolean,
@@ -155,8 +154,7 @@ class MyCoursesContent extends mixinBehaviors([
 	static get observers() {
 		return [
 			'_enrollmentsChanged(_enrollments.length, _numberOfEnrollments)',
-			'_enrollmentSearchActionChanged(enrollmentsSearchAction)',
-			'_onCourseEnrollmentChange(changedCourseEnrollment)'
+			'_enrollmentSearchActionChanged(enrollmentsSearchAction)'
 		];
 	}
 
@@ -234,7 +232,6 @@ class MyCoursesContent extends mixinBehaviors([
 			enrollments-search-action="[[enrollmentsSearchAction]]"
 			filter-standard-department-name="[[standardDepartmentName]]"
 			filter-standard-semester-name="[[standardSemesterName]]"
-			has-enrollments-changed="[[_hasEnrollmentsChanged]]"
 			org-unit-type-ids="[[orgUnitTypeIds]]"
 			presentation-url="[[presentationUrl]]"
 			tab-search-type="[[tabSearchType]]"
@@ -244,7 +241,6 @@ class MyCoursesContent extends mixinBehaviors([
 
 	ready() {
 		super.ready();
-		this._onEnrollmentPinnedMessage = this._onEnrollmentPinnedMessage.bind(this);
 		this._onTabSelected = this._onTabSelected.bind(this);
 	}
 
@@ -252,7 +248,6 @@ class MyCoursesContent extends mixinBehaviors([
 		super.connectedCallback();
 		this.performanceMark('d2l.my-courses.attached');
 
-		document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
 
 		this.addEventListener('course-tile-organization', this._onCourseTileOrganization);
@@ -272,13 +267,38 @@ class MyCoursesContent extends mixinBehaviors([
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback();
-		document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
 		document.body.removeEventListener('d2l-tab-panel-selected', this._onTabSelected);
 	}
 
 	/*
 	* Public API functions
 	*/
+
+	// Called by d2l-my-courses-container when a course has been pinned or unpinned
+	courseEnrollmentChanged(newValue) {
+		if (!newValue) {
+			return;
+		}
+
+		const changedEnrollmentId = newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId];
+		if (changedEnrollmentId) {
+			updateEntity(changedEnrollmentId, this.token);
+		}
+
+		if (this.tabSearchActions.length === 0 || this._thisTabSelected) {
+			// Only want to move pinned/unpinned enrollment if it exists in the panel
+			if (!changedEnrollmentId) {
+				this._refetchEnrollments();
+			} else {
+				this._rearrangeAfterPinning(changedEnrollmentId, newValue.isPinned);
+			}
+		} else if (this._isAllTab || this._isPinnedTab || changedEnrollmentId) {
+			this._isRefetchNeeded = true;
+		}
+
+		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
+		allCourses.courseEnrollmentChanged(newValue);
+	}
 
 	// After a user-uploaded image is set, this is called to try to update the image
 	refreshCardGridImages(imageOrg) {
@@ -441,78 +461,14 @@ class MyCoursesContent extends mixinBehaviors([
 	_onInitiallyVisibleCourseTile() {
 		this._initiallyVisibleCourseTileCount++;
 	}
-	_onEnrollmentPinnedMessage(e) {
-		if (e.composedPath()[0] === this) return;
-
-		const isPinned = e.detail.isPinned;
-		let orgUnitId;
-
-		if (e.detail.orgUnitId) {
-			orgUnitId = e.detail.orgUnitId;
-			if (this._orgUnitIdMap[orgUnitId]) {
-				const enrollmentHref = this._orgUnitIdMap[orgUnitId];
-				updateEntity(enrollmentHref, this.token);
-			}
-		} else {
-			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
-		}
-		// Only want to move pinned/unpinned enrollment if it exists in the panel
-		const changedEnrollmentId = orgUnitId && this._orgUnitIdMap[orgUnitId];
-		if (!changedEnrollmentId) {
-			this._refetchEnrollments();
-		}
-
-		this.dispatchEvent(new CustomEvent('d2l-course-enrollment-change', {
-			bubbles: true,
-			composed: true,
-			detail: {
-				orgUnitId: orgUnitId,
-				isPinned: isPinned
-			}
-		}));
-		this._isRefetchNeeded = false;
-
-		const removalIndex = this._enrollments.indexOf(changedEnrollmentId);
-		let insertIndex = this._lastPinnedIndex + 1;
-
-		if (!isPinned) {
-			this._lastPinnedIndex--;
-		}
-
-		if (isPinned) {
-			this._lastPinnedIndex++;
-		}
-
-		if (removalIndex === insertIndex) {
-			this._getCardGrid().onResize();
-			return;
-		}
-
-		if (removalIndex !== -1) {
-			this.splice('_enrollments', removalIndex, 1);
-
-			if (removalIndex < insertIndex) {
-				insertIndex--;
-			}
-		}
-
-		if (this._isPinnedTab) {
-			this._numberOfEnrollments--;
-		} else {
-			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
-		}
-
-		this._getCardGrid().onResize();
-	}
 	_onTabSelected(e) {
 		// Only handle if tab selected corresponds to this panel
 		if (!this.parentElement || e.composedPath()[0].id !== this.parentElement.id) {
-			document.body.removeEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
+			this._thisTabSelected = false;
 			return;
 		}
 
-		// Only listen to pin updates for the current tab
-		document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
+		this._thisTabSelected = true;
 
 		if (this._isRefetchNeeded) {
 			this._handleEnrollmentsRefetch();
@@ -554,27 +510,49 @@ class MyCoursesContent extends mixinBehaviors([
 			if (this._isRefetchNeeded) {
 				this._handleEnrollmentsRefetch();
 			}
-
-			document.body.addEventListener('d2l-course-pinned-change', this._onEnrollmentPinnedMessage, true);
-			this._hasEnrollmentsChanged = false;
 		}
 	}
 
-	_onCourseEnrollmentChange(newValue) {
-		if (!newValue) {
-			return;
-		}
-
-		if (this._isAllTab || this._isPinnedTab || (newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId])) {
-			this._isRefetchNeeded = true;
-			this._hasEnrollmentsChanged = true;
-		}
-	}
 	_computeIsAllTab(actionName) {
 		return actionName === Actions.enrollments.searchMyEnrollments;
 	}
 	_computeIsPinnedTab(actionName) {
 		return actionName === Actions.enrollments.searchMyPinnedEnrollments;
+	}
+	_rearrangeAfterPinning(changedEnrollmentId, isPinned) {
+		this._isRefetchNeeded = false;
+
+		const removalIndex = this._enrollments.indexOf(changedEnrollmentId);
+		let insertIndex = this._lastPinnedIndex + 1;
+
+		if (!isPinned) {
+			this._lastPinnedIndex--;
+		}
+
+		if (isPinned) {
+			this._lastPinnedIndex++;
+		}
+
+		if (removalIndex === insertIndex) {
+			this._getCardGrid().onResize();
+			return;
+		}
+
+		if (removalIndex !== -1) {
+			this.splice('_enrollments', removalIndex, 1);
+
+			if (removalIndex < insertIndex) {
+				insertIndex--;
+			}
+		}
+
+		if (this._isPinnedTab) {
+			this._numberOfEnrollments--;
+		} else {
+			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
+		}
+
+		this._getCardGrid().onResize();
 	}
 	/*
 	* Utility/helper functions

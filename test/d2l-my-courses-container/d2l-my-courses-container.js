@@ -119,6 +119,7 @@ describe('d2l-my-courses', () => {
 		component._userSettingsEntity = new UserSettingsEntity(lastSearchResponse);
 		component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchResponse);
 		component._enrollmentCollectionEntity = new EnrollmentCollectionEntity(enrollmentsSearchResponse);
+		component._changedCourseEnrollment = null;
 	});
 
 	afterEach(function() {
@@ -170,11 +171,11 @@ describe('d2l-my-courses', () => {
 		expect(component._tabSearchActions[2].selected).to.be.true;
 	});
 
-	it('should have updated _changedCourseEnrollment property based on the event', () => {
-		[
-			{ orgUnitId: 111, isPinned: true },
-			{ orgUnitId: 222, isPinned: false },
-		].forEach(testCase => {
+	[
+		{ orgUnitId: 111, isPinned: true },
+		{ orgUnitId: 222, isPinned: false }
+	].forEach(testCase => {
+		it(`should have updated _changedCourseEnrollment property based on the event of org ${testCase.orgUnitId}`, done => {
 			const event = {
 				detail: {
 					orgUnitId: testCase.orgUnitId,
@@ -183,9 +184,12 @@ describe('d2l-my-courses', () => {
 			};
 
 			component._changedCourseEnrollment = null;
-			component._onCourseEnrollmentChange(event);
-			expect(component._changedCourseEnrollment.orgUnitId).to.equal(testCase.orgUnitId);
-			expect(component._changedCourseEnrollment.isPinned).to.equal(testCase.isPinned);
+			requestAnimationFrame(() => {
+				component._onCourseEnrollmentChange(event);
+				expect(component._changedCourseEnrollment.orgUnitId).to.equal(testCase.orgUnitId);
+				expect(component._changedCourseEnrollment.isPinned).to.equal(testCase.isPinned);
+				done();
+			});
 		});
 	});
 
@@ -212,7 +216,7 @@ describe('d2l-my-courses', () => {
 					done();
 				});
 			});
-			it('should call refreshCardGridImages on the content (not grouped by tab), ', done => {
+			it('should call refreshCardGridImages on the content (not grouped by tab)', done => {
 				component._showGroupByTabs = false;
 				flush(() => {
 					const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'refreshCardGridImages');
@@ -410,6 +414,62 @@ describe('d2l-my-courses', () => {
 					done();
 				});
 			});
+		});
+
+		describe('d2l-course-pinned-change', () => {
+			let _enrollmentEntity,
+				event;
+
+			beforeEach(() => {
+				_enrollmentEntity = {
+					_entity: {},
+					organizationHref: function() { return '1234'; },
+				};
+
+				event = new CustomEvent('d2l-course-pinned-change', {
+					detail: {
+						isPinned: true,
+						enrollment: _enrollmentEntity
+					}
+				});
+
+				component._enrollmentsSearchAction = searchAction;
+				component._onPromotedSearchEntityChange();
+			});
+
+			[
+				{ },
+				{orgUnitId: '1234', isPinned: false },
+				{orgUnitId: '5678', isPinned: true }
+			].forEach(initialChangedCourseEnrollment => {
+				it(`should update the _changedCourseEnrollment property from ${JSON.stringify(initialChangedCourseEnrollment)}, and pass this to d2l-my-courses-content`, () => {
+					const stub = sandbox.stub(component._fetchContentComponent(), 'courseEnrollmentChanged');
+
+					component._changedCourseEnrollment = initialChangedCourseEnrollment;
+					component._onCourseEnrollmentChange(event);
+
+					expect(component._changedCourseEnrollment.orgUnitId).to.equal('1234');
+					expect(component._changedCourseEnrollment.isPinned).to.equal(true);
+					expect(stub).to.have.been.called;
+				});
+			});
+
+			it('should not update the _changedCourseEnrollment property if nothing has changed', () => {
+				const stub = sandbox.stub(component._fetchContentComponent(), 'courseEnrollmentChanged');
+				component._changedCourseEnrollment = {
+					orgUnitId: '1234',
+					isPinned: true,
+					didNotReplaceObject: true
+				};
+
+				component._onCourseEnrollmentChange(event);
+
+				expect(component._changedCourseEnrollment.orgUnitId).to.equal('1234');
+				expect(component._changedCourseEnrollment.isPinned).to.equal(true);
+				expect(component._changedCourseEnrollment.didNotReplaceObject).to.equal(true);
+				expect(stub).not.to.have.been.called;
+			});
+
 		});
 	});
 });
