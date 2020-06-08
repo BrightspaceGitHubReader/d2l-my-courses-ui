@@ -45,7 +45,6 @@ class AllCourses extends mixinBehaviors([
 
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
-			changedCourseEnrollment: Object,
 			// Standard Department OU Type name to be displayed in the filter dropdown
 			filterStandardDepartmentName: String,
 			// Standard Semester OU Type name to be displayed in the filter dropdown
@@ -180,12 +179,6 @@ class AllCourses extends mixinBehaviors([
 				}
 			}
 		};
-	}
-
-	static get observers() {
-		return [
-			'_onCourseEnrollmentChange(changedCourseEnrollment)'
-		];
 	}
 
 	static get template() {
@@ -407,6 +400,18 @@ class AllCourses extends mixinBehaviors([
 	* Public API methods
 	*/
 
+	courseEnrollmentChanged(newValue) {
+		if (this._showGroupByTabs) {
+			this._bustCacheToken = Math.random();
+			const actionName = this._selectedTabId.replace('all-courses-tab-', '');
+			if (!newValue.isPinned && actionName === Actions.enrollments.searchMyPinnedEnrollments && this._searchUrl) {
+				this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
+			}
+		}
+
+		this._hasEnrollmentsChanged = true;
+	}
+
 	load() {
 		this.$['all-courses-scroll-threshold'].scrollTarget = this.$['all-courses'].scrollRegion;
 		this.$['all-courses-scroll-threshold'].clearTriggers();
@@ -552,10 +557,12 @@ class AllCourses extends mixinBehaviors([
 		this.$.filterMenu.clearFilters();
 		this._filterText = this.localize('filtering.filter');
 		this._resetSortDropdown();
-		if (this._hasEnrollmentsChanged && this._searchUrl) {
+		if (this._hasEnrollmentsChanged) {
 			this._hasEnrollmentsChanged = false;
 			this._bustCacheToken = Math.random();
-			this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
+			if (this._searchUrl) {
+				this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
+			}
 		}
 	}
 
@@ -603,18 +610,6 @@ class AllCourses extends mixinBehaviors([
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			this.createActionUrl(tabAction.enrollmentsSearchAction, params)
 		);
-	}
-
-	_onCourseEnrollmentChange(newValue) {
-		if (this._showGroupByTabs && this._searchUrl) {
-			this._bustCacheToken = Math.random();
-			const actionName = this._selectedTabId.replace('all-courses-tab-', '');
-			if (!newValue.isPinned && actionName === Actions.enrollments.searchMyPinnedEnrollments) {
-				this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
-			}
-		}
-
-		this._hasEnrollmentsChanged = true;
 	}
 
 	/*

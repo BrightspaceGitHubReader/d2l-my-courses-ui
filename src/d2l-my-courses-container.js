@@ -65,6 +65,7 @@ class MyCoursesContainer extends mixinBehaviors([
 				value: []
 			},
 			_tabSearchType: String,
+			// Keep a record of the last changed course enrollment
 			_changedCourseEnrollment: Object,
 			_updateUserSettingsAction: Object,
 			_enrollmentCollectionEntity: Object,
@@ -126,8 +127,7 @@ class MyCoursesContainer extends mixinBehaviors([
 								org-unit-type-ids="[[orgUnitTypeIds]]"
 								tab-search-actions="[[_tabSearchActions]]"
 								tab-search-type="[[_tabSearchType]]"
-								update-user-settings-action="[[_updateUserSettingsAction]]"
-								changed-course-enrollment="[[_changedCourseEnrollment]]">
+								update-user-settings-action="[[_updateUserSettingsAction]]">
 							</d2l-my-courses-content>
 						</d2l-tab-panel>
 					</template>
@@ -139,7 +139,6 @@ class MyCoursesContainer extends mixinBehaviors([
 					show-image-error="[[_showImageError]]"
 					token="[[token]]"
 					advanced-search-url="[[advancedSearchUrl]]"
-					changed-course-enrollment="[[_changedCourseEnrollment]]"
 					org-unit-type-ids="[[orgUnitTypeIds]]"
 					enrollments-search-action="[[_enrollmentsSearchAction]]"
 					standard-department-name="[[standardDepartmentName]]"
@@ -337,12 +336,18 @@ class MyCoursesContainer extends mixinBehaviors([
 			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
 		}
 
-		// Only update the property if something has changed
+		// Only update if something has changed
+		// US117414 - Should investigate why we get the same event multiple times so we can remove this._changedCourseEnrollment altogether
 		if (!this._changedCourseEnrollment || this._changedCourseEnrollment.orgUnitId !== orgUnitId || this._changedCourseEnrollment.isPinned !== e.detail.isPinned) {
 			this._changedCourseEnrollment = {
 				orgUnitId: orgUnitId,
 				isPinned: e.detail.isPinned
 			};
+
+			const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
+			contents.forEach(content => {
+				content.courseEnrollmentChanged(this._changedCourseEnrollment);
+			});
 		}
 	}
 	_tabSelectedChanged(e) {

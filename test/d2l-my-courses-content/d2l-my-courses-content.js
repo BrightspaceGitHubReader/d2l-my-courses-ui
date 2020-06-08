@@ -241,13 +241,20 @@ describe('d2l-my-courses-content', () => {
 			}];
 		});
 
+		it('should pass down course enrollment update to All Courses', () => {
+			const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'courseEnrollmentChanged');
+
+			component.courseEnrollmentChanged(newValue);
+			expect(stub).to.have.been.called;
+		});
+
 		it('should set refetch when course enrollment changed and it is all tab', () => {
 			component.enrollmentsSearchAction = {
 				name: 'search-my-enrollments',
 				href: href,
 				fields: fields
 			};
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(component._isRefetchNeeded).to.be.true;
 		});
 
@@ -257,18 +264,18 @@ describe('d2l-my-courses-content', () => {
 				href: href,
 				fields: fields
 			};
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(component._isRefetchNeeded).to.be.true;
 		});
 
 		it('should set refetch when course enrollment changed and the search action contains this enrollment', () => {
 			component._orgUnitIdMap = { 1234: true };
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(component._isRefetchNeeded).to.be.true;
 		});
 
 		it('should not set refetch for other tabs', () => {
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(component._isRefetchNeeded).to.be.false;
 		});
 
@@ -278,7 +285,7 @@ describe('d2l-my-courses-content', () => {
 
 			component._orgUnitIdMap = { 1234: true };
 			component._thisTabSelected = true;
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(refetchStub.called).to.be.false;
 			expect(rearrangeStub.called).to.be.true;
 		});
@@ -289,7 +296,7 @@ describe('d2l-my-courses-content', () => {
 
 			component._orgUnitIdMap = {};
 			component._thisTabSelected = true;
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(refetchStub.called).to.be.true;
 			expect(rearrangeStub.called).to.be.false;
 		});

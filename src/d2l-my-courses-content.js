@@ -46,7 +46,6 @@ class MyCoursesContent extends mixinBehaviors([
 			},
 			tabSearchType: String,
 			updateUserSettingsAction: Object,
-			changedCourseEnrollment: Object,
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
 			// Standard Semester OU Type name to be displayed in the all-courses filter dropdown
@@ -155,8 +154,7 @@ class MyCoursesContent extends mixinBehaviors([
 	static get observers() {
 		return [
 			'_enrollmentsChanged(_enrollments.length, _numberOfEnrollments)',
-			'_enrollmentSearchActionChanged(enrollmentsSearchAction)',
-			'_onCourseEnrollmentChange(changedCourseEnrollment)'
+			'_enrollmentSearchActionChanged(enrollmentsSearchAction)'
 		];
 	}
 
@@ -231,7 +229,6 @@ class MyCoursesContent extends mixinBehaviors([
 
 		<d2l-all-courses
 			advanced-search-url="[[advancedSearchUrl]]"
-			changed-course-enrollment="[[changedCourseEnrollment]]"
 			enrollments-search-action="[[enrollmentsSearchAction]]"
 			filter-standard-department-name="[[standardDepartmentName]]"
 			filter-standard-semester-name="[[standardSemesterName]]"
@@ -276,6 +273,32 @@ class MyCoursesContent extends mixinBehaviors([
 	/*
 	* Public API functions
 	*/
+
+	// Called by d2l-my-courses-container when a course has been pinned or unpinned
+	courseEnrollmentChanged(newValue) {
+		if (!newValue) {
+			return;
+		}
+
+		const changedEnrollmentId = newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId];
+		if (changedEnrollmentId) {
+			updateEntity(changedEnrollmentId, this.token);
+		}
+
+		if (this.tabSearchActions.length === 0 || this._thisTabSelected) {
+			// Only want to move pinned/unpinned enrollment if it exists in the panel
+			if (!changedEnrollmentId) {
+				this._refetchEnrollments();
+			} else {
+				this._rearrangeAfterPinning(changedEnrollmentId, newValue.isPinned);
+			}
+		} else if (this._isAllTab || this._isPinnedTab || changedEnrollmentId) {
+			this._isRefetchNeeded = true;
+		}
+
+		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
+		allCourses.courseEnrollmentChanged(newValue);
+	}
 
 	// After a user-uploaded image is set, this is called to try to update the image
 	refreshCardGridImages(imageOrg) {
@@ -490,27 +513,6 @@ class MyCoursesContent extends mixinBehaviors([
 		}
 	}
 
-	_onCourseEnrollmentChange(newValue) {
-		if (!newValue) {
-			return;
-		}
-
-		const changedEnrollmentId = newValue.orgUnitId && this._orgUnitIdMap[newValue.orgUnitId];
-		if (changedEnrollmentId) {
-			updateEntity(changedEnrollmentId, this.token);
-		}
-
-		if (this.tabSearchActions.length === 0 || this._thisTabSelected) {
-			// Only want to move pinned/unpinned enrollment if it exists in the panel
-			if (!changedEnrollmentId) {
-				this._refetchEnrollments();
-				return;
-			}
-			this._rearrangeAfterPinning(changedEnrollmentId, newValue.isPinned);
-		} else if (this._isAllTab || this._isPinnedTab || changedEnrollmentId) {
-			this._isRefetchNeeded = true;
-		}
-	}
 	_computeIsAllTab(actionName) {
 		return actionName === Actions.enrollments.searchMyEnrollments;
 	}
