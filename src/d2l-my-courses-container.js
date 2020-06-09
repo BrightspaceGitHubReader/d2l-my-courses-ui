@@ -12,6 +12,7 @@ import '@brightspace-ui/core/components/tabs/tab-panel.js';
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import 'd2l-image-selector/d2l-basic-image-selector.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
+import './d2l-all-courses.js';
 import './d2l-my-courses-content.js';
 import './d2l-utility-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -117,13 +118,11 @@ class MyCoursesContainer extends mixinBehaviors([
 						<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
 						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 							<d2l-my-courses-content
+								on-d2l-my-courses-content-open-all-courses="_openAllCoursesOverlay"
 								presentation-url="[[_presentationUrl]]"
 								show-image-error="[[_showImageError]]"
 								token="[[token]]"
-								advanced-search-url="[[advancedSearchUrl]]"
 								enrollments-search-action="[[item.enrollmentsSearchAction]]"
-								standard-department-name="[[standardDepartmentName]]"
-								standard-semester-name="[[standardSemesterName]]"
 								org-unit-type-ids="[[orgUnitTypeIds]]"
 								tab-search-actions="[[_tabSearchActions]]"
 								tab-search-type="[[_tabSearchType]]"
@@ -135,16 +134,27 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>
 			<template is="dom-if" if="[[!_showGroupByTabs]]">
 				<d2l-my-courses-content
+					on-d2l-my-courses-content-open-all-courses="_openAllCoursesOverlay"
 					presentation-url="[[_presentationUrl]]"
 					show-image-error="[[_showImageError]]"
 					token="[[token]]"
-					advanced-search-url="[[advancedSearchUrl]]"
 					org-unit-type-ids="[[orgUnitTypeIds]]"
-					enrollments-search-action="[[_enrollmentsSearchAction]]"
-					standard-department-name="[[standardDepartmentName]]"
-					standard-semester-name="[[standardSemesterName]]">
+					enrollments-search-action="[[_enrollmentsSearchAction]]">
 				</d2l-my-courses-content>
 			</template>
+
+			<d2l-all-courses
+				on-d2l-simple-overlay-closed="_onAllCoursesOverlayClosed"
+				advanced-search-url="[[advancedSearchUrl]]"
+				enrollments-search-action="[[_enrollmentsSearchAction]]"
+				filter-standard-department-name="[[standardDepartmentName]]"
+				filter-standard-semester-name="[[standardSemesterName]]"
+				org-unit-type-ids="[[orgUnitTypeIds]]"
+				presentation-url="[[_presentationUrl]]"
+				show-image-error="[[_showImageError]]"
+				tab-search-type="[[_tabSearchType]]"
+				token="[[token]]">
+			</d2l-all-courses>
 			
 			<d2l-simple-overlay id="basic-image-selector-overlay"
 				title-name="[[localize('changeImage')]]"
@@ -181,6 +191,15 @@ class MyCoursesContainer extends mixinBehaviors([
 		document.body.addEventListener('d2l-course-pinned-change', this._onCourseEnrollmentChange);
 
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
+
+		let ouTypeIds = []; //default value
+		try {
+			ouTypeIds = JSON.parse(this.orgUnitTypeIds).value;
+		} catch (e) {
+			// default value used
+		}
+
+		this.orgUnitTypeIds = ouTypeIds;
 	}
 
 	disconnectedCallback() {
@@ -194,7 +213,8 @@ class MyCoursesContainer extends mixinBehaviors([
 		if (success) {
 			this.$['basic-image-selector-overlay'].close();
 
-			this._fetchContentComponent().refreshCardGridImages(this._setImageOrg);
+			this._getContentComponent().refreshCardGridImages(this._setImageOrg);
+			this._getAllCoursesComponent().refreshCardGridImages(this._setImageOrg);
 		}
 	}
 	// This is called by the LE, but only when it's a user-uploaded image
@@ -233,10 +253,25 @@ class MyCoursesContainer extends mixinBehaviors([
 		}
 	}
 
-	_fetchContentComponent() {
+	_getContentComponent() {
 		return this._showGroupByTabs === false || !this._currentTabId
 			? this.shadowRoot.querySelector('d2l-my-courses-content')
 			: this.shadowRoot.querySelector(`#${this._currentTabId} d2l-my-courses-content`);
+	}
+	_getAllCoursesComponent() {
+		return this.shadowRoot.querySelector('d2l-all-courses');
+	}
+
+	_openAllCoursesOverlay(e) {
+		const allCourses = this._getAllCoursesComponent();
+		allCourses.tabSearchActions = e.detail.tabSearchActions;
+		allCourses.open();
+
+		this._showImageError = false; // Clear image error when opening and closing the all courses overlay
+	}
+	_onAllCoursesOverlayClosed() {
+		this._showImageError = false; // Clear image error when opening and closing the all courses overlay
+		this._getContentComponent().allCoursesOverlayClosed();
 	}
 
 	_onEnrollmentAndUserSettingsEntityChange() {
@@ -348,6 +383,8 @@ class MyCoursesContainer extends mixinBehaviors([
 			contents.forEach(content => {
 				content.courseEnrollmentChanged(this._changedCourseEnrollment);
 			});
+
+			this._getAllCoursesComponent().courseEnrollmentChanged(this._changedCourseEnrollment);
 		}
 	}
 	_tabSelectedChanged(e) {

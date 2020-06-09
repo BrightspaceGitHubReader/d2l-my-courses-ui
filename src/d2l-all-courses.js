@@ -446,6 +446,7 @@ class AllCourses extends mixinBehaviors([
 		this.load();
 	}
 
+	// After a user-uploaded image is set, this is called to try to update the image
 	refreshCardGridImages(organization) {
 		this._getCardGrid().refreshCardGridImages(organization);
 	}
