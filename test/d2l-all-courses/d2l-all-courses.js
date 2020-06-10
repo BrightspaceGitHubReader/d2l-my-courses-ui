@@ -248,12 +248,35 @@ describe('d2l-all-courses', function() {
 
 	describe('closing the overlay', function() {
 
+		it('should prep _enrollmentsSearchAction for component resets', function() {
+			const entity = window.D2L.Hypermedia.Siren.Parse({
+				actions: [{
+					name: 'search-my-enrollments',
+					method: 'GET',
+					href: '/enrollments/users/169',
+					fields: [
+						{ name: 'search', type: 'search', value: 'testing' },
+						{ name: 'sort', type: 'text', value: 'LastAccessed' },
+						{ name: 'promotePins', type: 'checkbox', value: false }
+					]
+				}]
+			});
+			widget._enrollmentsSearchAction = entity.actions[0];
+
+			widget._onSimpleOverlayClosed();
+
+			expect(widget._enrollmentsSearchAction.getFieldByName('search').value).to.be.equal('');
+			expect(widget._enrollmentsSearchAction.getFieldByName('sort').value).to.be.equal('Current');
+			expect(widget._enrollmentsSearchAction.getFieldByName('promotePins').value).to.be.true;
+		});
+
 		it('should clear search text', function() {
 			const spy = sandbox.spy(widget, '_clearSearchWidget');
 			const searchField = widget.$['search-widget'];
 
 			searchField._getSearchWidget()._getSearchInput().value = 'foo';
-			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
+			widget._onSimpleOverlayClosed();
+
 			expect(spy.called).to.be.true;
 			expect(searchField._getSearchWidget()._getSearchInput().value).to.equal('');
 		});
@@ -271,7 +294,7 @@ describe('d2l-all-courses', function() {
 			fireEvent(widget.$.filterDropdownContent, 'd2l-dropdown-close', {});
 
 			expect(widget._filterText).to.equal('Filter: 1 Filter');
-			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
+			widget._onSimpleOverlayClosed();
 			expect(spy.called).to.be.true;
 			expect(widget._filterText).to.equal('Filter');
 		});
@@ -288,7 +311,7 @@ describe('d2l-all-courses', function() {
 			fireEvent(widget.shadowRoot.querySelector('d2l-dropdown-menu'), 'd2l-menu-item-change', event);
 			expect(widget._searchUrl).to.contain('OrgUnitCode,OrgUnitId');
 
-			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
+			widget._onSimpleOverlayClosed();
 			expect(spy.called).to.be.true;
 		});
 
