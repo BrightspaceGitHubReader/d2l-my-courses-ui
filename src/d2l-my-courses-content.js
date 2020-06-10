@@ -8,7 +8,6 @@ import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-alert-behavior.js';
-import './d2l-all-courses.js';
 import './d2l-my-courses-card-grid.js';
 import './d2l-utility-behavior.js';
 
@@ -37,8 +36,7 @@ class MyCoursesContent extends mixinBehaviors([
 			// Set by the image selector when it experiences an error trying to set a new course image
 			showImageError: {
 				type: Boolean,
-				value: false,
-				observer: '_setAllCoursesImageError'
+				value: false
 			},
 			tabSearchActions: {
 				type: Array,
@@ -46,12 +44,6 @@ class MyCoursesContent extends mixinBehaviors([
 			},
 			tabSearchType: String,
 			updateUserSettingsAction: Object,
-			// URL that directs to the advanced search page
-			advancedSearchUrl: String,
-			// Standard Semester OU Type name to be displayed in the all-courses filter dropdown
-			standardDepartmentName: String,
-			// Standard Department OU Type name to be displayed in the all-courses filter dropdown
-			standardSemesterName: String,
 			// Configuration value passed in to toggle Learning Paths code
 			orgUnitTypeIds: String,
 			// URL to fetch widget settings
@@ -225,18 +217,7 @@ class MyCoursesContent extends mixinBehaviors([
 				tabindex="0">
 				<h3 class="d2l-body-standard">[[_viewAllCoursesText]]</h3>
 			</d2l-link>
-		</div>
-
-		<d2l-all-courses
-			advanced-search-url="[[advancedSearchUrl]]"
-			enrollments-search-action="[[enrollmentsSearchAction]]"
-			filter-standard-department-name="[[standardDepartmentName]]"
-			filter-standard-semester-name="[[standardSemesterName]]"
-			org-unit-type-ids="[[orgUnitTypeIds]]"
-			presentation-url="[[presentationUrl]]"
-			tab-search-type="[[tabSearchType]]"
-			token="[[token]]">
-		</d2l-all-courses>`;
+		</div>`;
 	}
 
 	ready() {
@@ -253,17 +234,7 @@ class MyCoursesContent extends mixinBehaviors([
 		this.addEventListener('course-tile-organization', this._onCourseTileOrganization);
 		this.addEventListener('course-image-loaded', this._onCourseImageLoaded);
 		this.addEventListener('d2l-enrollment-new', this._onD2lEnrollmentNew);
-		this.addEventListener('d2l-simple-overlay-closed', this._onSimpleOverlayClosed);
 		this.addEventListener('initially-visible-course-tile', this._onInitiallyVisibleCourseTile);
-
-		let ouTypeIds = []; //default value
-		try {
-			ouTypeIds = JSON.parse(this.orgUnitTypeIds).value;
-		} catch (e) {
-			// default value used
-		}
-
-		this.orgUnitTypeIds = ouTypeIds;
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback();
@@ -273,6 +244,13 @@ class MyCoursesContent extends mixinBehaviors([
 	/*
 	* Public API functions
 	*/
+
+	// Called by d2l-my-courses-container when the all courses overlay is closed
+	allCoursesOverlayClosed() {
+		if (this._isRefetchNeeded) {
+			this._handleEnrollmentsRefetch();
+		}
+	}
 
 	// Called by d2l-my-courses-container when a course has been pinned or unpinned
 	courseEnrollmentChanged(newValue) {
@@ -295,17 +273,11 @@ class MyCoursesContent extends mixinBehaviors([
 		} else if (this._isAllTab || this._isPinnedTab || changedEnrollmentId) {
 			this._isRefetchNeeded = true;
 		}
-
-		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-		allCourses.courseEnrollmentChanged(newValue);
 	}
 
 	// After a user-uploaded image is set, this is called to try to update the image
 	refreshCardGridImages(imageOrg) {
 		this._getCardGrid().refreshCardGridImages(imageOrg);
-
-		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-		allCourses.refreshCardGridImages(imageOrg);
 	}
 
 	_getCardGrid() {
@@ -502,16 +474,6 @@ class MyCoursesContent extends mixinBehaviors([
 			};
 		});
 	}
-	_onSimpleOverlayClosed(e) {
-
-		if (e.composedPath()[0].id === 'all-courses') {
-			this.showImageError = false; // Clear image error when opening and closing the all courses overlay
-
-			if (this._isRefetchNeeded) {
-				this._handleEnrollmentsRefetch();
-			}
-		}
-	}
 
 	_computeIsAllTab(actionName) {
 		return actionName === Actions.enrollments.searchMyEnrollments;
@@ -629,21 +591,14 @@ class MyCoursesContent extends mixinBehaviors([
 		return enrollmentsLength > 0 ? `${viewAllCourses} (${count})` : viewAllCourses;
 	}
 	_openAllCoursesView(e) {
-		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-		allCourses.tabSearchActions = this.tabSearchActions;
-		allCourses.open();
-
-		this.showImageError = false; // Clear image error when opening and closing the all courses overlay
+		this.dispatchEvent(new CustomEvent('d2l-my-courses-content-open-all-courses', {
+			detail: {
+				tabSearchActions: this.tabSearchActions
+			}
+		}));
 
 		e.preventDefault();
 		e.stopPropagation();
-	}
-	_setAllCoursesImageError(newValue) {
-		const allCourses = this.shadowRoot.querySelector('d2l-all-courses');
-
-		if (allCourses) {
-			allCourses.showImageError = newValue;
-		}
 	}
 	_onEnrollmentsEntityChange(url) {
 		entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {

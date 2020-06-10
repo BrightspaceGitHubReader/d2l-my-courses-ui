@@ -241,13 +241,6 @@ describe('d2l-my-courses-content', () => {
 			}];
 		});
 
-		it('should pass down course enrollment update to All Courses', () => {
-			const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'courseEnrollmentChanged');
-
-			component.courseEnrollmentChanged(newValue);
-			expect(stub).to.have.been.called;
-		});
-
 		it('should set refetch when course enrollment changed and it is all tab', () => {
 			component.enrollmentsSearchAction = {
 				name: 'search-my-enrollments',
@@ -319,13 +312,11 @@ describe('d2l-my-courses-content', () => {
 	describe('Public API', () => {
 
 		describe('refreshCardGridImages', () => {
-			it('should refresh cards in both card grids', () => {
-				const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
-				const stub2 = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'refreshCardGridImages');
+			it('should refresh cards in grid', () => {
+				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
 
 				component.refreshCardGridImages();
-				expect(stub1).to.have.been.called;
-				expect(stub2).to.have.been.called;
+				expect(stub).to.have.been.called;
 			});
 		});
 	});
@@ -341,38 +332,6 @@ describe('d2l-my-courses-content', () => {
 			expect(alert.innerText).to.include(alertMessage);
 			component.showImageError = false;
 			expect(alert.hidden).to.be.true;
-		});
-
-		it('should hide the course image failure alert when the all courses overlay is opened', function() {
-			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
-			component.showImageError = true;
-
-			const alert = component.shadowRoot.querySelector('#imageErrorAlert');
-			expect(alert.hidden).to.be.false;
-			expect(alert.type).to.equal('warning');
-			expect(alert.innerText).to.include(alertMessage);
-
-			component._openAllCoursesView(new CustomEvent('event'));
-			expect(alert.hidden).to.be.true;
-			expect(component.showImageError).to.be.false;
-		});
-
-		it('should hide the course image failure alert when the all courses overlay is closed', function() {
-			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
-			component.showImageError = true;
-
-			const alert = component.shadowRoot.querySelector('#imageErrorAlert');
-			expect(alert.hidden).to.be.false;
-			expect(alert.type).to.equal('warning');
-			expect(alert.innerText).to.include(alertMessage);
-
-			const event = {
-				type: 'd2l-simple-overlay-closed',
-				composedPath: function() { return [{ id: 'all-courses' }]; }
-			};
-			component._onSimpleOverlayClosed(event);
-			expect(alert.hidden).to.be.true;
-			expect(component.showImageError).to.be.false;
 		});
 	});
 
@@ -448,31 +407,6 @@ describe('d2l-my-courses-content', () => {
 					expect(refetchStub.called).to.equal(refetchNeeded);
 					expect(resetStub.called).to.equal(refetchNeeded);
 					expect(component._isRefetchNeeded).to.be.false;
-				});
-			});
-		});
-
-		describe('d2l-simple-overlay-closed', () => {
-
-			it('should remove an existing course image failure alert', done => {
-				const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
-				component.showImageError = true;
-
-				const alert = component.shadowRoot.querySelector('#imageErrorAlert');
-				expect(alert.hidden).to.be.false;
-				expect(alert.type).to.equal('warning');
-				expect(alert.innerText).to.include(alertMessage);
-
-				const event = {
-					type: 'd2l-simple-overlay-closed',
-					composedPath: function() { return [{ id: 'all-courses' }]; }
-				};
-				component._onSimpleOverlayClosed(event);
-
-				setTimeout(() => {
-					expect(component.showImageError).to.be.false;
-					expect(alert.hidden).to.be.true;
-					done();
 				});
 			});
 		});
