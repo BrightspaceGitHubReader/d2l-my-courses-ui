@@ -196,17 +196,6 @@ describe('d2l-my-courses', () => {
 		});
 	});
 
-	it('should have updated _currentTabId property based on the event', () => {
-		component._currentTabId = null;
-		const event = {
-			detail: {
-				tabId: 1254
-			}
-		};
-		component._tabSelectedChanged(event);
-		expect(component._currentTabId).to.equal(`panel-${event.detail.tabId}`);
-	});
-
 	describe('Public API', () => {
 
 		describe('courseImageUploadCompleted', () => {
@@ -442,7 +431,7 @@ describe('d2l-my-courses', () => {
 			});
 		});
 
-		describe('d2l-my-courses-content-open-all-courses', () => {
+		describe('d2l-simple-overlay-closed', () => {
 			it('should remove an existing course image failure alert and tell d2l-my-courses-content that the overlay closed', () => {
 				const stub = sandbox.stub(component._getContentComponent(), 'allCoursesOverlayClosed');
 				component._showImageError = true;
@@ -454,20 +443,52 @@ describe('d2l-my-courses', () => {
 			});
 		});
 
-		describe('d2l-simple-overlay-closed', () => {
+		describe('d2l-my-courses-content-open-all-courses', () => {
 			it('should remove an existing course image failure alert and prep all courses for opening', () => {
-				const tabSearchActions = ['testing'];
-				const event = new CustomEvent('d2l-course-pinned-change', {
-					detail: {
-						tabSearchActions: tabSearchActions
-					}
-				});
+				const tabSearchActions = [{name: 'testing', href: 'something'}];
+				const event = new CustomEvent('d2l-course-pinned-change');
 				component._showImageError = true;
+				component._tabSearchActions = tabSearchActions;
 
 				component._openAllCoursesOverlay(event);
 
-				expect(component._getAllCoursesComponent().tabSearchActions).to.equal(tabSearchActions);
+				expect(component._getAllCoursesComponent().tabSearchActions[0]).to.not.equal(tabSearchActions[0]);
+				expect(component._getAllCoursesComponent().tabSearchActions).to.deep.equal(tabSearchActions);
 				expect(component._showImageError).to.be.false;
+			});
+		});
+
+		describe('d2l-tab-changed', () => {
+			it('should have updated _currentTabId property based on the event', () => {
+				const event = {
+					detail: {
+						tabId: '1254'
+					}
+				};
+				const tabSearchActions = [{
+					name: '1254',
+					title: 'WillBeSelected',
+					selected: false,
+					enrollmentsSearchAction: 'Action1254'
+				},
+				{
+					name: '8787',
+					title: 'WillBeUnSelected',
+					selected: true,
+					enrollmentsSearchAction: 'Action8787'
+				}];
+				component._currentTabId = null;
+				component._tabSearchActions = tabSearchActions.map(action => Object.assign({}, action));
+
+				component._tabSelectedChanged(event);
+				expect(component._currentTabId).to.equal(`panel-${event.detail.tabId}`);
+				for (let i = 0; i < tabSearchActions.length; i++) {
+					expect(component._tabSearchActions[i].name).to.equal(tabSearchActions[i].name);
+					expect(component._tabSearchActions[i].title).to.equal(tabSearchActions[i].title);
+					expect(component._tabSearchActions[i].enrollmentsSearchAction).to.equal(tabSearchActions[i].enrollmentsSearchAction);
+				}
+				expect(component._tabSearchActions[0].selected).to.be.true;
+				expect(component._tabSearchActions[1].selected).to.be.false;
 			});
 		});
 

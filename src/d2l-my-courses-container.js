@@ -124,7 +124,6 @@ class MyCoursesContainer extends mixinBehaviors([
 								token="[[token]]"
 								enrollments-search-action="[[item.enrollmentsSearchAction]]"
 								org-unit-type-ids="[[orgUnitTypeIds]]"
-								tab-search-actions="[[_tabSearchActions]]"
 								tab-search-type="[[_tabSearchType]]"
 								update-user-settings-action="[[_updateUserSettingsAction]]">
 							</d2l-my-courses-content>
@@ -134,6 +133,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>
 			<template is="dom-if" if="[[!_showGroupByTabs]]">
 				<d2l-my-courses-content
+					no-tabs
 					on-d2l-my-courses-content-open-all-courses="_openAllCoursesOverlay"
 					presentation-url="[[_presentationUrl]]"
 					show-image-error="[[_showImageError]]"
@@ -262,9 +262,12 @@ class MyCoursesContainer extends mixinBehaviors([
 		return this.shadowRoot.querySelector('d2l-all-courses');
 	}
 
-	_openAllCoursesOverlay(e) {
+	_openAllCoursesOverlay() {
 		const allCourses = this._getAllCoursesComponent();
-		allCourses.tabSearchActions = e.detail.tabSearchActions;
+		// Make a deep copy of the tabSearchActions so we can modify it to remember All Courses's last selected tab
+		// without affecting the selected tab on the main widget view
+		const tabSearchActionsCopy = this._tabSearchActions.map(action => Object.assign({}, action));
+		allCourses.tabSearchActions = tabSearchActionsCopy;
 		allCourses.open();
 
 		this._showImageError = false; // Clear image error when opening and closing the all courses overlay
@@ -389,6 +392,14 @@ class MyCoursesContainer extends mixinBehaviors([
 	}
 	_tabSelectedChanged(e) {
 		this._currentTabId = `panel-${e.detail.tabId}`;
+		// Whenever the selected tab changes, update tabSearchActions so
+		// All Courses will have the same tab selected when it opens
+		this._tabSearchActions = this._tabSearchActions.map((action) => {
+			return Object.assign({}, action, {
+				selected: action.name === e.detail.tabId
+			});
+		});
+
 	}
 	_tokenChanged(token, enrollmentsUrl, userSettingsUrl) {
 		if (token && enrollmentsUrl && userSettingsUrl) {

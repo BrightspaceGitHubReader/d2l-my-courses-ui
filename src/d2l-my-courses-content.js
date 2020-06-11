@@ -38,10 +38,6 @@ class MyCoursesContent extends mixinBehaviors([
 				type: Boolean,
 				value: false
 			},
-			tabSearchActions: {
-				type: Array,
-				value: function() { return []; }
-			},
 			tabSearchType: String,
 			updateUserSettingsAction: Object,
 			// Configuration value passed in to toggle Learning Paths code
@@ -50,7 +46,11 @@ class MyCoursesContent extends mixinBehaviors([
 			presentationUrl: String,
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
 			token: String,
-
+			// Once the pinned tab feature flag is removed, we can remove this code path
+			noTabs: {
+				type: Boolean,
+				value: false
+			},
 			// Alerts to display in course grid, above the course cards
 			_alertsView: {
 				type: Array,
@@ -263,7 +263,7 @@ class MyCoursesContent extends mixinBehaviors([
 			updateEntity(changedEnrollmentId, this.token);
 		}
 
-		if (this.tabSearchActions.length === 0 || this._thisTabSelected) {
+		if (this.noTabs || this._thisTabSelected) {
 			// Only want to move pinned/unpinned enrollment if it exists in the panel
 			if (!changedEnrollmentId) {
 				this._refetchEnrollments();
@@ -296,7 +296,7 @@ class MyCoursesContent extends mixinBehaviors([
 		}
 	}
 	_enrollmentSearchActionChanged() {
-		if (!this.tabSearchActions.length) {
+		if (this.noTabs) {
 			// We only need to manually fetch if we're not using tabs;
 			// otherwise, the fetch is initiated when a tab is selected.
 			this._fetchRoot();
@@ -463,16 +463,6 @@ class MyCoursesContent extends mixinBehaviors([
 			}
 		});
 		this.dispatchEvent(tabChanged);
-		// Whenever the selected tab changes, update tabSearchActions so
-		// All Courses will have the same tab selected when it opens
-		this.tabSearchActions = this.tabSearchActions.map((action) => {
-			return {
-				name: action.name,
-				title: action.title,
-				selected: action.name === this.enrollmentsSearchAction.name,
-				enrollmentsSearchAction: action.enrollmentsSearchAction
-			};
-		});
 	}
 
 	_computeIsAllTab(actionName) {
@@ -591,11 +581,7 @@ class MyCoursesContent extends mixinBehaviors([
 		return enrollmentsLength > 0 ? `${viewAllCourses} (${count})` : viewAllCourses;
 	}
 	_openAllCoursesView(e) {
-		this.dispatchEvent(new CustomEvent('d2l-my-courses-content-open-all-courses', {
-			detail: {
-				tabSearchActions: this.tabSearchActions
-			}
-		}));
+		this.dispatchEvent(new CustomEvent('d2l-my-courses-content-open-all-courses'));
 
 		e.preventDefault();
 		e.stopPropagation();
@@ -727,6 +713,7 @@ class MyCoursesContent extends mixinBehaviors([
 		this._existingEnrollmentsMap = {};
 		this._enrollments = [];
 		this._numberOfEnrollments = 0;
+		this._nextEnrollmentEntityUrl = null;
 	}
 	_setLastSearchName(id) {
 		performSirenAction(this.token, this.updateUserSettingsAction, [
