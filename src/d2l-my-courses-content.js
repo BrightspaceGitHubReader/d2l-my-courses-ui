@@ -713,6 +713,7 @@ class MyCoursesContent extends mixinBehaviors([
 		this._existingEnrollmentsMap = {};
 		this._enrollments = [];
 		this._numberOfEnrollments = 0;
+		this._nextEnrollmentEntityUrl = null;
 	}
 	_setLastSearchName(id) {
 		performSirenAction(this.token, this.updateUserSettingsAction, [
