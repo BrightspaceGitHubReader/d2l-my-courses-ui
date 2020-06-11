@@ -395,12 +395,9 @@ class MyCoursesContainer extends mixinBehaviors([
 		// Whenever the selected tab changes, update tabSearchActions so
 		// All Courses will have the same tab selected when it opens
 		this._tabSearchActions = this._tabSearchActions.map((action) => {
-			return {
-				name: action.name,
-				title: action.title,
-				selected: action.name === e.detail.tabId,
-				enrollmentsSearchAction: action.enrollmentsSearchAction
-			};
+			return Object.assign({}, action, {
+				selected: action.name === e.detail.tabId
+			});
 		});
 
 	}
