@@ -203,12 +203,14 @@ describe('d2l-my-courses-content', () => {
 		component._existingEnrollmentsMap = { 1234: true };
 		component._enrollments = [1234];
 		component._numberOfEnrollments = 10;
+		component._nextEnrollmentEntityUrl = 'nextUrl';
 
 		component._resetEnrollments();
 
 		expect(component._lastPinnedIndex).to.equal(-1);
 		expect(component._enrollments.length).to.equal(0);
 		expect(component._numberOfEnrollments).to.equal(0);
+		expect(component._nextEnrollmentEntityUrl).to.be.null;
 		for (const key in component._existingEnrollmentsMap) {
 			expect(component._existingEnrollmentsMap.hasOwnProperty(key)).to.be.false;
 		}
@@ -230,15 +232,6 @@ describe('d2l-my-courses-content', () => {
 				href: href,
 				fields: fields
 			};
-			component.tabSearchActions = [{
-				name: 'search-my-enrollments',
-				title: '',
-				selected: false
-			}, {
-				name: 'search-my-pinned-enrollments',
-				title: '',
-				selected: false
-			}];
 		});
 
 		it('should set refetch when course enrollment changed and it is all tab', () => {
@@ -347,7 +340,6 @@ describe('d2l-my-courses-content', () => {
 				component.updateUserSettingsAction = updateUserSettingsAction;
 				component.enrollmentsSearchAction = searchAction;
 				component._numberOfEnrollments = 1;
-				component.tabSearchActions = [];
 				sandbox.stub(component, '_setLastSearchName');
 				setTimeout(() => {
 					done();
@@ -368,29 +360,14 @@ describe('d2l-my-courses-content', () => {
 				});
 			});
 
-			it('should update the tabSearchActions to select the currently-active tab and set itself to the selected tab', () => {
-				component.tabSearchActions = [{
-					name: searchAction.name,
-					title: '',
-					selected: false,
-					enrollmentsSearchAction: searchAction
-				}, {
-					name: 'foo',
-					title: '',
-					selected: true,
-					enrollmentsSearchAction: searchAction
-				}];
-
+			it('should set itself to the selected tab', () => {
 				expect(component._thisTabSelected).to.be.false;
 
 				parentComponent.dispatchEvent(new CustomEvent(
 					'd2l-tab-panel-selected', { bubbles: true, composed: true }
 				));
 
-				component.tabSearchActions.forEach(function(action) {
-					expect(action.selected).to.equal(action.name !== 'foo');
-					expect(component._thisTabSelected).to.be.true;
-				});
+				expect(component._thisTabSelected).to.be.true;
 			});
 
 			[true, false].forEach(refetchNeeded => {
@@ -535,13 +512,18 @@ describe('d2l-my-courses-content', () => {
 			expect(component._showContent).to.be.true;
 		});
 
-		it('should fetch enrollments using the constructed enrollmentsSearchUrl', () => {
-			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsRootEntity));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('autoPinCourses=false'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('pageSize=20'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('embedDepth=0'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('sort=current'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('promotePins=true'));
+		it('should fetch enrollments using the constructed enrollmentsSearchUrl', done => {
+			component.noTabs = true;
+			component._enrollmentSearchActionChanged();
+
+			requestAnimationFrame(() => {
+				expect(fetchStub).to.have.been.calledWith(sinon.match('autoPinCourses=false'));
+				expect(fetchStub).to.have.been.calledWith(sinon.match('pageSize=20'));
+				expect(fetchStub).to.have.been.calledWith(sinon.match('embedDepth=0'));
+				expect(fetchStub).to.have.been.calledWith(sinon.match('sort=current'));
+				expect(fetchStub).to.have.been.calledWith(sinon.match('promotePins=true'));
+				done();
+			});
 		});
 
 		it('should fetch all pinned enrollments', done => {
