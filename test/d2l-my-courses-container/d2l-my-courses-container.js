@@ -159,6 +159,7 @@ describe('d2l-my-courses', () => {
 	});
 
 	it('should have search pinned enrollments action and hide the only saved search action', () => {
+		sandbox.stub(component, '_tryGetItemLocalStorage').withArgs('myCourses.pinnedTab').returns({previouslyShown: true});
 		component._enrollmentsSearchAction = searchAction;
 		component._pinnedTabAction = searchPinnedEnrollmentsAction;
 		component._onPromotedSearchEntityChange();
@@ -166,6 +167,7 @@ describe('d2l-my-courses', () => {
 	});
 
 	it('should have search pinned enrollments action with two saved search actions', () => {
+		sandbox.stub(component, '_tryGetItemLocalStorage').withArgs('myCourses.pinnedTab').returns({previouslyShown: true});
 		component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
 		component._enrollmentsSearchAction = searchAction;
 		component._pinnedTabAction = searchPinnedEnrollmentsAction;

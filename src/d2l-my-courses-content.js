@@ -280,6 +280,12 @@ class MyCoursesContent extends mixinBehaviors([
 		this._getCardGrid().refreshCardGridImages(imageOrg);
 	}
 
+	// Called by d2l-my-courses-container when the pinned tab has been added or removed
+	// Needed because of dom-repeat's re-use of DOM nodes
+	requestRefresh() {
+		this._isRefetchNeeded = true;
+	}
+
 	_getCardGrid() {
 		return this.shadowRoot.querySelector('d2l-my-courses-card-grid');
 	}
@@ -444,7 +450,7 @@ class MyCoursesContent extends mixinBehaviors([
 
 		if (this._isRefetchNeeded) {
 			this._handleEnrollmentsRefetch();
-		} else if (this._numberOfEnrollments === 0) {
+		} else if (this._numberOfEnrollments === 0 && !this._rootTabSelected) {
 			this._rootTabSelected = true;
 			this._fetchRoot();
 		} else {
@@ -521,7 +527,7 @@ class MyCoursesContent extends mixinBehaviors([
 		};
 		let enrollmentsSearchUrl = this.createActionUrl(this.enrollmentsSearchAction, query);
 
-		if (bustCache) {
+		if (bustCache || this._isPinnedTab) {
 			enrollmentsSearchUrl += `&bustCache=${Math.random()}`;
 		}
 
