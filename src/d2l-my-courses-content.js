@@ -528,7 +528,7 @@ class MyCoursesContent extends mixinBehaviors([
 		let enrollmentsSearchUrl = this.createActionUrl(this.enrollmentsSearchAction, query);
 
 		if (bustCache) {
-			if (enrollmentsSearchUrl.indexOf('?') > -1) {
+			if (enrollmentsSearchUrl && enrollmentsSearchUrl.indexOf('?') > -1) {
 				// enrollmentsSearchUrl already has some query params, append ours
 				enrollmentsSearchUrl += `&bustCache=${Math.random()}`;
 			} else {

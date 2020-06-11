@@ -471,7 +471,7 @@ class MyCoursesContainer extends mixinBehaviors([
 	}
 	_verifyPinnedTab(pinnedTabAction) {
 		let pinnedSearchUrl = this.createActionUrl(pinnedTabAction);
-		if (pinnedSearchUrl.indexOf('?') > -1) {
+		if (pinnedSearchUrl && pinnedSearchUrl.indexOf('?') > -1) {
 			// pinnedSearchUrl already has some query params, append ours
 			pinnedSearchUrl += `&bustCache=${Math.random()}`;
 		} else {
