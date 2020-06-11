@@ -107,7 +107,7 @@ class AllCourses extends mixinBehaviors([
 			},
 			_showGroupByTabs: {
 				type: Boolean,
-				computed: '_computeShowGroupByTabs(tabSearchActions)'
+				computed: '_computeShowGroupByTabs(tabSearchActions.length)'
 			},
 			_showTabContent: {
 				type: Boolean,
@@ -683,8 +683,8 @@ class AllCourses extends mixinBehaviors([
 		return !!link;
 	}
 
-	_computeShowGroupByTabs(groups) {
-		return groups.length > 0;
+	_computeShowGroupByTabs(tabLength) {
+		return tabLength > 0;
 	}
 
 	_mapSortOption(identifier, identifierName) {
