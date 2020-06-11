@@ -524,7 +524,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		try {
 			return JSON.parse(localStorage.getItem(itemName));
 		} catch (_) {
-			//noop if session storage isn't available or has bad data
+			//noop if local storage isn't available or has bad data
 			return;
 		}
 	}
