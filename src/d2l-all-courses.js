@@ -283,6 +283,7 @@ class AllCourses extends mixinBehaviors([
 			<d2l-simple-overlay
 				id="all-courses"
 				on-d2l-simple-overlay-opening="_onSimpleOverlayOpening"
+				on-d2l-simple-overlay-closed="_onSimpleOverlayClosed"
 				close-simple-overlay-alt-text="[[localize('closeSimpleOverlayAltText')]]"
 				restore-focus-on-close
 				title-name="[[localize('allCourses')]]"
@@ -542,6 +543,16 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_onSimpleOverlayOpening() {
+		if (this._hasEnrollmentsChanged) {
+			this._hasEnrollmentsChanged = false;
+			this._bustCacheToken = Math.random();
+			if (this._searchUrl) {
+				this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
+			}
+		}
+	}
+
+	_onSimpleOverlayClosed() {
 		if (this._enrollmentsSearchAction && this._enrollmentsSearchAction.hasFieldByName) {
 			if (this._enrollmentsSearchAction.hasFieldByName('search')) {
 				this._enrollmentsSearchAction.getFieldByName('search').value = '';
@@ -558,13 +569,6 @@ class AllCourses extends mixinBehaviors([
 		this.$.filterMenu.clearFilters();
 		this._filterText = this.localize('filtering.filter');
 		this._resetSortDropdown();
-		if (this._hasEnrollmentsChanged) {
-			this._hasEnrollmentsChanged = false;
-			this._bustCacheToken = Math.random();
-			if (this._searchUrl) {
-				this._searchUrl = this._appendOrUpdateBustCacheQueryString(this._searchUrl);
-			}
-		}
 	}
 
 	_onTabSelected(e) {
