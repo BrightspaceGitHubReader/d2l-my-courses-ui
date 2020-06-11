@@ -323,7 +323,7 @@ describe('d2l-all-courses', function() {
 			widget.tabSearchActions = [{
 				name: '12345',
 				title: 'Search Foo Action',
-				selected: false,
+				selected: true,
 				enrollmentsSearchAction: {
 					name: 'search-foo',
 					href: '/example/foo',
@@ -365,6 +365,27 @@ describe('d2l-all-courses', function() {
 				'd2l-tab-panel-selected', { bubbles: true, composed: true }
 			));
 			expect(widget._searchUrl.indexOf('/example/foo?autoPinCourses=false&embedDepth=0&sort=Current&search=&bustCache=') !== -1).to.be.true;
+		});
+
+		it('should update tabSearchActions so the correct tab is selected', function() {
+			widget.tabSearchActions = widget.tabSearchActions.concat({
+				name: '67890',
+				title: 'Currently Selected',
+				selected: false,
+				enrollmentsSearchAction: {}
+			});
+
+			expect(widget.tabSearchActions[0].selected).to.be.true;
+			expect(widget.tabSearchActions[1].selected).to.be.false;
+
+			widget._onTabSelected({
+				type: 'd2l-tab-panel-selected',
+				stopPropagation: function() {},
+				composedPath: function() { return [{id: '67890'}]; }
+			});
+
+			expect(widget.tabSearchActions[0].selected).to.be.false;
+			expect(widget.tabSearchActions[1].selected).to.be.true;
 		});
 	});
 
