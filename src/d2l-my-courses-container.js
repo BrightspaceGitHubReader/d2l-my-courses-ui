@@ -266,8 +266,8 @@ class MyCoursesContainer extends mixinBehaviors([
 		const allCourses = this._getAllCoursesComponent();
 		// Make a deep copy of the tabSearchActions so we can modify it to remember All Courses's last selected tab
 		// without affecting the selected tab on the main widget view
-		const TabSearchActionsCopy = this._tabSearchActions.map(action => Object.assign({}, action));
-		allCourses.tabSearchActions = TabSearchActionsCopy;
+		const tabSearchActionsCopy = this._tabSearchActions.map(action => Object.assign({}, action));
+		allCourses.tabSearchActions = tabSearchActionsCopy;
 		allCourses.open();
 
 		this._showImageError = false; // Clear image error when opening and closing the all courses overlay
