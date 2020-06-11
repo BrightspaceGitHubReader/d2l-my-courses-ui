@@ -471,7 +471,12 @@ class MyCoursesContainer extends mixinBehaviors([
 	}
 	_verifyPinnedTab(pinnedTabAction) {
 		let enrollmentsSearchUrl = this.createActionUrl(pinnedTabAction);
-		enrollmentsSearchUrl += `&bustCache=${Math.random()}`;
+		if (enrollmentsSearchUrl.indexOf('?') > -1) {
+			// enrollmentsSearchUrl already has some query params, append ours
+			enrollmentsSearchUrl += `&bustCache=${Math.random()}`;
+		} else {
+			enrollmentsSearchUrl += `?bustCache=${Math.random()}`;
+		}
 
 		entityFactory(EnrollmentCollectionEntity, enrollmentsSearchUrl, this.token, entity => {
 			if (!entity) {
