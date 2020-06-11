@@ -388,6 +388,16 @@ class MyCoursesContainer extends mixinBehaviors([
 			});
 
 			this._getAllCoursesComponent().courseEnrollmentChanged(this._changedCourseEnrollment);
+
+			if (this._pinnedTabAction) {
+				if (e.detail.isPinned) {
+					// We need to check if we need to add the pinned tab
+					this._addPinnedTab();
+				} else {
+					// We need to check if we've removed the last pinned course and if so, remove the pinned tab
+					this._verifyPinnedTab(this._pinnedTabAction);
+				}
+			}
 		}
 	}
 	_tabSelectedChanged(e) {
@@ -419,16 +429,31 @@ class MyCoursesContainer extends mixinBehaviors([
 			});
 		}
 
-		if (this._pinnedTabAction) {
-			actions.push({
-				name: this._pinnedTabAction.name,
-				title: this.localize('pinnedCourses'),
-				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
-				enrollmentsSearchAction: this._pinnedTabAction
-			});
+		if (!this._pinnedTabAction) {
+			return actions;
 		}
 
+		// Check cache to get our best guess about showing/hiding the pinned tab
+		const pinnedTabCache = this._tryGetItemLocalStorage('myCourses.pinnedTab');
+
+		if (pinnedTabCache && pinnedTabCache.previouslyShown) {
+			actions.push(this._getPinnedTabAction(lastEnrollmentsSearchName));
+		} else {
+			// Do not add the pinned action
+		}
+
+		// Check actual value asynchronously
+		this._verifyPinnedTab(this._pinnedTabAction);
+
 		return actions;
+	}
+	_getPinnedTabAction(lastEnrollmentsSearchName) {
+		return {
+			name: this._pinnedTabAction.name,
+			title: this.localize('pinnedCourses'),
+			selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
+			enrollmentsSearchAction: this._pinnedTabAction
+		};
 	}
 	_fetchTabSearchActions() {
 		if (!this.userSettingsUrl) {
@@ -443,6 +468,78 @@ class MyCoursesContainer extends mixinBehaviors([
 		}
 
 		return this._setPromotedSearchEntity(this.promotedSearches);
+	}
+	_verifyPinnedTab(pinnedTabAction) {
+		let pinnedSearchUrl = this.createActionUrl(pinnedTabAction);
+		if (pinnedSearchUrl && pinnedSearchUrl.indexOf('?') > -1) {
+			// pinnedSearchUrl already has some query params, append ours
+			pinnedSearchUrl += `&bustCache=${Math.random()}`;
+		} else {
+			pinnedSearchUrl += `?bustCache=${Math.random()}`;
+		}
+
+		entityFactory(EnrollmentCollectionEntity, pinnedSearchUrl, this.token, entity => {
+			if (!entity) {
+				return;
+			}
+
+			const enrollmentEntities = entity.getEnrollmentEntities();
+			if (enrollmentEntities && enrollmentEntities.length > 0) {
+				this._addPinnedTab();
+			} else {
+				this._removePinnedTab();
+			}
+		});
+	}
+	_addPinnedTab() {
+		const pinnedTabIndex = this._tabSearchActions.findIndex(action => action.name === this._pinnedTabAction.name);
+		if (pinnedTabIndex === -1) {
+			this.splice('_tabSearchActions', 1, 0, this._getPinnedTabAction());
+
+			const allCourses = this._getAllCoursesComponent();
+			if (allCourses.tabSearchActions && allCourses.tabSearchActions.length > 0) {
+				allCourses.splice('tabSearchActions', 1, 0, this._getPinnedTabAction());
+			}
+
+			const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
+			contents.forEach(content => {
+				content.requestRefresh();
+			});
+		}
+		this._trySetItemLocalStorage('myCourses.pinnedTab', {'previouslyShown': true});
+	}
+	_removePinnedTab() {
+		const pinnedTabIndex = this._tabSearchActions.findIndex(action => action.name === this._pinnedTabAction.name);
+		if (pinnedTabIndex !== -1) {
+			this.splice('_tabSearchActions', pinnedTabIndex, 1);
+
+			const allCourses = this._getAllCoursesComponent();
+			if (allCourses.tabSearchActions && allCourses.tabSearchActions.length > 0) {
+				allCourses.splice('tabSearchActions', pinnedTabIndex, 1);
+			}
+
+			const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
+			contents.forEach(content => {
+				content.requestRefresh();
+			});
+		}
+		this._trySetItemLocalStorage('myCourses.pinnedTab', {'previouslyShown': false});
+	}
+	_tryGetItemLocalStorage(itemName) {
+		try {
+			return JSON.parse(localStorage.getItem(itemName));
+		} catch (_) {
+			//noop if local storage isn't available or has bad data
+			return;
+		}
+	}
+	_trySetItemLocalStorage(itemName, value) {
+		try {
+			const itemCopied = JSON.parse(JSON.stringify(value));
+			localStorage.setItem(itemName, JSON.stringify(itemCopied));
+		} catch (_) {
+			//noop we don't want to blow up if we exceed a quota or are in safari private browsing mode
+		}
 	}
 }
 

@@ -579,8 +579,10 @@ class AllCourses extends mixinBehaviors([
 		let tabAction;
 		for (let i = 0; i < this.tabSearchActions.length; i++) {
 			if (this.tabSearchActions[i].name === actionName) {
+				this.tabSearchActions[i].selected = true;
 				tabAction = this.tabSearchActions[i];
-				break;
+			} else {
+				this.tabSearchActions[i].selected = false;
 			}
 		}
 

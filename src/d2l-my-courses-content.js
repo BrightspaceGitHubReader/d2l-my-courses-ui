@@ -280,6 +280,12 @@ class MyCoursesContent extends mixinBehaviors([
 		this._getCardGrid().refreshCardGridImages(imageOrg);
 	}
 
+	// Called by d2l-my-courses-container when the pinned tab has been added or removed
+	// Needed because of dom-repeat's re-use of DOM nodes
+	requestRefresh() {
+		this._isRefetchNeeded = true;
+	}
+
 	_getCardGrid() {
 		return this.shadowRoot.querySelector('d2l-my-courses-card-grid');
 	}
@@ -444,7 +450,7 @@ class MyCoursesContent extends mixinBehaviors([
 
 		if (this._isRefetchNeeded) {
 			this._handleEnrollmentsRefetch();
-		} else if (this._numberOfEnrollments === 0) {
+		} else if (this._numberOfEnrollments === 0 && !this._rootTabSelected) {
 			this._rootTabSelected = true;
 			this._fetchRoot();
 		} else {
@@ -522,7 +528,12 @@ class MyCoursesContent extends mixinBehaviors([
 		let enrollmentsSearchUrl = this.createActionUrl(this.enrollmentsSearchAction, query);
 
 		if (bustCache) {
-			enrollmentsSearchUrl += `&bustCache=${Math.random()}`;
+			if (enrollmentsSearchUrl && enrollmentsSearchUrl.indexOf('?') > -1) {
+				// enrollmentsSearchUrl already has some query params, append ours
+				enrollmentsSearchUrl += `&bustCache=${Math.random()}`;
+			} else {
+				enrollmentsSearchUrl += `?bustCache=${Math.random()}`;
+			}
 		}
 
 		return enrollmentsSearchUrl;
@@ -547,7 +558,9 @@ class MyCoursesContent extends mixinBehaviors([
 			'd2l.my-courses.root-enrollments.response'
 		);
 
-		const enrollmentsSearchUrl = this._createFetchEnrollmentsUrl();
+		// The pinned tab gets added and removed and needs to be refreshed each time
+		// For other tabs, we know this is their first time loading and do not need to bust the cache
+		const enrollmentsSearchUrl = this._createFetchEnrollmentsUrl(this._isPinnedTab);
 		this.performanceMark('d2l.my-courses.search-enrollments.request');
 
 		this._onEnrollmentsRootEntityChange(enrollmentsSearchUrl);
