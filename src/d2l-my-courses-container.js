@@ -470,15 +470,15 @@ class MyCoursesContainer extends mixinBehaviors([
 		return this._setPromotedSearchEntity(this.promotedSearches);
 	}
 	_verifyPinnedTab(pinnedTabAction) {
-		let enrollmentsSearchUrl = this.createActionUrl(pinnedTabAction);
-		if (enrollmentsSearchUrl.indexOf('?') > -1) {
-			// enrollmentsSearchUrl already has some query params, append ours
-			enrollmentsSearchUrl += `&bustCache=${Math.random()}`;
+		let pinnedSearchUrl = this.createActionUrl(pinnedTabAction);
+		if (pinnedSearchUrl.indexOf('?') > -1) {
+			// pinnedSearchUrl already has some query params, append ours
+			pinnedSearchUrl += `&bustCache=${Math.random()}`;
 		} else {
-			enrollmentsSearchUrl += `?bustCache=${Math.random()}`;
+			pinnedSearchUrl += `?bustCache=${Math.random()}`;
 		}
 
-		entityFactory(EnrollmentCollectionEntity, enrollmentsSearchUrl, this.token, entity => {
+		entityFactory(EnrollmentCollectionEntity, pinnedSearchUrl, this.token, entity => {
 			if (!entity) {
 				return;
 			}
