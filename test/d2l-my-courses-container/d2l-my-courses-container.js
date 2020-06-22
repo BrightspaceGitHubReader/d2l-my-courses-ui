@@ -520,7 +520,7 @@ describe('d2l-my-courses', () => {
 				{orgUnitId: '1234', isPinned: false },
 				{orgUnitId: '5678', isPinned: true }
 			].forEach(initialChangedCourseEnrollment => {
-				it(`should update the _changedCourseEnrollment property from ${JSON.stringify(initialChangedCourseEnrollment)}, and pass this to d2l-my-courses-content`, () => {
+				it(`should update the _changedCourseEnrollment property from ${JSON.stringify(initialChangedCourseEnrollment)}, and pass to content and all courses`, () => {
 					const stubContent = sandbox.stub(component._getContentComponent(), 'courseEnrollmentChanged');
 					const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'courseEnrollmentChanged');
 
@@ -550,6 +550,28 @@ describe('d2l-my-courses', () => {
 				expect(component._changedCourseEnrollment.didNotReplaceObject).to.equal(true);
 				expect(stubContent).not.to.have.been.called;
 				expect(stubAllCourses).not.to.have.been.called;
+			});
+
+			[
+				{orgUnitId: '1234', isPinned: false },
+				{orgUnitId: '5678', isPinned: true }
+			].forEach(eventDetail => {
+				it(`should handle pinned tab accordingly when the changed course was ${eventDetail.isPinned ? 'pinned' : 'unpinned'}`, () => {
+					const stubAddPinnedTab = sandbox.stub(component, '_addPinnedTab');
+					const stubVerifyPinnedTab = sandbox.stub(component, '_verifyPinnedTab');
+
+					const event = new CustomEvent('d2l-course-pinned-change', {
+						detail: eventDetail
+					});
+
+					component._pinnedTabAction = searchPinnedEnrollmentsAction;
+					component._onCourseEnrollmentChange(event);
+
+					expect(component._changedCourseEnrollment.orgUnitId).to.equal(eventDetail.orgUnitId);
+					expect(component._changedCourseEnrollment.isPinned).to.equal(eventDetail.isPinned);
+					expect(stubAddPinnedTab.called).to.equal(eventDetail.isPinned);
+					expect(stubVerifyPinnedTab.called).to.equal(!eventDetail.isPinned);
+				});
 			});
 
 		});
