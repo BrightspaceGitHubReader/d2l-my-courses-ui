@@ -6,6 +6,7 @@ describe('d2l-my-courses', () => {
 	let component,
 		clock,
 		sandbox,
+		setLocalStorageStub,
 		searchAction,
 		searchPinnedEnrollmentsAction,
 		enrollmentsSearchResponse,
@@ -110,6 +111,8 @@ describe('d2l-my-courses', () => {
 		});
 
 		component = fixture('d2l-my-courses-container-fixture');
+		setLocalStorageStub = sandbox.stub(component, '_trySetItemLocalStorage');
+		sandbox.stub(component, '_setUserSettingsEntity');
 
 		setTimeout(() => {
 			component.enrollmentsUrl = enrollmentsHref;
@@ -194,6 +197,168 @@ describe('d2l-my-courses', () => {
 				expect(component._changedCourseEnrollment.orgUnitId).to.equal(testCase.orgUnitId);
 				expect(component._changedCourseEnrollment.isPinned).to.equal(testCase.isPinned);
 				done();
+			});
+		});
+	});
+
+	describe('Adding and removing the pinned action', () => {
+		let getStub;
+
+		function setupGetPinnedEnrollmentsStub(hasPinnedCourses) {
+			getStub.withArgs(sinon.match(/\/enrollments\/users\/169.*&.*$/), sinon.match.string).returns(Promise.resolve({
+				getSubEntitiesByClass: function() {
+					return hasPinnedCourses ? ['pinnedCourse'] : [];
+				}
+			}));
+		}
+
+		beforeEach(() => {
+			getStub = sandbox.stub(window.D2L.Siren.EntityStore, 'get');
+			component._enrollmentsSearchAction = searchAction;
+			component._pinnedTabAction = searchPinnedEnrollmentsAction;
+		});
+
+		it('should not add the pinned action if it cannot read the cache', () => {
+			sandbox.stub(component, '_tryGetItemLocalStorage').withArgs('myCourses.pinnedTab').returns(null);
+			const verifyStub = sandbox.stub(component, '_verifyPinnedTab');
+
+			const resultActions = component._getPinTabAndAllTabActions();
+
+			expect(verifyStub).to.have.been.calledOnce;
+			expect(resultActions.length).to.equal(1);
+			expect(resultActions[0].name).to.equal('search-my-enrollments');
+		});
+
+		it('should not add the pinned action if the cache says the pinned tab was previously hidden', () => {
+			sandbox.stub(component, '_tryGetItemLocalStorage').withArgs('myCourses.pinnedTab').returns({previouslyShown: false});
+			const verifyStub = sandbox.stub(component, '_verifyPinnedTab');
+
+			const resultActions = component._getPinTabAndAllTabActions();
+
+			expect(verifyStub).to.have.been.calledOnce;
+			expect(resultActions.length).to.equal(1);
+			expect(resultActions[0].name).to.equal('search-my-enrollments');
+		});
+
+		it('should add the pinned action if the cache says the pinned tab was previously shown', () => {
+			sandbox.stub(component, '_tryGetItemLocalStorage').withArgs('myCourses.pinnedTab').returns({previouslyShown: true});
+			const verifyStub = sandbox.stub(component, '_verifyPinnedTab');
+
+			const resultActions = component._getPinTabAndAllTabActions();
+
+			expect(verifyStub).to.have.been.calledOnce;
+			expect(resultActions.length).to.equal(2);
+			expect(resultActions[0].name).to.equal('search-my-enrollments');
+			expect(resultActions[1].name).to.equal('search-my-pinned-enrollments');
+		});
+
+		it('should add the pinned tab if we verify there actually is a pinned course', done => {
+			sandbox.stub(component, '_tryGetItemLocalStorage').withArgs('myCourses.pinnedTab').returns({previouslyShown: false});
+			setupGetPinnedEnrollmentsStub(true);
+			const verifySpy = sandbox.spy(component, '_verifyPinnedTab');
+
+			component._onPromotedSearchEntityChange();
+
+			expect(component._tabSearchActions.length).to.equal(1);
+			expect(component._tabSearchActions[0].name).to.equal('search-my-enrollments');
+
+			expect(verifySpy).to.have.been.calledOnce;
+
+			requestAnimationFrame(() => {
+				expect(component._tabSearchActions.length).to.equal(2);
+				expect(component._tabSearchActions[0].name).to.equal('search-my-enrollments');
+				expect(component._tabSearchActions[1].name).to.equal('search-my-pinned-enrollments');
+				done();
+			});
+		});
+
+		it('should remove the pinned tab if we verify there actually is no pinned courses', done => {
+			sandbox.stub(component, '_tryGetItemLocalStorage').withArgs('myCourses.pinnedTab').returns({previouslyShown: true});
+			setupGetPinnedEnrollmentsStub(false);
+			const verifySpy = sandbox.spy(component, '_verifyPinnedTab');
+
+			component._onPromotedSearchEntityChange();
+
+			expect(component._tabSearchActions.length).to.equal(2);
+			expect(component._tabSearchActions[0].name).to.equal('search-my-enrollments');
+			expect(component._tabSearchActions[1].name).to.equal('search-my-pinned-enrollments');
+
+			expect(verifySpy).to.have.been.calledOnce;
+
+			requestAnimationFrame(() => {
+				expect(component._tabSearchActions.length).to.equal(1);
+				expect(component._tabSearchActions[0].name).to.equal('search-my-enrollments');
+				done();
+			});
+		});
+
+		describe('_addPinnedTab', () => {
+			it('should add the pinned tab to content and force each tab to refresh because of dom-repeat issues', () => {
+				const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
+				const contentRefreshStub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'requestRefresh');
+				component._tabSearchActions = [{ name: 'search-my-enrollments'}];
+
+				component._addPinnedTab();
+
+				expect(component._tabSearchActions.length).to.equal(2);
+				expect(allCoursesSpliceStub).to.not.have.been.called;
+				expect(contentRefreshStub).to.have.been.called;
+				expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': true});
+			});
+			it('should add the pinned tab to all-courses as well if it has been opened already', () => {
+				const allCourses = component._getAllCoursesComponent();
+				const allCoursesSpliceStub = sandbox.stub(allCourses, 'splice');
+				component._tabSearchActions = [{ name: 'search-my-enrollments'}];
+				component._openAllCoursesOverlay();
+
+				component._addPinnedTab();
+
+				expect(allCoursesSpliceStub).to.have.been.calledOnce;
+				expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': true});
+			});
+			it('should only add the pinned tab if it is not already there', () => {
+				const spliceStub = sandbox.stub(component, 'splice');
+				component._tabSearchActions = [{ name: 'search-my-enrollments'}, { name: 'search-my-pinned-enrollments'}];
+
+				component._addPinnedTab();
+
+				expect(spliceStub).to.not.have.been.called;
+				expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': true});
+			});
+		});
+
+		describe('_removePinnedTab', () => {
+			it('should remove the pinned tab to content and force each tab to refresh because of dom-repeat issues', () => {
+				const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
+				const contentRefreshStub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'requestRefresh');
+				component._tabSearchActions = [{ name: 'search-my-enrollments'}, { name: 'search-my-pinned-enrollments'}];
+
+				component._removePinnedTab();
+
+				expect(component._tabSearchActions.length).to.equal(1);
+				expect(allCoursesSpliceStub).to.not.have.been.called;
+				expect(contentRefreshStub).to.have.been.called;
+				expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': false});
+			});
+			it('should remove the pinned tab from all-courses as well if it has been opened already', () => {
+				const allCourses = component._getAllCoursesComponent();
+				const allCoursesSpliceStub = sandbox.stub(allCourses, 'splice');
+				component._tabSearchActions = [{ name: 'search-my-enrollments'}, { name: 'search-my-pinned-enrollments'}];
+				component._openAllCoursesOverlay();
+
+				component._removePinnedTab();
+
+				expect(allCoursesSpliceStub).to.have.been.calledOnce;
+				expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': false});
+			});
+			it('should only remove the pinned tab if it exists', () => {
+				const spliceStub = sandbox.stub(component, 'splice');
+				component._tabSearchActions = [{ name: 'search-my-enrollments'}];
+
+				component._removePinnedTab();
+
+				expect(spliceStub).to.not.have.been.called;
+				expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': false});
 			});
 		});
 	});
@@ -304,10 +469,7 @@ describe('d2l-my-courses', () => {
 		it('should remove a course image failure alert when the all courses overlay is opened', function() {
 			component._showImageError = true;
 
-			component._openAllCoursesOverlay(new CustomEvent(
-				'd2l-my-courses-content-open-all-courses',
-				{ detail: { tabSearchActions: [] } }
-			));
+			component._openAllCoursesOverlay();
 			expect(component._showImageError).to.be.false;
 		});
 
@@ -448,11 +610,10 @@ describe('d2l-my-courses', () => {
 		describe('d2l-my-courses-content-open-all-courses', () => {
 			it('should remove an existing course image failure alert and prep all courses for opening', () => {
 				const tabSearchActions = [{name: 'testing', href: 'something'}];
-				const event = new CustomEvent('d2l-course-pinned-change');
 				component._showImageError = true;
 				component._tabSearchActions = tabSearchActions;
 
-				component._openAllCoursesOverlay(event);
+				component._openAllCoursesOverlay();
 
 				expect(component._getAllCoursesComponent().tabSearchActions[0]).to.not.equal(tabSearchActions[0]);
 				expect(component._getAllCoursesComponent().tabSearchActions).to.deep.equal(tabSearchActions);
@@ -520,7 +681,7 @@ describe('d2l-my-courses', () => {
 				{orgUnitId: '1234', isPinned: false },
 				{orgUnitId: '5678', isPinned: true }
 			].forEach(initialChangedCourseEnrollment => {
-				it(`should update the _changedCourseEnrollment property from ${JSON.stringify(initialChangedCourseEnrollment)}, and pass this to d2l-my-courses-content`, () => {
+				it(`should update the _changedCourseEnrollment property from ${JSON.stringify(initialChangedCourseEnrollment)}, and pass to content and all courses`, () => {
 					const stubContent = sandbox.stub(component._getContentComponent(), 'courseEnrollmentChanged');
 					const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'courseEnrollmentChanged');
 
@@ -550,6 +711,28 @@ describe('d2l-my-courses', () => {
 				expect(component._changedCourseEnrollment.didNotReplaceObject).to.equal(true);
 				expect(stubContent).not.to.have.been.called;
 				expect(stubAllCourses).not.to.have.been.called;
+			});
+
+			[
+				{orgUnitId: '1234', isPinned: false },
+				{orgUnitId: '5678', isPinned: true }
+			].forEach(eventDetail => {
+				it(`should handle pinned tab accordingly when the changed course was ${eventDetail.isPinned ? 'pinned' : 'unpinned'}`, () => {
+					const stubAddPinnedTab = sandbox.stub(component, '_addPinnedTab');
+					const stubVerifyPinnedTab = sandbox.stub(component, '_verifyPinnedTab');
+
+					const event = new CustomEvent('d2l-course-pinned-change', {
+						detail: eventDetail
+					});
+
+					component._pinnedTabAction = searchPinnedEnrollmentsAction;
+					component._onCourseEnrollmentChange(event);
+
+					expect(component._changedCourseEnrollment.orgUnitId).to.equal(eventDetail.orgUnitId);
+					expect(component._changedCourseEnrollment.isPinned).to.equal(eventDetail.isPinned);
+					expect(stubAddPinnedTab.called).to.equal(eventDetail.isPinned);
+					expect(stubVerifyPinnedTab.called).to.equal(!eventDetail.isPinned);
+				});
 			});
 
 		});
