@@ -248,12 +248,35 @@ describe('d2l-all-courses', function() {
 
 	describe('closing the overlay', function() {
 
+		it('should prep _enrollmentsSearchAction for component resets', function() {
+			const entity = window.D2L.Hypermedia.Siren.Parse({
+				actions: [{
+					name: 'search-my-enrollments',
+					method: 'GET',
+					href: '/enrollments/users/169',
+					fields: [
+						{ name: 'search', type: 'search', value: 'testing' },
+						{ name: 'sort', type: 'text', value: 'LastAccessed' },
+						{ name: 'promotePins', type: 'checkbox', value: false }
+					]
+				}]
+			});
+			widget._enrollmentsSearchAction = entity.actions[0];
+
+			widget._onSimpleOverlayClosed();
+
+			expect(widget._enrollmentsSearchAction.getFieldByName('search').value).to.be.equal('');
+			expect(widget._enrollmentsSearchAction.getFieldByName('sort').value).to.be.equal('Current');
+			expect(widget._enrollmentsSearchAction.getFieldByName('promotePins').value).to.be.true;
+		});
+
 		it('should clear search text', function() {
 			const spy = sandbox.spy(widget, '_clearSearchWidget');
 			const searchField = widget.$['search-widget'];
 
 			searchField._getSearchWidget()._getSearchInput().value = 'foo';
-			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
+			widget._onSimpleOverlayClosed();
+
 			expect(spy.called).to.be.true;
 			expect(searchField._getSearchWidget()._getSearchInput().value).to.equal('');
 		});
@@ -271,7 +294,7 @@ describe('d2l-all-courses', function() {
 			fireEvent(widget.$.filterDropdownContent, 'd2l-dropdown-close', {});
 
 			expect(widget._filterText).to.equal('Filter: 1 Filter');
-			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
+			widget._onSimpleOverlayClosed();
 			expect(spy.called).to.be.true;
 			expect(widget._filterText).to.equal('Filter');
 		});
@@ -288,7 +311,7 @@ describe('d2l-all-courses', function() {
 			fireEvent(widget.shadowRoot.querySelector('d2l-dropdown-menu'), 'd2l-menu-item-change', event);
 			expect(widget._searchUrl).to.contain('OrgUnitCode,OrgUnitId');
 
-			widget.shadowRoot.querySelector('d2l-simple-overlay')._renderOpened();
+			widget._onSimpleOverlayClosed();
 			expect(spy.called).to.be.true;
 		});
 
@@ -300,7 +323,7 @@ describe('d2l-all-courses', function() {
 			widget.tabSearchActions = [{
 				name: '12345',
 				title: 'Search Foo Action',
-				selected: false,
+				selected: true,
 				enrollmentsSearchAction: {
 					name: 'search-foo',
 					href: '/example/foo',
@@ -342,6 +365,27 @@ describe('d2l-all-courses', function() {
 				'd2l-tab-panel-selected', { bubbles: true, composed: true }
 			));
 			expect(widget._searchUrl.indexOf('/example/foo?autoPinCourses=false&embedDepth=0&sort=Current&search=&bustCache=') !== -1).to.be.true;
+		});
+
+		it('should update tabSearchActions so the correct tab is selected', function() {
+			widget.tabSearchActions = widget.tabSearchActions.concat({
+				name: '67890',
+				title: 'Currently Selected',
+				selected: false,
+				enrollmentsSearchAction: {}
+			});
+
+			expect(widget.tabSearchActions[0].selected).to.be.true;
+			expect(widget.tabSearchActions[1].selected).to.be.false;
+
+			widget._onTabSelected({
+				type: 'd2l-tab-panel-selected',
+				stopPropagation: function() {},
+				composedPath: function() { return [{id: '67890'}]; }
+			});
+
+			expect(widget.tabSearchActions[0].selected).to.be.false;
+			expect(widget.tabSearchActions[1].selected).to.be.true;
 		});
 	});
 

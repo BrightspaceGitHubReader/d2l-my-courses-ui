@@ -11,6 +11,9 @@ window.D2L.MyCourses = window.D2L.MyCourses || {};
 D2L.MyCourses.UtilityBehavior = {
 	// Creates a URL with a query from an Action and an object of required parameters
 	createActionUrl: function(action, parameters) {
+		if (!action) {
+			return;
+		}
 		parameters = parameters || {};
 		action.fields = action.fields || [];
 		const query = {};

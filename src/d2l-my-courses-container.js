@@ -12,6 +12,7 @@ import '@brightspace-ui/core/components/tabs/tab-panel.js';
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import 'd2l-image-selector/d2l-basic-image-selector.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
+import './d2l-all-courses.js';
 import './d2l-my-courses-content.js';
 import './d2l-utility-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -65,6 +66,7 @@ class MyCoursesContainer extends mixinBehaviors([
 				value: []
 			},
 			_tabSearchType: String,
+			// Keep a record of the last changed course enrollment
 			_changedCourseEnrollment: Object,
 			_updateUserSettingsAction: Object,
 			_enrollmentCollectionEntity: Object,
@@ -116,18 +118,14 @@ class MyCoursesContainer extends mixinBehaviors([
 						<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
 						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 							<d2l-my-courses-content
+								on-d2l-my-courses-content-open-all-courses="_openAllCoursesOverlay"
 								presentation-url="[[_presentationUrl]]"
 								show-image-error="[[_showImageError]]"
 								token="[[token]]"
-								advanced-search-url="[[advancedSearchUrl]]"
 								enrollments-search-action="[[item.enrollmentsSearchAction]]"
-								standard-department-name="[[standardDepartmentName]]"
-								standard-semester-name="[[standardSemesterName]]"
 								org-unit-type-ids="[[orgUnitTypeIds]]"
-								tab-search-actions="[[_tabSearchActions]]"
 								tab-search-type="[[_tabSearchType]]"
-								update-user-settings-action="[[_updateUserSettingsAction]]"
-								changed-course-enrollment="[[_changedCourseEnrollment]]">
+								update-user-settings-action="[[_updateUserSettingsAction]]">
 							</d2l-my-courses-content>
 						</d2l-tab-panel>
 					</template>
@@ -135,16 +133,28 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>
 			<template is="dom-if" if="[[!_showGroupByTabs]]">
 				<d2l-my-courses-content
+					no-tabs
+					on-d2l-my-courses-content-open-all-courses="_openAllCoursesOverlay"
 					presentation-url="[[_presentationUrl]]"
 					show-image-error="[[_showImageError]]"
 					token="[[token]]"
-					advanced-search-url="[[advancedSearchUrl]]"
 					org-unit-type-ids="[[orgUnitTypeIds]]"
-					enrollments-search-action="[[_enrollmentsSearchAction]]"
-					standard-department-name="[[standardDepartmentName]]"
-					standard-semester-name="[[standardSemesterName]]">
+					enrollments-search-action="[[_enrollmentsSearchAction]]">
 				</d2l-my-courses-content>
 			</template>
+
+			<d2l-all-courses
+				on-d2l-simple-overlay-closed="_onAllCoursesOverlayClosed"
+				advanced-search-url="[[advancedSearchUrl]]"
+				enrollments-search-action="[[_enrollmentsSearchAction]]"
+				filter-standard-department-name="[[standardDepartmentName]]"
+				filter-standard-semester-name="[[standardSemesterName]]"
+				org-unit-type-ids="[[orgUnitTypeIds]]"
+				presentation-url="[[_presentationUrl]]"
+				show-image-error="[[_showImageError]]"
+				tab-search-type="[[_tabSearchType]]"
+				token="[[token]]">
+			</d2l-all-courses>
 			
 			<d2l-simple-overlay id="basic-image-selector-overlay"
 				title-name="[[localize('changeImage')]]"
@@ -163,10 +173,14 @@ class MyCoursesContainer extends mixinBehaviors([
 			</d2l-simple-overlay>`;
 	}
 
+	constructor() {
+		super();
+		this._onCourseEnrollmentChange = this._onCourseEnrollmentChange.bind(this);
+	}
+
 	connectedCallback() {
 		super.connectedCallback();
 		afterNextRender(this, () => {
-			this.addEventListener('d2l-course-enrollment-change', this._onCourseEnrollmentChange);
 			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
 		});
 
@@ -174,7 +188,23 @@ class MyCoursesContainer extends mixinBehaviors([
 		this.addEventListener('set-course-image', this._onSetCourseImage);
 		this.addEventListener('clear-image-scroll-threshold', this._onClearImageScrollThreshold);
 
+		document.body.addEventListener('d2l-course-pinned-change', this._onCourseEnrollmentChange);
+
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
+
+		let ouTypeIds = []; //default value
+		try {
+			ouTypeIds = JSON.parse(this.orgUnitTypeIds).value;
+		} catch (e) {
+			// default value used
+		}
+
+		this.orgUnitTypeIds = ouTypeIds;
+	}
+
+	disconnectedCallback() {
+		document.body.removeEventListener('d2l-course-pinned-change', this._onCourseEnrollmentChange);
+		super.disconnectedCallback();
 	}
 
 	// This is called by the LE, but only when it's a user-uploaded image
@@ -183,7 +213,8 @@ class MyCoursesContainer extends mixinBehaviors([
 		if (success) {
 			this.$['basic-image-selector-overlay'].close();
 
-			this._fetchContentComponent().refreshCardGridImages(this._setImageOrg);
+			this._getContentComponent().refreshCardGridImages(this._setImageOrg);
+			this._getAllCoursesComponent().refreshCardGridImages(this._setImageOrg);
 		}
 	}
 	// This is called by the LE, but only when it's a user-uploaded image
@@ -222,10 +253,28 @@ class MyCoursesContainer extends mixinBehaviors([
 		}
 	}
 
-	_fetchContentComponent() {
+	_getContentComponent() {
 		return this._showGroupByTabs === false || !this._currentTabId
 			? this.shadowRoot.querySelector('d2l-my-courses-content')
 			: this.shadowRoot.querySelector(`#${this._currentTabId} d2l-my-courses-content`);
+	}
+	_getAllCoursesComponent() {
+		return this.shadowRoot.querySelector('d2l-all-courses');
+	}
+
+	_openAllCoursesOverlay() {
+		const allCourses = this._getAllCoursesComponent();
+		// Make a deep copy of the tabSearchActions so we can modify it to remember All Courses's last selected tab
+		// without affecting the selected tab on the main widget view
+		const tabSearchActionsCopy = this._tabSearchActions.map(action => Object.assign({}, action));
+		allCourses.tabSearchActions = tabSearchActionsCopy;
+		allCourses.open();
+
+		this._showImageError = false; // Clear image error when opening and closing the all courses overlay
+	}
+	_onAllCoursesOverlayClosed() {
+		this._showImageError = false; // Clear image error when opening and closing the all courses overlay
+		this._getContentComponent().allCoursesOverlayClosed();
 	}
 
 	_onEnrollmentAndUserSettingsEntityChange() {
@@ -260,6 +309,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		}
 		const promotedSearchesEntity = this._promotedSearchEntity;
 		const userSettingsEntity = this._userSettingsEntity;
+		const lastEnrollmentsSearchName = userSettingsEntity.mostRecentEnrollmentsSearchName();
 
 		this._tabSearchActions = [];
 
@@ -276,8 +326,6 @@ class MyCoursesContainer extends mixinBehaviors([
 		if (promotedSearchesEntity.userEnrollmentsSearchType()) {
 			this._tabSearchType = promotedSearchesEntity.userEnrollmentsSearchType();
 		}
-
-		const lastEnrollmentsSearchName = userSettingsEntity.mostRecentEnrollmentsSearchName();
 
 		// DE36672 - need to check here if there's only one semester/department/etc but you have
 		// some courses that are not in any semester/department
@@ -318,13 +366,49 @@ class MyCoursesContainer extends mixinBehaviors([
 		});
 	}
 	_onCourseEnrollmentChange(e) {
-		this._changedCourseEnrollment = {
-			orgUnitId: e.detail.orgUnitId,
-			isPinned: e.detail.isPinned
-		};
+		let orgUnitId;
+		if (e.detail.orgUnitId) { // Pinning was done in the Course Selector
+			orgUnitId = e.detail.orgUnitId;
+		} else { // Pinning was done in the My Courses widget
+			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
+		}
+
+		// Only update if something has changed
+		// US117414 - Should investigate why we get the same event multiple times so we can remove this._changedCourseEnrollment altogether
+		if (!this._changedCourseEnrollment || this._changedCourseEnrollment.orgUnitId !== orgUnitId || this._changedCourseEnrollment.isPinned !== e.detail.isPinned) {
+			this._changedCourseEnrollment = {
+				orgUnitId: orgUnitId,
+				isPinned: e.detail.isPinned
+			};
+
+			const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
+			contents.forEach(content => {
+				content.courseEnrollmentChanged(this._changedCourseEnrollment);
+			});
+
+			this._getAllCoursesComponent().courseEnrollmentChanged(this._changedCourseEnrollment);
+
+			if (this._pinnedTabAction) {
+				if (e.detail.isPinned) {
+					// We need to check if we need to add the pinned tab
+					this._addPinnedTab();
+				} else {
+					// We need to check if we've removed the last pinned course and if so, remove the pinned tab
+					this._verifyPinnedTab(this._pinnedTabAction);
+				}
+			}
+		}
 	}
 	_tabSelectedChanged(e) {
 		this._currentTabId = `panel-${e.detail.tabId}`;
+		// Whenever the selected tab changes, update tabSearchActions so
+		// All Courses will have the same tab selected when it opens
+		this._tabSearchActions = this._tabSearchActions.map((action) => {
+			return Object.assign({}, action, {
+				selected: action.name === e.detail.tabId
+			});
+		});
+
 	}
 	_tokenChanged(token, enrollmentsUrl, userSettingsUrl) {
 		if (token && enrollmentsUrl && userSettingsUrl) {
@@ -344,16 +428,31 @@ class MyCoursesContainer extends mixinBehaviors([
 			});
 		}
 
-		if (this._pinnedTabAction) {
-			actions.push({
-				name: this._pinnedTabAction.name,
-				title: this.localize('pinnedCourses'),
-				selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
-				enrollmentsSearchAction: this._pinnedTabAction
-			});
+		if (!this._pinnedTabAction) {
+			return actions;
 		}
 
+		// Check cache to get our best guess about showing/hiding the pinned tab
+		const pinnedTabCache = this._tryGetItemLocalStorage('myCourses.pinnedTab');
+
+		if (pinnedTabCache && pinnedTabCache.previouslyShown) {
+			actions.push(this._getPinnedTabAction(lastEnrollmentsSearchName));
+		} else {
+			// Do not add the pinned action
+		}
+
+		// Check actual value asynchronously
+		this._verifyPinnedTab(this._pinnedTabAction);
+
 		return actions;
+	}
+	_getPinnedTabAction(lastEnrollmentsSearchName) {
+		return {
+			name: this._pinnedTabAction.name,
+			title: this.localize('pinnedCourses'),
+			selected: this._pinnedTabAction.name === lastEnrollmentsSearchName,
+			enrollmentsSearchAction: this._pinnedTabAction
+		};
 	}
 	_fetchTabSearchActions() {
 		if (!this.userSettingsUrl) {
@@ -368,6 +467,78 @@ class MyCoursesContainer extends mixinBehaviors([
 		}
 
 		return this._setPromotedSearchEntity(this.promotedSearches);
+	}
+	_verifyPinnedTab(pinnedTabAction) {
+		let pinnedSearchUrl = this.createActionUrl(pinnedTabAction);
+		if (pinnedSearchUrl && pinnedSearchUrl.indexOf('?') > -1) {
+			// pinnedSearchUrl already has some query params, append ours
+			pinnedSearchUrl += `&bustCache=${Math.random()}`;
+		} else {
+			pinnedSearchUrl += `?bustCache=${Math.random()}`;
+		}
+
+		entityFactory(EnrollmentCollectionEntity, pinnedSearchUrl, this.token, entity => {
+			if (!entity) {
+				return;
+			}
+
+			const enrollmentEntities = entity.getEnrollmentEntities();
+			if (enrollmentEntities && enrollmentEntities.length > 0) {
+				this._addPinnedTab();
+			} else {
+				this._removePinnedTab();
+			}
+		});
+	}
+	_addPinnedTab() {
+		const pinnedTabIndex = this._tabSearchActions.findIndex(action => action.name === this._pinnedTabAction.name);
+		if (pinnedTabIndex === -1) {
+			this.splice('_tabSearchActions', 1, 0, this._getPinnedTabAction());
+
+			const allCourses = this._getAllCoursesComponent();
+			if (allCourses.tabSearchActions && allCourses.tabSearchActions.length > 0) {
+				allCourses.splice('tabSearchActions', 1, 0, this._getPinnedTabAction());
+			}
+
+			const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
+			contents.forEach(content => {
+				content.requestRefresh();
+			});
+		}
+		this._trySetItemLocalStorage('myCourses.pinnedTab', {'previouslyShown': true});
+	}
+	_removePinnedTab() {
+		const pinnedTabIndex = this._tabSearchActions.findIndex(action => action.name === this._pinnedTabAction.name);
+		if (pinnedTabIndex !== -1) {
+			this.splice('_tabSearchActions', pinnedTabIndex, 1);
+
+			const allCourses = this._getAllCoursesComponent();
+			if (allCourses.tabSearchActions && allCourses.tabSearchActions.length > 0) {
+				allCourses.splice('tabSearchActions', pinnedTabIndex, 1);
+			}
+
+			const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
+			contents.forEach(content => {
+				content.requestRefresh();
+			});
+		}
+		this._trySetItemLocalStorage('myCourses.pinnedTab', {'previouslyShown': false});
+	}
+	_tryGetItemLocalStorage(itemName) {
+		try {
+			return JSON.parse(localStorage.getItem(itemName));
+		} catch (_) {
+			//noop if local storage isn't available or has bad data
+			return;
+		}
+	}
+	_trySetItemLocalStorage(itemName, value) {
+		try {
+			const itemCopied = JSON.parse(JSON.stringify(value));
+			localStorage.setItem(itemName, JSON.stringify(itemCopied));
+		} catch (_) {
+			//noop we don't want to blow up if we exceed a quota or are in safari private browsing mode
+		}
 	}
 }
 

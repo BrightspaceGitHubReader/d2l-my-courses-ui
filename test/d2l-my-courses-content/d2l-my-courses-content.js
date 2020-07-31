@@ -191,7 +191,6 @@ describe('d2l-my-courses-content', () => {
 
 	it('should properly implement a random assortment of properties', () => {
 		expect(component).to.exist;
-		expect(component._alertsView).to.be.an.instanceof(Array);
 		expect(component._existingEnrollmentsMap).to.be.an('object');
 		expect(component._nextEnrollmentEntityUrl).to.be.null;
 		expect(component._orgUnitIdMap).to.be.an('object');
@@ -203,12 +202,16 @@ describe('d2l-my-courses-content', () => {
 		component._existingEnrollmentsMap = { 1234: true };
 		component._enrollments = [1234];
 		component._numberOfEnrollments = 10;
+		component._newEnrollmentAlertNum = 5;
+		component._nextEnrollmentEntityUrl = 'nextUrl';
 
 		component._resetEnrollments();
 
 		expect(component._lastPinnedIndex).to.equal(-1);
 		expect(component._enrollments.length).to.equal(0);
 		expect(component._numberOfEnrollments).to.equal(0);
+		expect(component._newEnrollmentAlertNum).to.equal(0);
+		expect(component._nextEnrollmentEntityUrl).to.be.null;
 		for (const key in component._existingEnrollmentsMap) {
 			expect(component._existingEnrollmentsMap.hasOwnProperty(key)).to.be.false;
 		}
@@ -238,7 +241,7 @@ describe('d2l-my-courses-content', () => {
 				href: href,
 				fields: fields
 			};
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(component._isRefetchNeeded).to.be.true;
 		});
 
@@ -248,25 +251,46 @@ describe('d2l-my-courses-content', () => {
 				href: href,
 				fields: fields
 			};
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(component._isRefetchNeeded).to.be.true;
 		});
 
 		it('should set refetch when course enrollment changed and the search action contains this enrollment', () => {
 			component._orgUnitIdMap = { 1234: true };
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(component._isRefetchNeeded).to.be.true;
 		});
 
 		it('should not set refetch for other tabs', () => {
-			component._onCourseEnrollmentChange(newValue);
+			component.courseEnrollmentChanged(newValue);
 			expect(component._isRefetchNeeded).to.be.false;
+		});
+
+		it('should immediately rearrange when course enrollment changed and we are on the tab containing that enrollment', () => {
+			const refetchStub = sandbox.stub(component, '_refetchEnrollments');
+			const rearrangeStub = sandbox.stub(component, '_rearrangeAfterPinning');
+
+			component._orgUnitIdMap = { 1234: true };
+			component._thisTabSelected = true;
+			component.courseEnrollmentChanged(newValue);
+			expect(refetchStub.called).to.be.false;
+			expect(rearrangeStub.called).to.be.true;
+		});
+
+		it('should immediately refetch when course enrollment changed and it is not on the selected tab', () => {
+			const refetchStub = sandbox.stub(component, '_refetchEnrollments');
+			const rearrangeStub = sandbox.stub(component, '_rearrangeAfterPinning');
+
+			component._orgUnitIdMap = {};
+			component._thisTabSelected = true;
+			component.courseEnrollmentChanged(newValue);
+			expect(refetchStub.called).to.be.true;
+			expect(rearrangeStub.called).to.be.false;
 		});
 	});
 
 	describe('Card grid', () => {
 		beforeEach((done) => {
-			//component._fetchRoot();
 			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsSearchPageTwoEntity));
 			setTimeout(done, 300);
 		});
@@ -281,13 +305,11 @@ describe('d2l-my-courses-content', () => {
 	describe('Public API', () => {
 
 		describe('refreshCardGridImages', () => {
-			it('should refresh cards in both card grids', () => {
-				const stub1 = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
-				const stub2 = sandbox.stub(component.shadowRoot.querySelector('d2l-all-courses'), 'refreshCardGridImages');
+			it('should refresh cards in grid', () => {
+				const stub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-card-grid'), 'refreshCardGridImages');
 
 				component.refreshCardGridImages();
-				expect(stub1).to.have.been.called;
-				expect(stub2).to.have.been.called;
+				expect(stub).to.have.been.called;
 			});
 		});
 	});
@@ -305,36 +327,61 @@ describe('d2l-my-courses-content', () => {
 			expect(alert.hidden).to.be.true;
 		});
 
-		it('should hide the course image failure alert when the all courses overlay is opened', function() {
-			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
-			component.showImageError = true;
+		it('should show the no courses alert when there are no courses', function() {
+			const alertMessage = 'You don\'t have any courses to display.';
+			component._numberOfEnrollments = 0;
+			component._enrollments = [];
 
-			const alert = component.shadowRoot.querySelector('#imageErrorAlert');
+			const alert = component.shadowRoot.querySelector('#courseInfoAlert');
 			expect(alert.hidden).to.be.false;
-			expect(alert.type).to.equal('warning');
-			expect(alert.innerText).to.include(alertMessage);
+			expect(alert.type).to.equal('call-to-action');
+			expect(component._courseInfoAlertText).to.equal(alertMessage);
 
-			component._openAllCoursesView(new CustomEvent('event'));
+			component._numberOfEnrollments++;
 			expect(alert.hidden).to.be.true;
-			expect(component.showImageError).to.be.false;
+			expect(component._courseInfoAlertText).to.be.null;
 		});
 
-		it('should hide the course image failure alert when the all courses overlay is closed', function() {
-			const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
-			component.showImageError = true;
+		it('should show the past courses only alert when there are only past courses', function() {
+			const alertMessage = 'You don\'t have any current or future courses. View All Courses to browse your past courses.';
+			component._numberOfEnrollments = 2;
+			component._enrollments = [];
+			component._hidePastCourses = true;
 
-			const alert = component.shadowRoot.querySelector('#imageErrorAlert');
+			const alert = component.shadowRoot.querySelector('#courseInfoAlert');
 			expect(alert.hidden).to.be.false;
-			expect(alert.type).to.equal('warning');
-			expect(alert.innerText).to.include(alertMessage);
+			expect(alert.type).to.equal('call-to-action');
+			expect(component._courseInfoAlertText).to.equal(alertMessage);
 
-			const event = {
-				type: 'd2l-simple-overlay-closed',
-				composedPath: function() { return [{ id: 'all-courses' }]; }
-			};
-			component._onSimpleOverlayClosed(event);
+			component._enrollments = [{}];
 			expect(alert.hidden).to.be.true;
-			expect(component.showImageError).to.be.false;
+			expect(component._courseInfoAlertText).to.be.null;
+		});
+
+		it('should not show the past courses only alert when past courses are not hidden', function() {
+			component._numberOfEnrollments = 2;
+			component._enrollments = [];
+			component._hidePastCourses = false;
+
+			const alert = component.shadowRoot.querySelector('#courseInfoAlert');
+			expect(alert.hidden).to.be.true;
+			expect(component._courseInfoAlertText).to.be.null;
+		});
+
+		it('should show the new enrollments alert if there are new enrollments', function() {
+			component._newEnrollmentAlertNum = 1;
+
+			const alert = component.shadowRoot.querySelector('#newEnrollmentAlert');
+			expect(alert.hidden).to.be.false;
+			expect(component._newEnrollmentAlertText).to.equal('You\'ve been enrolled in a new course.');
+
+			component._newEnrollmentAlertNum++;
+			expect(alert.hidden).to.be.false;
+			expect(component._newEnrollmentAlertText).to.equal('You\'ve been enrolled in new courses.');
+
+			component._resetEnrollments();
+			expect(alert.hidden).to.be.true;
+			expect(component._newEnrollmentAlertText).to.be.null;
 		});
 	});
 
@@ -350,7 +397,6 @@ describe('d2l-my-courses-content', () => {
 				component.updateUserSettingsAction = updateUserSettingsAction;
 				component.enrollmentsSearchAction = searchAction;
 				component._numberOfEnrollments = 1;
-				component.tabSearchActions = [];
 				sandbox.stub(component, '_setLastSearchName');
 				setTimeout(() => {
 					done();
@@ -371,26 +417,14 @@ describe('d2l-my-courses-content', () => {
 				});
 			});
 
-			it('should update the tabSearchActions to select the currently-active tab', () => {
-				component.tabSearchActions = [{
-					name: searchAction.name,
-					title: '',
-					selected: false,
-					enrollmentsSearchAction: searchAction
-				}, {
-					name: 'foo',
-					title: '',
-					selected: true,
-					enrollmentsSearchAction: searchAction
-				}];
+			it('should set itself to the selected tab', () => {
+				expect(component._thisTabSelected).to.be.false;
 
 				parentComponent.dispatchEvent(new CustomEvent(
 					'd2l-tab-panel-selected', { bubbles: true, composed: true }
 				));
 
-				component.tabSearchActions.forEach(function(action) {
-					expect(action.selected).to.equal(action.name !== 'foo');
-				});
+				expect(component._thisTabSelected).to.be.true;
 			});
 
 			[true, false].forEach(refetchNeeded => {
@@ -407,59 +441,6 @@ describe('d2l-my-courses-content', () => {
 					expect(refetchStub.called).to.equal(refetchNeeded);
 					expect(resetStub.called).to.equal(refetchNeeded);
 					expect(component._isRefetchNeeded).to.be.false;
-				});
-			});
-		});
-
-		describe('d2l-course-pinned-change', () => {
-
-			it('should refetch enrollments if the new pinned enrollment has not previously been fetched', () => {
-				const _enrollmentEntity = {
-					_entity: {},
-					organizationHref: function() { return 'organizationHref'; },
-				};
-
-				const event = new CustomEvent('d2l-course-pinned-change', {
-					detail: {
-						isPinned: true,
-						enrollment: _enrollmentEntity
-					}
-				});
-
-				component._orgUnitIdMap = {
-					1: enrollmentEntity
-				};
-
-				const refetchSpy = sandbox.spy(component, '_refetchEnrollments');
-				component._onEnrollmentPinnedMessage(event);
-				setTimeout(() => {
-					expect(refetchSpy).to.have.been.called;
-				});
-			});
-
-		});
-
-		describe('d2l-simple-overlay-closed', () => {
-
-			it('should remove an existing course image failure alert', done => {
-				const alertMessage = 'Sorry, we\'re unable to change your image right now. Please try again later.';
-				component.showImageError = true;
-
-				const alert = component.shadowRoot.querySelector('#imageErrorAlert');
-				expect(alert.hidden).to.be.false;
-				expect(alert.type).to.equal('warning');
-				expect(alert.innerText).to.include(alertMessage);
-
-				const event = {
-					type: 'd2l-simple-overlay-closed',
-					composedPath: function() { return [{ id: 'all-courses' }]; }
-				};
-				component._onSimpleOverlayClosed(event);
-
-				setTimeout(() => {
-					expect(component.showImageError).to.be.false;
-					expect(alert.hidden).to.be.true;
-					done();
 				});
 			});
 		});
@@ -502,6 +483,22 @@ describe('d2l-my-courses-content', () => {
 
 				requestAnimationFrame(() => {
 					expect(component._initiallyVisibleCourseTileCount).to.equal(1);
+					done();
+				});
+			});
+
+		});
+
+		describe('d2l-enrollment-new', () => {
+
+			it('should increment the count of new enrollments for the enrollments alert', done => {
+				expect(component._newEnrollmentAlertNum).to.equal(0);
+
+				const event = new CustomEvent('d2l-enrollment-new');
+				component.dispatchEvent(event);
+
+				requestAnimationFrame(() => {
+					expect(component._newEnrollmentAlertNum).to.equal(1);
 					done();
 				});
 			});
@@ -588,13 +585,18 @@ describe('d2l-my-courses-content', () => {
 			expect(component._showContent).to.be.true;
 		});
 
-		it('should fetch enrollments using the constructed enrollmentsSearchUrl', () => {
-			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsRootEntity));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('autoPinCourses=false'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('pageSize=20'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('embedDepth=0'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('sort=current'));
-			expect(fetchStub).to.have.been.calledWith(sinon.match('promotePins=true'));
+		it('should fetch enrollments using the constructed enrollmentsSearchUrl', done => {
+			component.noTabs = true;
+			component._enrollmentSearchActionChanged();
+
+			requestAnimationFrame(() => {
+				expect(fetchStub).to.have.been.calledWith(sinon.match('autoPinCourses=false'));
+				expect(fetchStub).to.have.been.calledWith(sinon.match('pageSize=20'));
+				expect(fetchStub).to.have.been.calledWith(sinon.match('embedDepth=0'));
+				expect(fetchStub).to.have.been.calledWith(sinon.match('sort=current'));
+				expect(fetchStub).to.have.been.calledWith(sinon.match('promotePins=true'));
+				done();
+			});
 		});
 
 		it('should fetch all pinned enrollments', done => {
@@ -613,6 +615,8 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should display the appropriate alert when there are no enrollments', () => {
+			const courseInfoAlert = component.shadowRoot.querySelector('#courseInfoAlert');
+			const noCoursesMessage = 'You don\'t have any courses to display.';
 			fetchStub.restore();
 			component._enrollments = [];
 			component._numberOfEnrollments = 0;
@@ -630,14 +634,15 @@ describe('d2l-my-courses-content', () => {
 			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsRootEntity));
 			expect(component._showContent).to.be.true;
 			expect(component._numberOfEnrollments).to.equal(0);
-			expect(component._alertsView).to.include({
-				alertName: 'noCourses',
-				alertType: 'call-to-action',
-				alertMessage: 'You don\'t have any courses to display.'
-			});
+			expect(courseInfoAlert.hidden).to.be.false;
+			expect(courseInfoAlert.type).to.equal('call-to-action');
+			expect(component._courseInfoAlertText).to.equal(noCoursesMessage);
 		});
 
 		it('should update enrollment alerts when enrollment information is updated', () => {
+			const courseInfoAlert = component.shadowRoot.querySelector('#courseInfoAlert');
+			const noCoursesMessage = 'You don\'t have any courses to display.';
+
 			fetchStub.restore();
 			component._enrollments = [];
 			component._numberOfEnrollments = 0;
@@ -654,14 +659,14 @@ describe('d2l-my-courses-content', () => {
 
 			component._enrollmentsRootResponse(new EnrollmentCollectionEntity(enrollmentsRootEntity));
 			expect(component._numberOfEnrollments).to.equal(0);
-			expect(component._alertsView).to.include({
-				alertName: 'noCourses',
-				alertType: 'call-to-action',
-				alertMessage: 'You don\'t have any courses to display.'
-			});
+			expect(courseInfoAlert.hidden).to.be.false;
+			expect(courseInfoAlert.type).to.equal('call-to-action');
+			expect(component._courseInfoAlertText).to.equal(noCoursesMessage);
+
 			component._enrollments = ['/enrollments/users/169/organizations/1'];
 			component._numberOfEnrollments = 1;
-			expect(component._alertsView).to.be.empty;
+			expect(courseInfoAlert.hidden).to.be.true;
+			expect(component._courseInfoAlertText).to.be.null;
 		});
 
 	});
@@ -703,6 +708,8 @@ describe('d2l-my-courses-content', () => {
 			});
 
 			it('should not add the alert if not hiding past courses', () => {
+				const courseInfoAlert = component.shadowRoot.querySelector('#courseInfoAlert');
+
 				component._hidePastCourses = false;
 				component.dispatchEvent(new CustomEvent(
 					'd2l-enrollment-card-status', {
@@ -715,7 +722,8 @@ describe('d2l-my-courses-content', () => {
 					}
 				));
 
-				expect(component._hasOnlyPastCourses).to.be.false;
+				expect(courseInfoAlert.hidden).to.be.true;
+				expect(component._courseInfoAlertText).to.be.null;
 
 			});
 

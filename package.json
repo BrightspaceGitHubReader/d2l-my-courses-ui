@@ -26,6 +26,7 @@
     "@webcomponents/webcomponentsjs": "^2",
     "babel-eslint": "^10",
     "chromedriver": "^2.40.0",
+    "frau-ci": "^1",
     "eslint": "^6",
     "eslint-config-brightspace": "^0.7.0",
     "eslint-plugin-html": "^6",
@@ -34,7 +35,7 @@
     "polymer-cli": "^1.9.8",
     "wct-browser-legacy": "^1.0.1"
   },
-  "version": "",
+  "version": "11.14.0",
   "main": "d2l-my-courses.js",
   "dependencies": {
     "@brightspace-ui/core": "^1",

@@ -3,3 +3,6 @@ node_modules*/
 
 node_modules
 package-lock.json
+
+test/index.html
+wct.conf.json
