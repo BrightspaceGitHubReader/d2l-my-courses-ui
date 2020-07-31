@@ -11,7 +11,7 @@ export default {
 	"filtering.clear": "지우기",
 	"filtering.filter": "필터",
 	"filtering.filterBy": "필터링 기준",
-	"filtering.filterLabel": "{filterLabel}{num, plural, =0{} 기타{ ({num})}}",
+	"filtering.filterLabel": "{filterLabel}{num, plural, =0{} other{ ({num})}}",
 	"filtering.filterMultiple": "필터: {num}개 필터",
 	"filtering.filterSingle": "필터: 1개 필터",
 	"filtering.noDepartments": "{department} 필터가 없습니다.",
