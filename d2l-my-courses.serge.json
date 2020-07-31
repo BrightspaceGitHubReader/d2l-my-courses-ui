@@ -8,8 +8,10 @@
   "output_file_path": "src/lang/%LANG%.js",
   "output_lang_rewrite": [
     "ar-sa ar",
+    "cy-gb cy-gb",
     "da-dk da-dk",
     "de-de de",
+    "es-es es-es",
     "es-mx es",
     "fi-fi fi",
     "fr-ca fr",
