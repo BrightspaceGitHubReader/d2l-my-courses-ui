@@ -20,7 +20,7 @@ export default {
 	"filtering.roles": "Roles",
 	"filtering.searchBy": "Search by {filter}",
 	"newEnrollment": "You've been enrolled in a new course.",
-	"newEnrollmentMultiple": "You\'ve been enrolled in new courses.",
+	"newEnrollmentMultiple": "You've been enrolled in new courses.",
 	"noCoursesInDepartment": "There are no current or active courses in this department",
 	"noCoursesInRole": "There are no current or active courses for this role",
 	"noCoursesInSearch": "There are no courses for your search entry.",
