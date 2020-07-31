@@ -7,7 +7,6 @@ import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import './d2l-alert-behavior.js';
 import './d2l-my-courses-card-grid.js';
 import './d2l-utility-behavior.js';
 
@@ -21,7 +20,6 @@ import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
 import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
 
 class MyCoursesContent extends mixinBehaviors([
-	D2L.MyCourses.AlertBehavior,
 	D2L.MyCourses.UtilityBehavior
 ], StatusMixin(MyCoursesLocalizeBehavior(PolymerElement))) {
 
@@ -51,11 +49,6 @@ class MyCoursesContent extends mixinBehaviors([
 				type: Boolean,
 				value: false
 			},
-			// Alerts to display in course grid, above the course cards
-			_alertsView: {
-				type: Array,
-				value: function() { return []; }
-			},
 			_courseTileOrganizationEventCount: {
 				type: Number,
 				value: 0
@@ -75,10 +68,19 @@ class MyCoursesContent extends mixinBehaviors([
 				type: String,
 				value: null
 			},
-			_hasOnlyPastCourses: {
-				type: Boolean,
-				value: false,
-				computed: '_computeHasOnlyPastCourses(_courseTileOrganizationEventCount, _enrollments.length)'
+			_courseInfoAlertText: {
+				type: String,
+				value: null,
+				computed: '_computeCourseInfoAlertText(_numberOfEnrollments, _enrollments.length, _hidePastCourses)'
+			},
+			_newEnrollmentAlertNum: {
+				type: Number,
+				value: 0
+			},
+			_newEnrollmentAlertText: {
+				type: String,
+				value: null,
+				computed: '_computeNewEnrollmentAlertText(_newEnrollmentAlertNum)'
 			},
 			// Lookup table of org unit ID -> enrollment, to avoid having to re-fetch enrollments
 			_orgUnitIdMap: {
@@ -145,7 +147,6 @@ class MyCoursesContent extends mixinBehaviors([
 
 	static get observers() {
 		return [
-			'_enrollmentsChanged(_enrollments.length, _numberOfEnrollments)',
 			'_enrollmentSearchActionChanged(enrollmentsSearchAction)'
 		];
 	}
@@ -195,18 +196,16 @@ class MyCoursesContent extends mixinBehaviors([
 				presentation-url="[[presentationUrl]]"
 				widget-view>
 
-				<d2l-alert hidden$="[[!_hasOnlyPastCourses]]" type="call-to-action">
-					[[localize('onlyPastCoursesMessage')]]
-				</d2l-alert>
 				<d2l-alert id="imageErrorAlert" hidden$="[[!showImageError]]" type="warning">
 					[[localize('error.settingImage')]]
 				</d2l-alert>
+				<d2l-alert id="courseInfoAlert" hidden$="[[!_courseInfoAlertText]]" type="call-to-action">
+					[[_courseInfoAlertText]]
+				</d2l-alert>
+				<d2l-alert id="newEnrollmentAlert" hidden$="[[!_newEnrollmentAlertText]]" type="call-to-action">
+					[[_newEnrollmentAlertText]]
+				</d2l-alert>
 
-				<template is="dom-repeat" items="[[_alertsView]]">
-					<d2l-alert type="[[item.alertType]]">
-						[[item.alertMessage]]
-					</d2l-alert>
-				</template>
 			</d2l-my-courses-card-grid>
 
 			<d2l-link id="viewAllCourses"
@@ -289,18 +288,6 @@ class MyCoursesContent extends mixinBehaviors([
 	_getCardGrid() {
 		return this.shadowRoot.querySelector('d2l-my-courses-card-grid');
 	}
-	_enrollmentsChanged(viewAbleLength, totalLength) {
-		this._removeAlert('noCourses');
-		if (this._isRefetchNeeded) {
-			return;
-		}
-		if (viewAbleLength <= 0) {
-			this._clearAlerts();
-		}
-		if (totalLength === 0) {
-			this._addAlert('call-to-action', 'noCourses', this.localize('noCoursesMessage'));
-		}
-	}
 	_enrollmentSearchActionChanged() {
 		if (this.noTabs) {
 			// We only need to manually fetch if we're not using tabs;
@@ -308,10 +295,21 @@ class MyCoursesContent extends mixinBehaviors([
 			this._fetchRoot();
 		}
 	}
-	_computeHasOnlyPastCourses() {
-		return this._hidePastCourses
-			&& this._numberOfEnrollments !== 0
-			&& this._enrollments.length === 0;
+	_computeCourseInfoAlertText(enrollmentsLength, viewableEnrollmentsLength, hidePastCourses) {
+		if (enrollmentsLength === 0) {
+			return this.localize('noCoursesMessage');
+		} else if (hidePastCourses && enrollmentsLength !== 0 && viewableEnrollmentsLength === 0) {
+			return this.localize('onlyPastCoursesMessage');
+		}
+		return null;
+	}
+	_computeNewEnrollmentAlertText(numNewEnrollments) {
+		if (numNewEnrollments === 1) {
+			return this.localize('newEnrollment');
+		} else if (numNewEnrollments >= 1) {
+			return this.localize('newEnrollmentMultiple');
+		}
+		return null;
 	}
 	_insertToOrgUnitIdMap(url, enrollmentCollectionEntity) {
 		if (!url || !enrollmentCollectionEntity) {
@@ -372,15 +370,7 @@ class MyCoursesContent extends mixinBehaviors([
 	* Listeners
 	*/
 	_onD2lEnrollmentNew() {
-		if (this._hasAlert('newEnrollmentMultiple')) {
-			return;
-		}
-		let message = 'newEnrollment';
-		if (this._hasAlert(message)) {
-			this._removeAlert(message);
-			message = 'newEnrollmentMultiple';
-		}
-		this._addAlert('call-to-action', message, this.localize(message));
+		this._newEnrollmentAlertNum++;
 	}
 	_onCourseImageLoaded() {
 		this._courseImagesLoadedEventCount++;
@@ -726,6 +716,7 @@ class MyCoursesContent extends mixinBehaviors([
 		this._existingEnrollmentsMap = {};
 		this._enrollments = [];
 		this._numberOfEnrollments = 0;
+		this._newEnrollmentAlertNum = 0;
 		this._nextEnrollmentEntityUrl = null;
 	}
 	_setLastSearchName(id) {
