@@ -8,14 +8,13 @@ import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/colors/colors.js';
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
-import '@brightspace-ui/core/components/dropdown/dropdown-menu.js';
 import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
-import '@brightspace-ui/core/components/menu/menu.js';
-import '@brightspace-ui/core/components/menu/menu-item-radio.js';
 import '@brightspace-ui/core/components/tabs/tabs.js';
 import '@brightspace-ui/core/components/tabs/tab-panel.js';
+import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdown.js';
+import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdown-option.js';
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import './d2l-my-courses-card-grid.js';
@@ -234,6 +233,13 @@ class AllCourses extends mixinBehaviors([
 						margin-top: 5px;
 					}
 				}
+				d2l-sort-by-dropdown {
+					margin-left: 1rem;
+				}
+				:host(:dir(rtl)) d2l-sort-by-dropdown {
+					margin-left: 0;
+					margin-right: 1rem;
+				}
 				.dropdown-opener-text {
 					font-size: 0.95rem;
 					font-family: Lato;
@@ -250,18 +256,6 @@ class AllCourses extends mixinBehaviors([
 				}
 				.dropdown-button > d2l-icon {
 					margin-left: 4px;
-				}
-				.dropdown-content-header {
-					box-sizing: border-box;
-					display: flex;
-					align-items: center;
-					justify-content: space-between;
-					border-bottom: 1px solid var(--d2l-color-mica);
-					width: 100%;
-					padding: 20px;
-				}
-				.dropdown-content-gradient {
-					background: linear-gradient(to top, white, var(--d2l-color-regolith));
 				}
 				button[aria-pressed="true"] {
 					color: var(--d2l-color-celestine);
@@ -329,25 +323,15 @@ class AllCourses extends mixinBehaviors([
 									</d2l-dropdown-content>
 								</d2l-dropdown>
 
-								<d2l-dropdown id="sortDropdown" on-d2l-menu-item-change="_onSortOrderChanged">
-									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="sortText">
-										<span id="sortText" class="dropdown-opener-text">[[localize('sorting.sortDefault')]]</span>
-										<d2l-icon icon="tier1:chevron-down" aria-hidden="true"></d2l-icon>
-									</button>
-									<d2l-dropdown-menu no-padding="" min-width="350">
-										<d2l-menu id="sortDropdownMenu" label="[[localize('sorting.sortBy')]]">
-											<div class="dropdown-content-header">
-												<span>[[localize('sorting.sortBy')]]</span>
-											</div>
-											<d2l-menu-item-radio class="dropdown-content-gradient" value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="OrgUnitName" text="[[localize('sorting.sortCourseName')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="OrgUnitCode" text="[[localize('sorting.sortCourseCode')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="PinDate" text="[[localize('sorting.sortDatePinned')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="LastAccessed" text="[[localize('sorting.sortLastAccessed')]]"></d2l-menu-item-radio>
-											<d2l-menu-item-radio value="EnrollmentDate" text="[[localize('sorting.sortEnrollmentDate')]]"></d2l-menu-item-radio>
-										</d2l-menu>
-									</d2l-dropdown-menu>
-								</d2l-dropdown>
+								<d2l-sort-by-dropdown align="end" label="[[localize('sorting.sortBy')]]" value="[[_sortMap[0].name]]" on-d2l-sort-by-dropdown-change="_onSortOrderChanged">
+									<d2l-sort-by-dropdown-option value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-sort-by-dropdown-option>
+									<d2l-sort-by-dropdown-option value="OrgUnitName" text="[[localize('sorting.sortCourseName')]]"></d2l-sort-by-dropdown-option>
+									<d2l-sort-by-dropdown-option value="OrgUnitCode" text="[[localize('sorting.sortCourseCode')]]"></d2l-sort-by-dropdown-option>
+									<d2l-sort-by-dropdown-option value="PinDate" text="[[localize('sorting.sortDatePinned')]]"></d2l-sort-by-dropdown-option>
+									<d2l-sort-by-dropdown-option value="LastAccessed" text="[[localize('sorting.sortLastAccessed')]]"></d2l-sort-by-dropdown-option>
+									<d2l-sort-by-dropdown-option value="EnrollmentDate" text="[[localize('sorting.sortEnrollmentDate')]]"></d2l-sort-by-dropdown-option>
+								</d2l-sort-by-dropdown>
+
 							</div>
 						</div>
 						<div class="search-and-filter-row advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]">
@@ -524,9 +508,6 @@ class AllCourses extends mixinBehaviors([
 				promotePins: sortData.promotePins
 			})
 		);
-
-		this.$.sortText.textContent = this.localize(sortData.langterm || '');
-		this.$.sortDropdown.toggleOpen();
 	}
 
 	_onSearchResultsChanged(e) {
@@ -569,7 +550,7 @@ class AllCourses extends mixinBehaviors([
 		this._clearSearchWidget();
 		this.$.filterMenu.clearFilters();
 		this._filterText = this.localize('filtering.filter');
-		this._resetSortDropdown();
+		this.shadowRoot.querySelector(`d2l-sort-by-dropdown-option[value=${this._sortMap[0].name}]`).click();
 
 		e.stopPropagation();
 		this.dispatchEvent(new CustomEvent('d2l-all-courses-close'));
@@ -635,18 +616,6 @@ class AllCourses extends mixinBehaviors([
 
 		const searchAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
 		this._enrollmentsSearchAction = searchAction;
-
-		if (searchAction && searchAction.hasFieldByName('sort')) {
-			const sortParameter = searchAction.getFieldByName('sort').value;
-			if (!sortParameter) {
-				return;
-			}
-
-			const sortData = this._mapSortOption(sortParameter, 'action');
-
-			this.$.sortText.textContent = this.localize(sortData.langterm || '');
-			this._selectSortOption(sortData.name);
-		}
 	}
 
 	/*
@@ -702,24 +671,6 @@ class AllCourses extends mixinBehaviors([
 		}
 
 		return this._sortMap[0];
-	}
-
-	_resetSortDropdown() {
-		this._selectSortOption(this._sortMap[0].name);
-
-		const content = this.$.sortDropdown.__getContentElement();
-		if (content) {
-			content.close();
-		}
-	}
-
-	_selectSortOption(sortName) {
-		const items = this.$.sortDropdownMenu.querySelectorAll('d2l-menu-item-radio');
-		for (let i = 0; i < items.length; i++) {
-			items[i].selected = false;
-		}
-
-		this.$.sortDropdownMenu.querySelector(`d2l-menu-item-radio[value=${sortName}]`).selected = true;
 	}
 
 	_updateFilteredEnrollments(enrollments, append) {

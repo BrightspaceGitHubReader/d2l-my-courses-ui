@@ -41,6 +41,7 @@
     "@brightspace-ui/core": "^1",
     "d2l-course-image": "Brightspace/course-image#semver:^3",
     "d2l-enrollments": "BrightspaceHypermediaComponents/enrollments#semver:^4",
+    "d2l-facet-filter-sort": "BrightspaceUI/facet-filter-sort#semver:^3",
     "d2l-fetch": "Brightspace/d2l-fetch.git#semver:^2",
     "d2l-hypermedia-constants": "^6",
     "d2l-image-selector": "Brightspace/image-selector#semver:^4",
