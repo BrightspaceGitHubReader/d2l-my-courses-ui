@@ -476,7 +476,7 @@ describe('d2l-my-courses', () => {
 		it('should remove a course image failure alert when the all courses overlay is closed', function() {
 			component._showImageError = true;
 
-			component._onAllCoursesOverlayClosed();
+			component._onAllCoursesClose();
 			expect(component._showImageError).to.be.false;
 		});
 	});
@@ -595,15 +595,20 @@ describe('d2l-my-courses', () => {
 			});
 		});
 
-		describe('d2l-simple-overlay-closed', () => {
-			it('should remove an existing course image failure alert and tell d2l-my-courses-content that the overlay closed', () => {
+		describe('d2l-all-courses-close', () => {
+			it('should remove an existing course image failure alert and tell d2l-my-courses-content that the overlay closed', done => {
 				const stub = sandbox.stub(component._getContentComponent(), 'allCoursesOverlayClosed');
 				component._showImageError = true;
 
-				component._onAllCoursesOverlayClosed();
+				const event = new CustomEvent('d2l-all-courses-close');
+				component._getAllCoursesComponent().dispatchEvent(event);
 
-				expect(stub).to.have.been.called;
-				expect(component._showImageError).to.be.false;
+				setTimeout(() => {
+					expect(stub).to.have.been.called;
+					expect(component._showImageError).to.be.false;
+					done();
+				});
+
 			});
 		});
 
