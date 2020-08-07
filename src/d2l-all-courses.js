@@ -141,37 +141,31 @@ class AllCourses extends mixinBehaviors([
 						{
 							name: 'Default',
 							action: 'Current',
-							langterm: 'sorting.sortDefault',
 							promotePins: true
 						},
 						{
 							name: 'OrgUnitName',
 							action: 'OrgUnitName,OrgUnitId',
-							langterm: 'sorting.sortCourseName',
 							promotePins: false
 						},
 						{
 							name: 'OrgUnitCode',
 							action: 'OrgUnitCode,OrgUnitId',
-							langterm: 'sorting.sortCourseCode',
 							promotePins: false
 						},
 						{
 							name: 'PinDate',
 							action: '-PinDate,OrgUnitId',
-							langterm: 'sorting.sortDatePinned',
 							promotePins: true
 						},
 						{
 							name: 'LastAccessed',
 							action: 'LastAccessed',
-							langterm: 'sorting.sortLastAccessed',
 							promotePins: false
 						},
 						{
 							name: 'EnrollmentDate',
 							action: '-LastModifiedDate,OrgUnitId',
-							langterm: 'sorting.sortEnrollmentDate',
 							promotePins: false
 						}
 					];
