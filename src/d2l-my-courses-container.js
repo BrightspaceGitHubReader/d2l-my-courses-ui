@@ -144,7 +144,7 @@ class MyCoursesContainer extends mixinBehaviors([
 			</template>
 
 			<d2l-all-courses
-				on-d2l-simple-overlay-closed="_onAllCoursesOverlayClosed"
+				on-d2l-all-courses-close="_onAllCoursesOverlayClosed"
 				advanced-search-url="[[advancedSearchUrl]]"
 				enrollments-search-action="[[_enrollmentsSearchAction]]"
 				filter-standard-department-name="[[standardDepartmentName]]"

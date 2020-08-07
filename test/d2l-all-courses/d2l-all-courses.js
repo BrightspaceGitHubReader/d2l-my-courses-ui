@@ -247,6 +247,7 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('closing the overlay', function() {
+		const closeEvent = new CustomEvent('d2l-simple-overlay-closed');
 
 		it('should prep _enrollmentsSearchAction for component resets', function() {
 			const entity = window.D2L.Hypermedia.Siren.Parse({
@@ -263,7 +264,7 @@ describe('d2l-all-courses', function() {
 			});
 			widget._enrollmentsSearchAction = entity.actions[0];
 
-			widget._onSimpleOverlayClosed();
+			widget._onSimpleOverlayClosed(closeEvent);
 
 			expect(widget._enrollmentsSearchAction.getFieldByName('search').value).to.be.equal('');
 			expect(widget._enrollmentsSearchAction.getFieldByName('sort').value).to.be.equal('Current');
@@ -275,7 +276,7 @@ describe('d2l-all-courses', function() {
 			const searchField = widget.$['search-widget'];
 
 			searchField._getSearchWidget()._getSearchInput().value = 'foo';
-			widget._onSimpleOverlayClosed();
+			widget._onSimpleOverlayClosed(closeEvent);
 
 			expect(spy.called).to.be.true;
 			expect(searchField._getSearchWidget()._getSearchInput().value).to.equal('');
@@ -294,7 +295,7 @@ describe('d2l-all-courses', function() {
 			fireEvent(widget.$.filterDropdownContent, 'd2l-dropdown-close', {});
 
 			expect(widget._filterText).to.equal('Filter: 1 Filter');
-			widget._onSimpleOverlayClosed();
+			widget._onSimpleOverlayClosed(closeEvent);
 			expect(spy.called).to.be.true;
 			expect(widget._filterText).to.equal('Filter');
 		});
@@ -311,7 +312,7 @@ describe('d2l-all-courses', function() {
 			fireEvent(widget.shadowRoot.querySelector('d2l-dropdown-menu'), 'd2l-menu-item-change', event);
 			expect(widget._searchUrl).to.contain('OrgUnitCode,OrgUnitId');
 
-			widget._onSimpleOverlayClosed();
+			widget._onSimpleOverlayClosed(closeEvent);
 			expect(spy.called).to.be.true;
 		});
 
