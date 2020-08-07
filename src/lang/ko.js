@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "최근 검색",
 	"search.searchCourses": "강의 검색",
 	"sorting.sortBy": "정렬 기준",
-	"sorting.sortCourseCode": "정렬: 강의 코드",
-	"sorting.sortCourseName": "정렬: 강의 이름",
-	"sorting.sortDatePinned": "정렬: 고정된 날짜",
-	"sorting.sortDefault": "정렬: 기본값",
-	"sorting.sortEnrollmentDate": "정렬: 등록 날짜",
-	"sorting.sortLastAccessed": "정렬: 최종 접속",
+	"sorting.sortCourseCode": "강의 코드",
+	"sorting.sortCourseName": "강의 이름",
+	"sorting.sortDatePinned": "고정된 날짜",
+	"sorting.sortDefault": "기본값",
+	"sorting.sortEnrollmentDate": "등록 날짜",
+	"sorting.sortLastAccessed": "최종 접속",
 	"viewAllCourses": "모든 강의 보기"
 };

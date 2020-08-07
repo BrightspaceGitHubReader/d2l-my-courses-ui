@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "Senaste sökningar",
 	"search.searchCourses": "Sök kurser",
 	"sorting.sortBy": "Sortera efter",
-	"sorting.sortCourseCode": "Sortera: kurskod",
-	"sorting.sortCourseName": "Sortera: kursnamn",
-	"sorting.sortDatePinned": "Sortera: datum markerat",
-	"sorting.sortDefault": "Sortera: standard",
-	"sorting.sortEnrollmentDate": "Sortera: inskrivningsdatum",
-	"sorting.sortLastAccessed": "Sortera: senast öppnad",
+	"sorting.sortCourseCode": "Kurskod",
+	"sorting.sortCourseName": "Kursnamn",
+	"sorting.sortDatePinned": "Datum markerat",
+	"sorting.sortDefault": "Standard",
+	"sorting.sortEnrollmentDate": "Inskrivningsdatum",
+	"sorting.sortLastAccessed": "Senast öppnad",
 	"viewAllCourses": "Visa alla kurser"
 };

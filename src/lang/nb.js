@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "Siste søk",
 	"search.searchCourses": "Søk i undervisningsenheter",
 	"sorting.sortBy": "Sorter etter",
-	"sorting.sortCourseCode": "Sorter: Kode for undervisningsenhet",
-	"sorting.sortCourseName": "Sorter: Navn på undervisningsenhet",
-	"sorting.sortDatePinned": "Sorter: Dato for festing",
-	"sorting.sortDefault": "Sort: Default",
-	"sorting.sortEnrollmentDate": "Sort: Enrollment Date",
-	"sorting.sortLastAccessed": "Sorter: Sist åpnet",
+	"sorting.sortCourseCode": "Kode for undervisningsenhet",
+	"sorting.sortCourseName": "Navn på undervisningsenhet",
+	"sorting.sortDatePinned": "Dato for festing",
+	"sorting.sortDefault": "Default",
+	"sorting.sortEnrollmentDate": "Enrollment Date",
+	"sorting.sortLastAccessed": "Sist åpnet",
 	"viewAllCourses": "Vis alle undervisningsenheter"
 };

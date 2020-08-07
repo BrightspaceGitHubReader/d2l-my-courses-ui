@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "近期的搜尋",
 	"search.searchCourses": "搜尋課程",
 	"sorting.sortBy": "排序方式",
-	"sorting.sortCourseCode": "排序：課程代碼",
-	"sorting.sortCourseName": "排序：課程名稱",
-	"sorting.sortDatePinned": "排序：置頂日期",
-	"sorting.sortDefault": "排序：預設",
-	"sorting.sortEnrollmentDate": "排序：註冊日期",
-	"sorting.sortLastAccessed": "排序：上次存取時間",
+	"sorting.sortCourseCode": "課程代碼",
+	"sorting.sortCourseName": "課程名稱",
+	"sorting.sortDatePinned": "置頂日期",
+	"sorting.sortDefault": "預設",
+	"sorting.sortEnrollmentDate": "註冊日期",
+	"sorting.sortLastAccessed": "上次存取時間",
 	"viewAllCourses": "檢視所有課程"
 };

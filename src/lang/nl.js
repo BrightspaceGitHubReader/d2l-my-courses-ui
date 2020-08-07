@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "Recente zoekopdrachten",
 	"search.searchCourses": "Op cursus zoeken",
 	"sorting.sortBy": "Sorteren op",
-	"sorting.sortCourseCode": "Sorteren op: cursuscode",
-	"sorting.sortCourseName": "Sorteren op: cursusnaam",
-	"sorting.sortDatePinned": "Sorteren op: datum vastgepind",
-	"sorting.sortDefault": "Sorteren op: standaard",
-	"sorting.sortEnrollmentDate": "Sorteren op: inschrijvingsdatum",
-	"sorting.sortLastAccessed": "Sorteren op: laatst geopend",
+	"sorting.sortCourseCode": "Cursuscode",
+	"sorting.sortCourseName": "Cursusnaam",
+	"sorting.sortDatePinned": "Datum vastgepind",
+	"sorting.sortDefault": "Standaard",
+	"sorting.sortEnrollmentDate": "Inschrijvingsdatum",
+	"sorting.sortLastAccessed": "Laatst geopend",
 	"viewAllCourses": "Alle cursussen weergeven"
 };
