@@ -140,9 +140,9 @@ describe('d2l-all-courses', function() {
 		});
 	});
 
-	describe('d2l-menu-item-change event', function() {
+	describe('d2l-sort-by-dropdown-change event', function() {
 		it('should set the _searchUrl', function() {
-			fireEvent(widget.$.sortDropdown, 'd2l-menu-item-change', {
+			fireEvent(widget.shadowRoot.querySelector('d2l-sort-by-dropdown'), 'd2l-sort-by-dropdown-change', {
 				value: 'LastAccessed'
 			});
 
@@ -300,7 +300,7 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should clear sort', function() {
-			const spy = sandbox.spy(widget, '_resetSortDropdown');
+			const sortDropdown = widget.shadowRoot.querySelector('d2l-sort-by-dropdown');
 
 			const event = {
 				selected: true,
@@ -308,11 +308,11 @@ describe('d2l-all-courses', function() {
 			};
 
 			widget.load();
-			fireEvent(widget.shadowRoot.querySelector('d2l-dropdown-menu'), 'd2l-menu-item-change', event);
-			expect(widget._searchUrl).to.contain('OrgUnitCode,OrgUnitId');
+			fireEvent(sortDropdown, 'd2l-sort-by-dropdown-change', event);
+			expect(widget._searchUrl).to.contain('sort=OrgUnitCode,OrgUnitId');
 
 			widget._onSimpleOverlayClosed();
-			expect(spy.called).to.be.true;
+			expect(widget._searchUrl).to.contain('sort=Current');
 		});
 
 	});

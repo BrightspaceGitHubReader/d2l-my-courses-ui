@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "最近搜索",
 	"search.searchCourses": "搜索课程",
 	"sorting.sortBy": "排序依据",
-	"sorting.sortCourseCode": "排序：课程代码",
-	"sorting.sortCourseName": "排序：课程名称",
-	"sorting.sortDatePinned": "排序：锁定日期",
-	"sorting.sortDefault": "排序：默认",
-	"sorting.sortEnrollmentDate": "排序：报名日期",
-	"sorting.sortLastAccessed": "排序：上次访问",
+	"sorting.sortCourseCode": "课程代码",
+	"sorting.sortCourseName": "课程名称",
+	"sorting.sortDatePinned": "锁定日期",
+	"sorting.sortDefault": "默认",
+	"sorting.sortEnrollmentDate": "报名日期",
+	"sorting.sortLastAccessed": "上次访问",
 	"viewAllCourses": "查看所有课程"
 };

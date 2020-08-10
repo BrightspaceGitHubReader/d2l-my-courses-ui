@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "Pesquisas Recentes",
 	"search.searchCourses": "Pesquisar Cursos",
 	"sorting.sortBy": "Classificar por",
-	"sorting.sortCourseCode": "Classificar: Código do Curso",
-	"sorting.sortCourseName": "Classificar: Nome do Curso",
-	"sorting.sortDatePinned": "Classificar: Data Fixada",
-	"sorting.sortDefault": "Classificar: Padrão",
-	"sorting.sortEnrollmentDate": "Classificar: Data de Inscrição",
-	"sorting.sortLastAccessed": "Classificar: Data do Último Acesso",
+	"sorting.sortCourseCode": "Código do Curso",
+	"sorting.sortCourseName": "Nome do Curso",
+	"sorting.sortDatePinned": "Data Fixada",
+	"sorting.sortDefault": "Padrão",
+	"sorting.sortEnrollmentDate": "Data de Inscrição",
+	"sorting.sortLastAccessed": "Data do Último Acesso",
 	"viewAllCourses": "Exibir Todos os Cursos"
 };

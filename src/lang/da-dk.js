@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "Seneste søgninger",
 	"search.searchCourses": "Søg i kurser",
 	"sorting.sortBy": "Sortér efter",
-	"sorting.sortCourseCode": "Sortér: Kursuskode",
-	"sorting.sortCourseName": "Sortér: Kursusnavn",
-	"sorting.sortDatePinned": "Sortér: Dato for fastgørelse",
-	"sorting.sortDefault": "Sortér: Standard",
-	"sorting.sortEnrollmentDate": "Sortér: Tilmeldingsdato",
-	"sorting.sortLastAccessed": "Sortér: Senest åbnet",
+	"sorting.sortCourseCode": "Kursuskode",
+	"sorting.sortCourseName": "Kursusnavn",
+	"sorting.sortDatePinned": "Dato for fastgørelse",
+	"sorting.sortDefault": "Standard",
+	"sorting.sortEnrollmentDate": "Tilmeldingsdato",
+	"sorting.sortLastAccessed": "Senest åbnet",
 	"viewAllCourses": "Vis alle kurser"
 };

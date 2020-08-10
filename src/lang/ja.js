@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "最近の検索",
 	"search.searchCourses": "コースの検索",
 	"sorting.sortBy": "並べ替え基準",
-	"sorting.sortCourseCode": "並べ替え: コースコード",
-	"sorting.sortCourseName": "並べ替え: コース名",
-	"sorting.sortDatePinned": "並べ替え: 固定した日付",
-	"sorting.sortDefault": "並べ替え: デフォルト",
-	"sorting.sortEnrollmentDate": "並べ替え: 登録日",
-	"sorting.sortLastAccessed": "並べ替え: 最終アクセス",
+	"sorting.sortCourseCode": "コースコード",
+	"sorting.sortCourseName": "コース名",
+	"sorting.sortDatePinned": "固定した日付",
+	"sorting.sortDefault": "デフォルト",
+	"sorting.sortEnrollmentDate": "登録日",
+	"sorting.sortLastAccessed": "最終アクセス",
 	"viewAllCourses": "すべてのコースの表示"
 };

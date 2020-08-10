@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "Viimeisimmät haut",
 	"search.searchCourses": "Hae kursseja",
 	"sorting.sortBy": "Lajitteluperuste",
-	"sorting.sortCourseCode": "Lajittelu: kurssin koodi",
-	"sorting.sortCourseName": "Lajittelu: kurssin nimi",
-	"sorting.sortDatePinned": "Lajittelu: kiinnityspäivämäärä",
-	"sorting.sortDefault": "Lajittelu: oletus",
-	"sorting.sortEnrollmentDate": "Lajittelu: rekisteröitymispäivämäärä",
-	"sorting.sortLastAccessed": "Lajittelu: viimeisin käyttökerta",
+	"sorting.sortCourseCode": "Kurssin koodi",
+	"sorting.sortCourseName": "Kurssin nimi",
+	"sorting.sortDatePinned": "Kiinnityspäivämäärä",
+	"sorting.sortDefault": "Oletus",
+	"sorting.sortEnrollmentDate": "Rekisteröitymispäivämäärä",
+	"sorting.sortLastAccessed": "Viimeisin käyttökerta",
 	"viewAllCourses": "Näytä kaikki kurssit"
 };

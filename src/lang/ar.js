@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "عمليات البحث الحديثة",
 	"search.searchCourses": "البحث في المقررات التعليمية",
 	"sorting.sortBy": "الفرز حسب",
-	"sorting.sortCourseCode": "الفرز: رمز المقرر التعليمي",
-	"sorting.sortCourseName": "الفرز: اسم المقرر التعليمي",
-	"sorting.sortDatePinned": "الفرز: تاريخ التثبيت",
-	"sorting.sortDefault": "الفرز: افتراضي",
-	"sorting.sortEnrollmentDate": "الفرز: تاريخ التسجيل",
-	"sorting.sortLastAccessed": "الفرز: آخر وصول",
+	"sorting.sortCourseCode": "رمز المقرر التعليمي",
+	"sorting.sortCourseName": "اسم المقرر التعليمي",
+	"sorting.sortDatePinned": "تاريخ التثبيت",
+	"sorting.sortDefault": "افتراضي",
+	"sorting.sortEnrollmentDate": "تاريخ التسجيل",
+	"sorting.sortLastAccessed": "آخر وصول",
 	"viewAllCourses": "عرض كل المقررات التعليمية"
 };

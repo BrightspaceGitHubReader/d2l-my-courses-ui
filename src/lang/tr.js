@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "En Son Aramalar",
 	"search.searchCourses": "Dersleri Ara",
 	"sorting.sortBy": "Sıralama Ölçütü",
-	"sorting.sortCourseCode": "Sırala: Ders Kodu",
-	"sorting.sortCourseName": "Sırala: Ders Adı",
-	"sorting.sortDatePinned": "Sırala: Sabitleme Tarihi",
-	"sorting.sortDefault": "Sırala: Varsayılan",
-	"sorting.sortEnrollmentDate": "Sırala: Kayıt Tarihi",
-	"sorting.sortLastAccessed": "Sırala: Son Erişim",
+	"sorting.sortCourseCode": "Ders Kodu",
+	"sorting.sortCourseName": "Ders Adı",
+	"sorting.sortDatePinned": "Sabitleme Tarihi",
+	"sorting.sortDefault": "Varsayılan",
+	"sorting.sortEnrollmentDate": "Kayıt Tarihi",
+	"sorting.sortLastAccessed": "Son Erişim",
 	"viewAllCourses": "Tüm Dersleri Görüntüle"
 };
