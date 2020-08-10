@@ -528,7 +528,7 @@ class AllCourses extends mixinBehaviors([
 		}
 	}
 
-	_onSimpleOverlayClosed(e) {
+	_onSimpleOverlayClosed() {
 		if (this._enrollmentsSearchAction && this._enrollmentsSearchAction.hasFieldByName) {
 			if (this._enrollmentsSearchAction.hasFieldByName('search')) {
 				this._enrollmentsSearchAction.getFieldByName('search').value = '';
@@ -546,7 +546,6 @@ class AllCourses extends mixinBehaviors([
 		this._filterText = this.localize('filtering.filter');
 		this.shadowRoot.querySelector(`d2l-sort-by-dropdown-option[value=${this._sortMap[0].name}]`).click();
 
-		e.stopPropagation();
 		this.dispatchEvent(new CustomEvent('d2l-all-courses-close'));
 	}
 
