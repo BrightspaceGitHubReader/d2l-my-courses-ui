@@ -570,6 +570,8 @@ class AllCourses extends mixinBehaviors([
 		this.$.filterMenu.clearFilters();
 		this._filterText = this.localize('filtering.filter');
 		this._resetSortDropdown();
+
+		this.dispatchEvent(new CustomEvent('d2l-all-courses-close'));
 	}
 
 	_onTabSelected(e) {
