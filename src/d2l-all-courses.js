@@ -5,7 +5,6 @@ Polymer-based web component for the all courses overlay.
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@brightspace-ui/core/components/alert/alert.js';
-import '@brightspace-ui/core/components/colors/colors.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-button-subtle.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/link/link.js';
