@@ -5,10 +5,8 @@ Polymer-based web component for the all courses overlay.
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@brightspace-ui/core/components/alert/alert.js';
-import '@brightspace-ui/core/components/colors/colors.js';
-import '@brightspace-ui/core/components/dropdown/dropdown.js';
+import '@brightspace-ui/core/components/dropdown/dropdown-button-subtle.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
-import '@brightspace-ui/core/components/icons/icon.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/tabs/tabs.js';
@@ -183,11 +181,6 @@ class AllCourses extends mixinBehaviors([
 				d2l-alert {
 					margin-bottom: 20px;
 				}
-				d2l-icon {
-					--d2l-icon-height: 15px;
-					--d2l-icon-width: 15px;
-					margin-top: -0.35rem;
-				}
 				d2l-loading-spinner {
 					margin-bottom: 30px;
 					padding-bottom: 30px;
@@ -227,42 +220,15 @@ class AllCourses extends mixinBehaviors([
 						margin-top: 5px;
 					}
 				}
+				d2l-dropdown-button-subtle,
 				d2l-sort-by-dropdown {
-					margin-left: 1rem;
+					margin-left: 0.5rem;
 				}
+				:host(:dir(rtl)) d2l-dropdown-button-subtle,
 				:host(:dir(rtl)) d2l-sort-by-dropdown {
 					margin-left: 0;
-					margin-right: 1rem;
+					margin-right: 0.5rem;
 				}
-				.dropdown-opener-text {
-					font-size: 0.95rem;
-					font-family: Lato;
-					cursor: pointer;
-					padding: 0;
-					margin-left: 1rem;
-				}
-				.dropdown-button {
-					background: none;
-					border: none;
-					cursor: pointer;
-					padding: 0;
-					color: var(--d2l-color-ferrite);
-				}
-				.dropdown-button > d2l-icon {
-					margin-left: 4px;
-				}
-				button[aria-pressed="true"] {
-					color: var(--d2l-color-celestine);
-				}
-				button:focus > d2l-icon,
-				button:hover > d2l-icon,
-				button:focus > span,
-				button:hover > span,
-				.focus {
-					text-decoration: underline;
-					color: var(--d2l-color-celestine);
-				}
-
 				#infoMessage {
 					padding-bottom: 20px;
 				}
@@ -292,11 +258,7 @@ class AllCourses extends mixinBehaviors([
 							</d2l-search-widget-custom>
 
 							<div id="filterAndSort">
-								<d2l-dropdown id="filterDropdown">
-									<button class="d2l-dropdown-opener dropdown-button" aria-labelledby="filterText">
-										<span id="filterText" class="dropdown-opener-text">[[_filterText]]</span>
-										<d2l-icon icon="tier1:chevron-down" aria-hidden="true"></d2l-icon>
-									</button>
+								<d2l-dropdown-button-subtle text="[[_filterText]]">
 									<d2l-dropdown-content
 										id="filterDropdownContent"
 										on-d2l-dropdown-open="_onFilterDropdownOpen"
@@ -315,7 +277,7 @@ class AllCourses extends mixinBehaviors([
 											filter-standard-department-name="[[filterStandardDepartmentName]]">
 										</d2l-filter-menu>
 									</d2l-dropdown-content>
-								</d2l-dropdown>
+								</d2l-dropdown-button-subtle>
 
 								<d2l-sort-by-dropdown align="end" label="[[localize('sorting.sortBy')]]" value="[[_sortMap[0].name]]" on-d2l-sort-by-dropdown-change="_onSortOrderChanged">
 									<d2l-sort-by-dropdown-option value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-sort-by-dropdown-option>
