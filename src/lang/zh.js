@@ -36,8 +36,8 @@ export default {
 	"sorting.sortCourseCode": "课程代码",
 	"sorting.sortCourseName": "课程名称",
 	"sorting.sortDatePinned": "锁定日期",
-	"sorting.sortDefault": "默认",
-	"sorting.sortEnrollmentDate": "报名日期",
+	"sorting.sortDefault": "默认值",
+	"sorting.sortEnrollmentDate": "注册日期",
 	"sorting.sortLastAccessed": "上次访问",
 	"viewAllCourses": "查看所有课程"
 };

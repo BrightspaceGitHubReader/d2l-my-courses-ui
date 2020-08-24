@@ -38,6 +38,6 @@ export default {
 	"sorting.sortDatePinned": "تاريخ التثبيت",
 	"sorting.sortDefault": "افتراضي",
 	"sorting.sortEnrollmentDate": "تاريخ التسجيل",
-	"sorting.sortLastAccessed": "آخر وصول",
+	"sorting.sortLastAccessed": "تاريخ آخر وصول",
 	"viewAllCourses": "عرض كل المقررات التعليمية"
 };

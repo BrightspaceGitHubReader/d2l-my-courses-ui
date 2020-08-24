@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "Recherches récentes",
 	"search.searchCourses": "Rechercher des cours",
 	"sorting.sortBy": "Trier par",
-	"sorting.sortCourseCode": "Code du cours",
+	"sorting.sortCourseCode": "Code de cours",
 	"sorting.sortCourseName": "Nom du cours",
-	"sorting.sortDatePinned": "Date de l’épinglement",
+	"sorting.sortDatePinned": "Date d’épinglement",
 	"sorting.sortDefault": "Par défaut",
 	"sorting.sortEnrollmentDate": "Date d’inscription",
-	"sorting.sortLastAccessed": "Dernière connexion",
+	"sorting.sortLastAccessed": "Dernier accès",
 	"viewAllCourses": "Afficher tous les cours"
 };

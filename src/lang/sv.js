@@ -37,7 +37,7 @@ export default {
 	"sorting.sortCourseName": "Kursnamn",
 	"sorting.sortDatePinned": "Datum markerat",
 	"sorting.sortDefault": "Standard",
-	"sorting.sortEnrollmentDate": "Inskrivningsdatum",
+	"sorting.sortEnrollmentDate": "Registreringsdatum",
 	"sorting.sortLastAccessed": "Senast öppnad",
 	"viewAllCourses": "Visa alla kurser"
 };
