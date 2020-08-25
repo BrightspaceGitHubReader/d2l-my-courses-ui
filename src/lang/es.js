@@ -38,6 +38,6 @@ export default {
 	"sorting.sortDatePinned": "Fecha anclada",
 	"sorting.sortDefault": "Predeterminado",
 	"sorting.sortEnrollmentDate": "Fecha de inscripción",
-	"sorting.sortLastAccessed": "Último acceso",
+	"sorting.sortLastAccessed": "Fecha de último acceso",
 	"viewAllCourses": "Ver todos los cursos"
 };

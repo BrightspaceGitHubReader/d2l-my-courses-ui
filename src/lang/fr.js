@@ -38,6 +38,6 @@ export default {
 	"sorting.sortDatePinned": "Date de l'épinglage",
 	"sorting.sortDefault": "Par défaut",
 	"sorting.sortEnrollmentDate": "Date d'inscription",
-	"sorting.sortLastAccessed": "Date de l'accès le plus récent",
+	"sorting.sortLastAccessed": "Accès le plus récent",
 	"viewAllCourses": "Afficher tous les cours"
 };

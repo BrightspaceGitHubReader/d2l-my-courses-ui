@@ -33,11 +33,11 @@ export default {
 	"recentSearches": "Recent Searches",
 	"search.searchCourses": "Search Courses",
 	"sorting.sortBy": "Sort By",
-	"sorting.sortCourseCode": "Course Code",
-	"sorting.sortCourseName": "Course Name",
-	"sorting.sortDatePinned": "Date Pinned",
-	"sorting.sortDefault": "Default",
-	"sorting.sortEnrollmentDate": "Enrollment Date",
-	"sorting.sortLastAccessed": "Last Accessed",
+	"sorting.sortCourseCode": "Cod y Cwrs",
+	"sorting.sortCourseName": "Enw’r Cwrs",
+	"sorting.sortDatePinned": "Dyddiad Pinio",
+	"sorting.sortDefault": "Diofyn",
+	"sorting.sortEnrollmentDate": "Dyddiad Cofrestru",
+	"sorting.sortLastAccessed": "Gwelwyd Ddiwethaf",
 	"viewAllCourses": "View All Courses"
 };
