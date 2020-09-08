@@ -7,15 +7,12 @@ import '@brightspace-ui/core/components/menu/menu.js';
 import 'd2l-search-widget/d2l-search-widget.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-filter-list-item.js';
-import '../d2l-utility-behavior.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { fetchSirenEntity } from '../d2l-utility-helpers.js';
 import { MyCoursesLocalizeBehavior } from '../localize-behavior.js';
 import { Rels } from 'd2l-hypermedia-constants';
 
-class FilterMenuTab extends mixinBehaviors([
-	D2L.MyCourses.UtilityBehavior
-], MyCoursesLocalizeBehavior(PolymerElement)) {
+class FilterMenuTab extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	static get is() { return 'd2l-filter-menu-tab'; }
 
@@ -95,7 +92,7 @@ class FilterMenuTab extends mixinBehaviors([
 			return Promise.resolve();
 		}
 
-		return this.fetchSirenEntity(this.searchAction.href)
+		return fetchSirenEntity(this.searchAction.href)
 			.then((resultsEntity) => {
 				this.set('_allFilters', resultsEntity.entities || []);
 				this.shadowRoot.querySelector('d2l-search-widget').search();

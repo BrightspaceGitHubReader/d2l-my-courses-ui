@@ -16,10 +16,10 @@ import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdo
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import './d2l-my-courses-card-grid.js';
-import './d2l-utility-behavior.js';
 import './search-filter/d2l-filter-menu.js';
 import './search-filter/d2l-search-widget-custom.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
+import { createActionUrl, fetchSirenEntity } from './d2l-utility-helpers.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
@@ -28,8 +28,7 @@ import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 import SirenParse from 'siren-parser';
 
 class AllCourses extends mixinBehaviors([
-	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior,
-	D2L.MyCourses.UtilityBehavior
+	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior
 ], MyCoursesLocalizeBehavior(PolymerElement)) {
 
 	static get is() { return 'd2l-all-courses'; }
@@ -367,7 +366,7 @@ class AllCourses extends mixinBehaviors([
 		}
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			this.createActionUrl(this.enrollmentsSearchAction, {
+			createActionUrl(this.enrollmentsSearchAction, {
 				autoPinCourses: false,
 				orgUnitTypeId: this.orgUnitTypeIds,
 				embedDepth: 0,
@@ -458,7 +457,7 @@ class AllCourses extends mixinBehaviors([
 		const sortData = this._mapSortOption(e.detail.value, 'name');
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			this.createActionUrl(this._enrollmentsSearchAction, {
+			createActionUrl(this._enrollmentsSearchAction, {
 				sort: sortData.action,
 				orgUnitTypeId: this.orgUnitTypeIds,
 				promotePins: sortData.promotePins
@@ -555,7 +554,7 @@ class AllCourses extends mixinBehaviors([
 		}
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			this.createActionUrl(tabAction.enrollmentsSearchAction, params)
+			createActionUrl(tabAction.enrollmentsSearchAction, params)
 		);
 	}
 

@@ -9,15 +9,13 @@ import '@brightspace-ui/core/components/colors/colors.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-filter-menu-tab.js';
 import './d2l-filter-menu-tab-roles.js';
-import '../d2l-utility-behavior.js';
+
+import { createActionUrl, parseEntity } from '../d2l-utility-helpers.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesLocalizeBehavior } from '../localize-behavior.js';
 
-class FilterMenu extends mixinBehaviors([
-	D2L.MyCourses.UtilityBehavior
-], MyCoursesLocalizeBehavior(PolymerElement)) {
+class FilterMenu extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	static get is() { return 'd2l-filter-menu'; }
 
@@ -254,7 +252,7 @@ class FilterMenu extends mixinBehaviors([
 			params.roles = '';
 		}
 
-		const searchUrl = this.createActionUrl(this._searchMyEnrollmentsAction, params);
+		const searchUrl = createActionUrl(this._searchMyEnrollmentsAction, params);
 
 		this.fire('d2l-filter-menu-change', {
 			url: searchUrl,
@@ -284,7 +282,7 @@ class FilterMenu extends mixinBehaviors([
 
 		const departmentSemesterFilters = this._semesterFilters.concat(this._departmentFilters);
 
-		const searchUrl = this.createActionUrl(this._searchMyEnrollmentsAction, {
+		const searchUrl = createActionUrl(this._searchMyEnrollmentsAction, {
 			orgUnitTypeId: this.orgUnitTypeIds,
 			parentOrganizations: departmentSemesterFilters.join(',')
 		});
@@ -299,7 +297,7 @@ class FilterMenu extends mixinBehaviors([
 		});
 	}
 	_myEnrollmentsEntityChanged(myEnrollmentsEntity) {
-		myEnrollmentsEntity = this.parseEntity(myEnrollmentsEntity);
+		myEnrollmentsEntity = parseEntity(myEnrollmentsEntity);
 
 		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMySemesters)) {
 			this._searchSemestersAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMySemesters);

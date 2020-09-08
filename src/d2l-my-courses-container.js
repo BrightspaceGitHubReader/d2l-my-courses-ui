@@ -14,19 +14,16 @@ import 'd2l-image-selector/d2l-basic-image-selector.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import './d2l-all-courses.js';
 import './d2l-my-courses-content.js';
-import './d2l-utility-behavior.js';
+import { createActionUrl, getEntityIdentifier, getOrgUnitIdFromHref, parseEntity } from './d2l-utility-helpers.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 import { PromotedSearchEntity } from 'siren-sdk/src/promotedSearch/PromotedSearchEntity.js';
 import { UserSettingsEntity } from 'siren-sdk/src/userSettings/UserSettingsEntity';
 
-class MyCoursesContainer extends mixinBehaviors([
-	D2L.MyCourses.UtilityBehavior
-], MyCoursesLocalizeBehavior(PolymerElement)) {
+class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	static get is() { return 'd2l-my-courses-container'; }
 
@@ -222,7 +219,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		if (!this._setImageOrg.links) {
 			return;
 		}
-		return this.getOrgUnitIdFromHref(this.getEntityIdentifier(this._setImageOrg));
+		return getOrgUnitIdFromHref(getEntityIdentifier(this._setImageOrg));
 	}
 
 	/*
@@ -236,7 +233,7 @@ class MyCoursesContainer extends mixinBehaviors([
 	}
 	_onOpenChangeImageView(e) {
 		if (e.detail.organization) {
-			this._setImageOrg = this.parseEntity(e.detail.organization);
+			this._setImageOrg = parseEntity(e.detail.organization);
 		}
 
 		this.$['basic-image-selector-overlay'].open();
@@ -370,7 +367,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		if (e.detail.orgUnitId) { // Pinning was done in the Course Selector
 			orgUnitId = e.detail.orgUnitId;
 		} else { // Pinning was done in the My Courses widget
-			orgUnitId = this.getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
+			orgUnitId = getOrgUnitIdFromHref(e.detail.enrollment.organizationHref());
 		}
 
 		// Only update if something has changed
@@ -469,7 +466,7 @@ class MyCoursesContainer extends mixinBehaviors([
 		return this._setPromotedSearchEntity(this.promotedSearches);
 	}
 	_verifyPinnedTab(pinnedTabAction) {
-		let pinnedSearchUrl = this.createActionUrl(pinnedTabAction);
+		let pinnedSearchUrl = createActionUrl(pinnedTabAction);
 		if (pinnedSearchUrl && pinnedSearchUrl.indexOf('?') > -1) {
 			// pinnedSearchUrl already has some query params, append ours
 			pinnedSearchUrl += `&bustCache=${Math.random()}`;

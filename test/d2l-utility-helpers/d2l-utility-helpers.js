@@ -1,8 +1,8 @@
+import { createActionUrl, getEntityIdentifier, getOrgUnitIdFromHref } from '../../src/d2l-utility-helpers.js';
 import { Actions } from 'd2l-hypermedia-constants';
 
-describe('d2l-utility-behavior', function() {
-	let component,
-		enrollmentEntity;
+describe('d2l-utility-helpers', function() {
+	let enrollmentEntity;
 
 	const enrollment = {
 		class: ['pinned', 'enrollment'],
@@ -43,19 +43,15 @@ describe('d2l-utility-behavior', function() {
 		enrollmentEntity = window.D2L.Hypermedia.Siren.Parse(enrollment);
 	});
 
-	beforeEach(function() {
-		component = fixture('default-fixture');
-	});
-
 	describe('createActionUrl', function() {
 		it('should return the URL with default values if no parameters are specified', function() {
-			const url = component.createActionUrl(enrollmentEntity.getActionByName(Actions.enrollments.unpinCourse));
+			const url = createActionUrl(enrollmentEntity.getActionByName(Actions.enrollments.unpinCourse));
 
 			expect(url).to.equal(`${enrollment.actions[0].href}?pinned=false`);
 		});
 
 		it('should return the URL with the specified query parameter(s)', function() {
-			const url = component.createActionUrl(
+			const url = createActionUrl(
 				enrollmentEntity.getActionByName(Actions.enrollments.unpinCourse),
 				{ pinned: 'foo' }
 			);
@@ -64,7 +60,7 @@ describe('d2l-utility-behavior', function() {
 		});
 
 		it('should not add any fields that are not on the action', function() {
-			const url = component.createActionUrl(
+			const url = createActionUrl(
 				enrollmentEntity.getActionByName(Actions.enrollments.unpinCourse),
 				{ foo: 'bar' }
 			);
@@ -73,7 +69,7 @@ describe('d2l-utility-behavior', function() {
 		});
 
 		it('should work with hrefs that already have query params', function() {
-			const url = component.createActionUrl(
+			const url = createActionUrl(
 				enrollmentEntity.getActionByName('action-with-query-params'),
 				{ param2: 'baz' }
 			);
@@ -82,7 +78,7 @@ describe('d2l-utility-behavior', function() {
 		});
 
 		it('should generate orgUnitTypeId query string as expected for more than one orgUnitTypeId', function() {
-			const url = component.createActionUrl(
+			const url = createActionUrl(
 				enrollmentEntity.getActionByName(Actions.enrollments.searchMyEnrollments),
 				{ orgUnitTypeId: [3, 7] }
 			);
@@ -91,7 +87,7 @@ describe('d2l-utility-behavior', function() {
 		});
 
 		it('should generate orgUnitTypeId query string as expected when only one orgUnitTypeId given as array', function() {
-			const url = component.createActionUrl(
+			const url = createActionUrl(
 				enrollmentEntity.getActionByName(Actions.enrollments.searchMyEnrollments),
 				{ orgUnitTypeId: [3] }
 			);
@@ -100,7 +96,7 @@ describe('d2l-utility-behavior', function() {
 		});
 
 		it('should generate orgUnitTypeId query string as expected when only one orgUnitTypeId given as number', function() {
-			const url = component.createActionUrl(
+			const url = createActionUrl(
 				enrollmentEntity.getActionByName(Actions.enrollments.searchMyEnrollments),
 				{ orgUnitTypeId: 3 }
 			);
@@ -111,9 +107,16 @@ describe('d2l-utility-behavior', function() {
 
 	describe('getEntityIdentifier', function() {
 		it('should get the unique enrollment ID based off the self link', function() {
-			const id = component.getEntityIdentifier(enrollmentEntity);
+			const id = getEntityIdentifier(enrollmentEntity);
 
 			expect(id).to.equal(enrollment.links[1].href);
+		});
+	});
+
+	describe('getOrgUnitIdFromHref', function() {
+		it('should return correct org unit id from various href', () => {
+			expect(getOrgUnitIdFromHref('/organizations/671')).to.equal('671');
+			expect(getOrgUnitIdFromHref('/some/other/route/8798734534')).to.equal('8798734534');
 		});
 	});
 });

@@ -1,6 +1,7 @@
 describe('d2l-filter-menu-tab-roles', function() {
 
 	let sandbox,
+		fetchStub,
 		component,
 		myEnrollmentsEntity,
 		roleFiltersEntity;
@@ -47,8 +48,10 @@ describe('d2l-filter-menu-tab-roles', function() {
 				}]
 			}]
 		});
+
+		fetchStub = sandbox.stub(window.d2lfetch, 'fetch').returns(Promise.resolve());
+
 		component = fixture('d2l-filter-menu-tab-roles-fixture');
-		component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({}));
 		component.myEnrollmentsEntity = myEnrollmentsEntity;
 	});
 
@@ -62,30 +65,30 @@ describe('d2l-filter-menu-tab-roles', function() {
 		});
 
 		it('should show the empty state message if there are no role filters', function(done) {
-			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({
-				entities: []
-			}));
+			fetchStub.returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({ entities: [] }, null, 2)], {type : 'application/json'}))
+			));
 			component._myEnrollmentsEntityChanged(myEnrollmentsEntity);
 
 			setTimeout(function() {
 				expect(component._showContent).to.be.false;
 				expect(component.shadowRoot.querySelector('.no-items-text').getAttribute('hidden')).to.be.null;
-				expect(component.fetchSirenEntity).to.have.been.called;
+				expect(fetchStub).to.have.been.called;
 				done();
 			});
 		});
 
 		it('should show content once the role filters have been fetched', function(done) {
-			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({
-				entities: [1]
-			}));
+			fetchStub.returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({ entities: [getFilter('filter')] }, null, 2)], {type : 'application/json'}))
+			));
 			component._myEnrollmentsEntityChanged(myEnrollmentsEntity);
 
 			setTimeout(function() {
 				expect(component._showContent).to.be.true;
 				expect(component.shadowRoot.querySelector('.no-items-text').getAttribute('hidden')).to.not.be.null;
 				done();
-			});
+			}, 50);
 		});
 	});
 
@@ -96,10 +99,13 @@ describe('d2l-filter-menu-tab-roles', function() {
 		].forEach(function(testCase) {
 			it(testCase.name, function(done) {
 				component._roleFiltersEntity = roleFiltersEntity;
-				component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve(roleFiltersEntity));
+				fetchStub.returns(Promise.resolve(
+					new Response(new Blob([JSON.stringify(roleFiltersEntity, null, 2)], {type : 'application/json'}))
+				));
 				const listener = function() {
 					component.removeEventListener('role-filters-changed', listener);
-					expect(component.fetchSirenEntity).to.have.been.calledWith(testCase.url);
+					expect(fetchStub).to.have.been.calledTwice;
+					expect(fetchStub.getCall(1).args[0].url).to.equal(testCase.url);
 					done();
 				};
 				component.addEventListener('role-filters-changed', listener);
@@ -113,7 +119,9 @@ describe('d2l-filter-menu-tab-roles', function() {
 
 		it('should fire a role-filters-changed event with the new URL', function(done) {
 			component._roleFiltersEntity = roleFiltersEntity;
-			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve(roleFiltersEntity));
+			fetchStub.returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify(roleFiltersEntity, null, 2)], {type : 'application/json'}))
+			));
 			const listener = function(e) {
 				component.removeEventListener('role-filters-changed', listener);
 				expect(e.detail.url).to.equal('http://example.com?roles=1,2,3,4');
@@ -131,17 +139,18 @@ describe('d2l-filter-menu-tab-roles', function() {
 			const filterOn = getFilter('foo', 'on');
 			const filterOff = getFilter('foo', 'off');
 			component._roleFiltersEntity = parse({ entities: [filterOff, filterOff] });
-			component.createActionUrl = sinon.stub();
 
-			const stub = sandbox.stub();
-			stub.onFirstCall().returns(Promise.resolve(parse({ entities: [filterOn, filterOff] })));
-			stub.onSecondCall().returns(Promise.resolve(parse({ entities: [filterOn, filterOn] })));
-			component.fetchSirenEntity = stub;
+			fetchStub.onSecondCall().returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({ entities: [filterOn, filterOff] }, null, 2)], {type : 'application/json'}))
+			));
+			fetchStub.onThirdCall().returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({ entities: [filterOn, filterOn] }, null, 2)], {type : 'application/json'}))
+			));
 
 			const listener = function() {
 				component.removeEventListener('role-filters-changed', listener);
-				// Once per filter with the name 'foo'
-				expect(component.fetchSirenEntity.callCount).to.equal(2);
+				// Once on load and once per filter with the name 'foo'
+				expect(fetchStub.callCount).to.equal(3);
 				done();
 			};
 			component.addEventListener('role-filters-changed', listener);
@@ -154,23 +163,30 @@ describe('d2l-filter-menu-tab-roles', function() {
 	});
 
 	describe('clear', function() {
-		it('should reset the "selected" state to false on all filter items', function() {
+		beforeEach(function() {
+			fetchStub.returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({}, null, 2)], {type : 'application/json'}))
+			));
+		});
+		it('should reset the "selected" state to false on all filter items', function(done) {
 			component._filterTitles = [ 'one', 'two', 'three' ];
 			const filters = component.shadowRoot.querySelector('d2l-menu').querySelectorAll('d2l-filter-list-item-role');
 			for (let i = 0; i < filters.length; i++) {
 				filters[i].selected = true;
 			}
 
-			return component.clear().then(function() {
+			component.clear().then(function() {
 				for (let i = 0; i < filters.length; i++) {
 					expect(filters[i].selected).to.be.false;
 				}
+
+				done();
 			});
 		});
 
 		it('should re-fetch the role filters with their updated states (all "off")', function() {
 			return component.clear().then(function() {
-				expect(component.fetchSirenEntity).to.have.been.calledWith(sinon.match(/\?include=$/));
+				sinon.assert.match(fetchStub.getCall(1).args[0].url, sinon.match(/\?include=$/));
 			});
 		});
 	});

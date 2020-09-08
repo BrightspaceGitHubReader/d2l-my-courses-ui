@@ -13,7 +13,7 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@brightspace-ui/core/components/icons/icon.js';
 import 'd2l-menu/d2l-menu-item-selectable-behavior.js';
 import './d2l-filter-list-item-styles.js';
-import '../d2l-utility-behavior.js';
+import { fetchSirenEntity, parseEntity } from '../d2l-utility-helpers.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { Rels } from 'd2l-hypermedia-constants';
 const $_documentContainer = document.createElement('template');
@@ -44,8 +44,7 @@ Polymer({
 		}
 	},
 	behaviors: [
-		D2L.PolymerBehaviors.MenuItemSelectableBehavior,
-		D2L.MyCourses.UtilityBehavior
+		D2L.PolymerBehaviors.MenuItemSelectableBehavior
 	],
 	listeners: {
 		'd2l-menu-item-select': '_onSelect'
@@ -55,14 +54,14 @@ Polymer({
 			this.set('_organizationUrl', entity.href);
 		}
 
-		entity = this.parseEntity(entity);
+		entity = parseEntity(entity);
 
 		if (entity.getLinkByRel(Rels.organization)) {
 			this.set('_organizationUrl', entity.getLinkByRel(Rels.organization).href);
 		}
 	},
 	_onOrganizationUrlChanged: function(organizationUrl) {
-		return this.fetchSirenEntity(organizationUrl)
+		return fetchSirenEntity(organizationUrl)
 			.then(this._onOrganizationResponse.bind(this));
 	},
 	_onOrganizationResponse: function(entity) {

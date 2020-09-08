@@ -13,7 +13,7 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@brightspace-ui/core/components/menu/menu.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-filter-list-item-role.js';
-import '../d2l-utility-behavior.js';
+import { createActionUrl, fetchSirenEntity, parseEntity } from '../d2l-utility-helpers.js';
 import { Actions } from 'd2l-hypermedia-constants';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 const $_documentContainer = document.createElement('template');
@@ -65,9 +65,6 @@ Polymer({
 			value: false
 		}
 	},
-	behaviors: [
-		D2L.MyCourses.UtilityBehavior
-	],
 	listeners: {
 		'd2l-menu-item-change': '_onMenuItemChange'
 	},
@@ -80,13 +77,13 @@ Polymer({
 
 		// This should instead use a `clear-role-filters` action from the API
 		// (which would do effectively the same thing), but it doesn't exist yet
-		const myEnrollmentsEntity = this.parseEntity(this.myEnrollmentsEntity);
+		const myEnrollmentsEntity = parseEntity(this.myEnrollmentsEntity);
 		const actionName = Actions.enrollments.setRoleFilters;
 		if (!myEnrollmentsEntity.hasActionByName(actionName)) {
 			return;
 		}
 		const setRoleFiltersAction = myEnrollmentsEntity.getActionByName(actionName);
-		const clearRoleFiltersUrl = this.createActionUrl(setRoleFiltersAction, {
+		const clearRoleFiltersUrl = createActionUrl(setRoleFiltersAction, {
 			include: ''
 		});
 
@@ -105,14 +102,14 @@ Polymer({
 		return filtersLength > 0;
 	},
 	_myEnrollmentsEntityChanged: function(myEnrollmentsEntity) {
-		myEnrollmentsEntity = this.parseEntity(myEnrollmentsEntity);
+		myEnrollmentsEntity = parseEntity(myEnrollmentsEntity);
 		const actionName = Actions.enrollments.setRoleFilters;
 		if (!myEnrollmentsEntity.hasActionByName(actionName)) {
 			return;
 		}
 
 		const setRoleFiltersAction = myEnrollmentsEntity.getActionByName(actionName);
-		const setRoleFiltersUrl = this.createActionUrl(setRoleFiltersAction);
+		const setRoleFiltersUrl = createActionUrl(setRoleFiltersAction);
 
 		this._fetchFilterItems(setRoleFiltersUrl);
 	},
@@ -128,8 +125,8 @@ Polymer({
 
 		const filter = this._findNextFilter(this._roleFiltersEntity.entities, filterTitle, actionName);
 		const action = filter.getActionByName(actionName);
-		const url = this.createActionUrl(action);
-		let request = this.fetchSirenEntity(url);
+		const url = createActionUrl(action);
+		let request = fetchSirenEntity(url);
 
 		for (let i = 1; i < this._roleFiltersEntity.entities.length; i++) {
 			request = request.then((updatedFilters) => {
@@ -141,8 +138,8 @@ Polymer({
 
 				// Create the URL to enable the next correctly-titled, "off" filter
 				const action = filter.getActionByName(actionName);
-				const url = this.createActionUrl(action);
-				return this.fetchSirenEntity(url);
+				const url = createActionUrl(action);
+				return fetchSirenEntity(url);
 			});
 		}
 
@@ -164,14 +161,14 @@ Polymer({
 		const applyAction = this._roleFiltersEntity.getActionByName(
 			Actions.enrollments.roleFilters.applyRoleFilters
 		);
-		const searchUrl = this.createActionUrl(applyAction);
+		const searchUrl = createActionUrl(applyAction);
 		this.fire('role-filters-changed', {
 			url: searchUrl,
 			filterCount: this.querySelectorAll('d2l-filter-list-item-role[selected]').length
 		});
 	},
 	_fetchFilterItems: function(url) {
-		return this.fetchSirenEntity(url)
+		return fetchSirenEntity(url)
 			.then(this._parseFilterItems.bind(this));
 	},
 	_parseFilterItems: function(roleFiltersEntity) {

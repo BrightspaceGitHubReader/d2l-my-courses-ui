@@ -8,16 +8,13 @@ import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import 'd2l-search-widget/d2l-search-widget.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-search-listbox.js';
-import '../d2l-utility-behavior.js';
+
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { isComposedAncestor } from '@brightspace-ui/core/helpers/dom.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesLocalizeBehavior } from '../localize-behavior.js';
 
-class SearchWidgetCustom extends mixinBehaviors([
-	D2L.MyCourses.UtilityBehavior
-], MyCoursesLocalizeBehavior(PolymerElement)) {
+class SearchWidgetCustom extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	static get is() { return 'd2l-search-widget-custom'; }
 

@@ -511,7 +511,7 @@ describe('d2l-my-courses-content', () => {
 		let stub;
 
 		beforeEach(() => {
-			stub = sandbox.stub(component, 'performanceMeasure');
+			stub = sandbox.stub(window.performance, 'measure');
 		});
 
 		it('should measure d2l.my-courses when all visible course tile images have loaded', done => {
