@@ -289,7 +289,7 @@ class AllCourses extends mixinBehaviors([
 					</d2l-alert>
 
 					<template is="dom-if" if="[[_showGroupByTabs]]">
-						<d2l-tabs>
+						<d2l-tabs on-d2l-tab-panel-selected="_onTabSelected">
 							<template items="[[tabSearchActions]]" is="dom-repeat">
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
@@ -322,8 +322,6 @@ class AllCourses extends mixinBehaviors([
 
 	connectedCallback() {
 		super.connectedCallback();
-
-		this.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
 		this._filterText = this.localize('filtering.filter');
 	}
 
