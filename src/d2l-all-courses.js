@@ -157,11 +157,6 @@ class AllCourses extends mixinBehaviors([
 						}
 					];
 				}
-			},
-			// Number of filters currently selected; used to change opener text when menu closes
-			_totalFilterCount: {
-				type: Number,
-				value: 0
 			}
 		};
 	}
@@ -428,17 +423,18 @@ class AllCourses extends mixinBehaviors([
 	_onFilterChanged(e) {
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(e.detail.url);
 		this._filterCounts = e.detail.filterCounts;
-		this._totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
 	}
 
 	_onFilterDropdownClose() {
 		let text;
-		if (this._totalFilterCount === 0) {
+		const totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
+	
+		if (totalFilterCount === 0) {
 			text = this.localize('filtering.filter');
-		} else if (this._totalFilterCount === 1) {
+		} else if (totalFilterCount === 1) {
 			text = this.localize('filtering.filterSingle');
 		} else {
-			text = this.localize('filtering.filterMultiple', 'num', this._totalFilterCount);
+			text = this.localize('filtering.filterMultiple', 'num', totalFilterCount);
 		}
 		this.set('_filterText', text);
 	}
@@ -658,7 +654,8 @@ class AllCourses extends mixinBehaviors([
 				this._infoMessageText = this.localize('noCoursesInSearch');
 				return;
 			}
-			if (this._totalFilterCount === 1) {
+			const totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
+			if (totalFilterCount === 1) {
 				if (this._filterCounts.departments === 1) {
 					this._infoMessageText = this.localize('noCoursesInDepartment');
 				} else if (this._filterCounts.semesters === 1) {
@@ -668,7 +665,7 @@ class AllCourses extends mixinBehaviors([
 				}
 				return;
 			}
-			if (this._totalFilterCount > 1) {
+			if (totalFilterCount > 1) {
 				this._infoMessageText = this.localize('noCoursesInSelection');
 				return;
 			}
