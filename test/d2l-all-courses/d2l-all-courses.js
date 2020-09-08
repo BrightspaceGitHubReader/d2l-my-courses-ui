@@ -118,7 +118,9 @@ describe('d2l-all-courses', function() {
 			});
 			requestAnimationFrame(() => {
 				expect(widget._searchUrl.indexOf('http://example.com?bustCache') !== -1).to.be.true;
-				expect(widget._totalFilterCount).to.equal(12);
+				expect(widget._filterCounts.departments).to.equal(12);
+				expect(widget._filterCounts.semesters).to.equal(0);
+				expect(widget._filterCounts.roles).to.equal(0);
 				done();
 			});
 		});
@@ -134,7 +136,9 @@ describe('d2l-all-courses', function() {
 			});
 			requestAnimationFrame(() => {
 				expect(widget._searchUrl.indexOf('http://example.com?search=&pageSize=20&bustCache=') !== -1).to.be.true;
-				expect(widget._totalFilterCount).to.equal(15);
+				expect(widget._filterCounts.departments).to.equal(15);
+				expect(widget._filterCounts.semesters).to.equal(0);
+				expect(widget._filterCounts.roles).to.equal(0);
 				done();
 			});
 		});
@@ -184,13 +188,17 @@ describe('d2l-all-courses', function() {
 
 		describe('changing enrollment entities', function() {
 			[
-				{ _isSearched: true, _totalFilterCount: 0, enrollmentsLength: 0, expectedMessage: 'noCoursesInSearch', hideMessage: false },
-				{ _isSearched: true, _totalFilterCount: 0, enrollmentsLength: 3, expectedMessage: null, hideMessage: true },
-				{ _isSearched: false, _totalFilterCount: 2, enrollmentsLength: 0, expectedMessage: 'noCoursesInSelection', hideMessage: false }
+				{ _isSearched: true, filterCount: 0, enrollmentsLength: 0, expectedMessage: 'noCoursesInSearch', hideMessage: false },
+				{ _isSearched: true, filterCount: 0, enrollmentsLength: 3, expectedMessage: null, hideMessage: true },
+				{ _isSearched: false, filterCount: 2, enrollmentsLength: 0, expectedMessage: 'noCoursesInSelection', hideMessage: false }
 			].forEach(testCase => {
-				it(`should set _infoMessageText to ${testCase.expectedMessage} and ${testCase.hideMessage ? 'hide' : 'show'} the message when enrollments length is ${testCase.enrollmentsLength}, _isSearched is ${testCase._isSearched} and _totalFilterCount is ${testCase._totalFilterCount}`, () => {
+				it(`should set _infoMessageText to ${testCase.expectedMessage} and ${testCase.hideMessage ? 'hide' : 'show'} the message when enrollments length is ${testCase.enrollmentsLength}, _isSearched is ${testCase._isSearched} and total filter count is ${testCase.filterCount}`, () => {
 					widget._isSearched = testCase._isSearched;
-					widget._totalFilterCount = testCase._totalFilterCount;
+					widget._filterCounts = {
+						departments: 0,
+						semesters: testCase.filterCount,
+						roles: 0
+					};
 					widget._updateInfoMessage(testCase.enrollmentsLength);
 
 					expect(widget._infoMessageText).to.equal(widget.localize(testCase.expectedMessage) ? widget.localize(testCase.expectedMessage) : null);
@@ -207,8 +215,11 @@ describe('d2l-all-courses', function() {
 			].forEach(testCase => {
 				it(`should set _infoMessageText to ${testCase.expectedMessage} when there are no enrollments and one ${testCase.filter} is filtered`, () => {
 					widget._isSearched = false;
-					widget._totalFilterCount = 1;
-					widget._filterCounts = {};
+					widget._filterCounts = {
+						departments: 0,
+						semesters: 0,
+						roles: 0
+					};
 					widget._filterCounts[testCase.filter] = 1;
 					widget._updateInfoMessage(0);
 
@@ -224,8 +235,11 @@ describe('d2l-all-courses', function() {
 			].forEach(testCase => {
 				it(`should set _infoMessageText to catch-all langterm when there are no enrollments and more than one ${testCase.filter} are filtered`, () => {
 					widget._isSearched = false;
-					widget._totalFilterCount = 3;
-					widget._filterCounts = {};
+					widget._filterCounts = {
+						departments: 0,
+						semesters: 0,
+						roles: 0
+					};
 					widget._filterCounts[testCase.filter] = 3;
 					widget._updateInfoMessage(0);
 
@@ -236,8 +250,11 @@ describe('d2l-all-courses', function() {
 
 			it('should set _infoMessageText to catch-all langterm when there are more than one filters', () => {
 				widget._isSearched = false;
-				widget._totalFilterCount = 4;
-				widget._filterCounts = {};
+				widget._filterCounts = {
+					departments: 2,
+					semesters: 0,
+					roles: 2
+				};
 				widget._updateInfoMessage(0);
 
 				expect(widget._infoMessageText).to.equal(widget.localize('noCoursesInSelection'));
@@ -349,22 +366,23 @@ describe('d2l-all-courses', function() {
 			});
 		});
 
-		it('should hide tab contents when loading a tab\'s contents', function() {
+		it('should hide tab contents when loading a tab\'s contents', function(done) {
 			widget._showTabContent = true;
+			widget.shadowRoot.querySelector('d2l-tabs').dispatchEvent(new CustomEvent('d2l-tab-panel-selected'));
 
-			widget.dispatchEvent(new CustomEvent(
-				'd2l-tab-panel-selected', { bubbles: true, composed: true }
-			));
+			requestAnimationFrame(() => {
+				expect(widget._showTabContent).to.be.false;
+				done();
+			});
 
-			expect(widget._showTabContent).to.be.false;
 		});
 
-		it('should set the _searchUrl based on the selected tab\'s action', function() {
-
-			widget.dispatchEvent(new CustomEvent(
-				'd2l-tab-panel-selected', { bubbles: true, composed: true }
-			));
-			expect(widget._searchUrl.indexOf('/example/foo?autoPinCourses=false&embedDepth=0&sort=Current&search=&bustCache=') !== -1).to.be.true;
+		it('should set the _searchUrl based on the selected tab\'s action', function(done) {
+			widget.shadowRoot.querySelector('d2l-tabs').dispatchEvent(new CustomEvent('d2l-tab-panel-selected'));
+			requestAnimationFrame(() => {
+				expect(widget._searchUrl.indexOf('/example/foo?autoPinCourses=false&embedDepth=0&sort=Current&search=&bustCache=') !== -1).to.be.true;
+				done();
+			});
 		});
 
 		it('should update tabSearchActions so the correct tab is selected', function() {
