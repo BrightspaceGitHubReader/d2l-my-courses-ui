@@ -63,12 +63,10 @@ describe('d2l-filter-list-item', function() {
 	it('should update text and value based off of organizations response', function(done) {
 		listItem.set('enrollmentEntity', window.D2L.Hypermedia.Siren.Parse(enrollment));
 
-		requestAnimationFrame(function() {
-			requestAnimationFrame(function() {
-				expect(listItem.text).to.equal('foo');
-				expect(listItem.value).to.equal('bar');
-				done();
-			});
-		});
+		setTimeout(function() {
+			expect(listItem.text).to.equal('foo');
+			expect(listItem.value).to.equal('bar');
+			done();
+		}, 50);
 	});
 });
