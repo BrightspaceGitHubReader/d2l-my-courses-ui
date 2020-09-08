@@ -426,7 +426,7 @@ class AllCourses extends mixinBehaviors([
 	_onFilterDropdownClose() {
 		let text;
 		const totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
-	
+
 		if (totalFilterCount === 0) {
 			text = this.localize('filtering.filter');
 		} else if (totalFilterCount === 1) {
