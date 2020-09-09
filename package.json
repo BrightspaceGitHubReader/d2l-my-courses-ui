@@ -53,6 +53,7 @@
     "d2l-search-widget": "Brightspace/d2l-search-widget-ui#semver:^5",
     "d2l-simple-overlay": "Brightspace/simple-overlay.git#semver:^3",
     "d2l-typography": "BrightspaceUI/typography#semver:^7",
+    "lit-element": "^2",
     "@polymer/iron-a11y-announcer": "^3.0.0",
     "@polymer/iron-a11y-keys-behavior": "^3.0.0",
     "@polymer/iron-menu-behavior": "^3.0.0",

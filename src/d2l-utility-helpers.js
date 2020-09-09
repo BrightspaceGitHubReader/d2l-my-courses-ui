@@ -74,7 +74,10 @@ export function parseEntity(entity) {
 	return SirenParse(entity);
 }
 
-// This is only used by the filter menu and can hopefully be removed after that is moved to the shared component
+/* Ideally we would be using performSirenAction from siren-sdk/src/es6/SirenAction.js instead of this.
+ * However, the LMS is encoding the "via" field of the "set-role-filters" action, which cause it to be
+ * double-encoded and not understood by the LMS. The LMS needs to be updated, which will affect legacy as well.
+ */
 export function fetchSirenEntity(url, clearCache) {
 	if (!url) {
 		return;
