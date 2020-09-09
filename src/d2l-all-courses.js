@@ -35,24 +35,15 @@ class AllCourses extends mixinBehaviors([
 
 	static get properties() {
 		return {
-			/*
-			* Public Polymer properties
-			*/
-
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
+			// Initial search action, should combine with _enrollmentsSearchAction
+			enrollmentsSearchAction: Object,
 			// Standard Department OU Type name to be displayed in the filter dropdown
 			filterStandardDepartmentName: String,
 			// Standard Semester OU Type name to be displayed in the filter dropdown
 			filterStandardSemesterName: String,
-			// Object containing the last response from an enrollments search request
-			_lastEnrollmentsSearchResponse: Object,
-			// Entity returned from my-enrollments Link from the enrollments root
-			_myEnrollmentsEntity: {
-				type: Object,
-				value: function() { return {}; },
-				observer: '_myEnrollmentsEntityChanged'
-			},
+			// Configuration value passed in to toggle Learning Paths code
 			orgUnitTypeIds: Array,
 			// URL to fetch widget settings
 			presentationUrl: String,
@@ -70,15 +61,21 @@ class AllCourses extends mixinBehaviors([
 			tabSearchType: String,
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
 			token: String,
-			// Initial search action, should combine with _enrollmentsSearchAction
-			enrollmentsSearchAction: Object,
 
-			/*
-			* Private Polymer properties
-			*/
-
+			_bustCacheToken: Number,
 			// search-my-enrollments Action
 			_enrollmentsSearchAction: Object,
+			// Used to set the correct message when no courses are shown and to handle tab loads
+			_filterCounts: {
+				type: Object,
+				value: function() {
+					return {
+						departments: 0,
+						semesters: 0,
+						roles: 0
+					};
+				}
+			},
 			// Filter dropdown opener text
 			_filterText: String,
 			_hasEnrollmentsChanged: {
@@ -90,8 +87,23 @@ class AllCourses extends mixinBehaviors([
 				type: Boolean,
 				computed: '_computeHasMoreEnrollments(_lastEnrollmentsSearchResponse, _showTabContent)'
 			},
+			_infoMessageText: {
+				type: String,
+				value: null
+			},
+			// Used to set the correct message when no courses are shown
+			_isSearched: Boolean,
+			// Object containing the last response from an enrollments search request
+			_lastEnrollmentsSearchResponse: Object,
+			// Entity returned from my-enrollments Link from the enrollments root
+			_myEnrollmentsEntity: {
+				type: Object,
+				value: function() { return {}; },
+				observer: '_myEnrollmentsEntityChanged'
+			},
 			// URL passed to search widget, called for searching
 			_searchUrl: String,
+			_selectedTabId: String,
 			_showAdvancedSearchLink: {
 				type: Boolean,
 				value: false,
@@ -108,28 +120,6 @@ class AllCourses extends mixinBehaviors([
 			_showTabContent: {
 				type: Boolean,
 				value: false
-			},
-			// Number of filters currently selected; used to change opener text when menu closes
-			_totalFilterCount: {
-				type: Number,
-				value: 0
-			},
-			_filterCounts: {
-				type: Object,
-				value: function() {
-					return {
-						departments: 0,
-						semesters: 0,
-						roles: 0
-					};
-				}
-			},
-			_isSearched: Boolean,
-			_bustCacheToken: Number,
-			_selectedTabId: String,
-			_infoMessageText: {
-				type: String,
-				value: null
 			},
 			_sortMap: {
 				type: Object,
@@ -299,7 +289,7 @@ class AllCourses extends mixinBehaviors([
 					</d2l-alert>
 
 					<template is="dom-if" if="[[_showGroupByTabs]]">
-						<d2l-tabs>
+						<d2l-tabs on-d2l-tab-panel-selected="_onTabSelected">
 							<template items="[[tabSearchActions]]" is="dom-repeat">
 								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
 									<div hidden$="[[!_showTabContent]]">
@@ -332,8 +322,6 @@ class AllCourses extends mixinBehaviors([
 
 	connectedCallback() {
 		super.connectedCallback();
-
-		this.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
 		this._filterText = this.localize('filtering.filter');
 	}
 
@@ -433,17 +421,18 @@ class AllCourses extends mixinBehaviors([
 	_onFilterChanged(e) {
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(e.detail.url);
 		this._filterCounts = e.detail.filterCounts;
-		this._totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
 	}
 
 	_onFilterDropdownClose() {
 		let text;
-		if (this._totalFilterCount === 0) {
+		const totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
+
+		if (totalFilterCount === 0) {
 			text = this.localize('filtering.filter');
-		} else if (this._totalFilterCount === 1) {
+		} else if (totalFilterCount === 1) {
 			text = this.localize('filtering.filterSingle');
 		} else {
-			text = this.localize('filtering.filterMultiple', 'num', this._totalFilterCount);
+			text = this.localize('filtering.filterMultiple', 'num', totalFilterCount);
 		}
 		this.set('_filterText', text);
 	}
@@ -663,7 +652,8 @@ class AllCourses extends mixinBehaviors([
 				this._infoMessageText = this.localize('noCoursesInSearch');
 				return;
 			}
-			if (this._totalFilterCount === 1) {
+			const totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
+			if (totalFilterCount === 1) {
 				if (this._filterCounts.departments === 1) {
 					this._infoMessageText = this.localize('noCoursesInDepartment');
 				} else if (this._filterCounts.semesters === 1) {
@@ -673,7 +663,7 @@ class AllCourses extends mixinBehaviors([
 				}
 				return;
 			}
-			if (this._totalFilterCount > 1) {
+			if (totalFilterCount > 1) {
 				this._infoMessageText = this.localize('noCoursesInSelection');
 				return;
 			}
