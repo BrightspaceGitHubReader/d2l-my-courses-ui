@@ -404,30 +404,40 @@ describe('d2l-my-courses', () => {
 		});
 
 		describe('getLastOrgUnitId', () => {
-			it('should call getOrgUnitIdFromHref (not grouped by tab)', done => {
+			it('should get the orgunit id from the organization entity in _setImageOrg (not grouped by tab)', done => {
 				component._showGroupByTabs = false;
-				component._setImageOrg.links = [];
+				component._setImageOrg = window.D2L.Hypermedia.Siren.Parse({
+					properties: {
+						name: 'Course One'
+					},
+					links: [{
+						rel: ['self'],
+						href: '/organizations/123'
+					}]
+				});
 				flush(() => {
-					const stub1 = sandbox.stub(component, 'getOrgUnitIdFromHref');
-					const stub2 = sandbox.stub(component, 'getEntityIdentifier');
-					component.getLastOrgUnitId();
-					expect(stub1).to.have.been.called;
-					expect(stub2).to.have.been.called;
+					const response = component.getLastOrgUnitId();
+					expect(response).to.equal('123');
 					done();
 				});
 			});
 
-			it('should call getOrgUnitIdFromHref (grouped by tab)', done => {
+			it('should get the orgunit id from the organization entity in _setImageOrg (grouped by tab)', done => {
 				component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
 				component._onPromotedSearchEntityChange();
 				component._currentTabId = '6607';
-				component._setImageOrg.links = [];
+				component._setImageOrg = window.D2L.Hypermedia.Siren.Parse({
+					properties: {
+						name: 'Course One'
+					},
+					links: [{
+						rel: ['self'],
+						href: '/organizations/123'
+					}]
+				});
 				flush(() => {
-					const stub1 = sandbox.stub(component, 'getOrgUnitIdFromHref');
-					const stub2 = sandbox.stub(component, 'getEntityIdentifier');
-					component.getLastOrgUnitId();
-					expect(stub1).to.have.been.called;
-					expect(stub2).to.have.been.called;
+					const response = component.getLastOrgUnitId();
+					expect(response).to.equal('123');
 					done();
 				});
 			});
@@ -552,11 +562,6 @@ describe('d2l-my-courses', () => {
 				requestAnimationFrame(() => {
 					component.dispatchEvent(event);
 				});
-			});
-
-			it('should return correct org unit id from various href', () => {
-				expect(component.getOrgUnitIdFromHref('/organizations/671')).to.equal('671');
-				expect(component.getOrgUnitIdFromHref('/some/other/route/8798734534')).to.equal('8798734534');
 			});
 
 		});

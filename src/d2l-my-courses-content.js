@@ -8,20 +8,17 @@ import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-my-courses-card-grid.js';
-import './d2l-utility-behavior.js';
 
+import { createActionUrl, getOrgUnitIdFromHref, performanceMark, performanceMeasure } from './d2l-utility-helpers.js';
 import { entityFactory, updateEntity } from 'siren-sdk/src/es6/EntityFactory.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { Actions } from 'd2l-hypermedia-constants';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 import { performSirenAction } from 'siren-sdk/src/es6/SirenAction.js';
 import { StatusMixin } from 'd2l-enrollments/components/date-text-status-mixin';
 
-class MyCoursesContent extends mixinBehaviors([
-	D2L.MyCourses.UtilityBehavior
-], StatusMixin(MyCoursesLocalizeBehavior(PolymerElement))) {
+class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElement)) {
 
 	static get is() { return 'd2l-my-courses-content'; }
 
@@ -226,7 +223,7 @@ class MyCoursesContent extends mixinBehaviors([
 
 	connectedCallback() {
 		super.connectedCallback();
-		this.performanceMark('d2l.my-courses.attached');
+		performanceMark('d2l.my-courses.attached');
 
 		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
 
@@ -316,7 +313,7 @@ class MyCoursesContent extends mixinBehaviors([
 			return;
 		}
 		enrollmentCollectionEntity.onEnrollmentEntityChange(url, (enrollmentEntity) => {
-			const orgUnitId = this.getOrgUnitIdFromHref(enrollmentEntity.organizationHref());
+			const orgUnitId = getOrgUnitIdFromHref(enrollmentEntity.organizationHref());
 			this._orgUnitIdMap[orgUnitId] = url;
 		});
 	}
@@ -376,8 +373,8 @@ class MyCoursesContent extends mixinBehaviors([
 		this._courseImagesLoadedEventCount++;
 
 		if (this._courseImagesLoadedEventCount === this._initiallyVisibleCourseTileCount) {
-			this.performanceMark('d2l.my-courses.visible-images-complete');
-			this.performanceMeasure(
+			performanceMark('d2l.my-courses.visible-images-complete');
+			performanceMeasure(
 				'd2l.my-courses',
 				'd2l.my-courses.attached',
 				'd2l.my-courses.visible-images-complete'
@@ -388,14 +385,14 @@ class MyCoursesContent extends mixinBehaviors([
 		if (this._initiallyVisibleCourseTileCount === 0 && this._courseTileOrganizationEventCount === 0) {
 			// If no course tiles are initially visible (widget is outside of initial viewport)
 			// then we can say we're already finished loading the visible organizations and images
-			this.performanceMark('d2l.my-courses.visible-organizations-complete');
-			this.performanceMeasure(
+			performanceMark('d2l.my-courses.visible-organizations-complete');
+			performanceMeasure(
 				'd2l.my-courses.meaningful.visible',
 				'd2l.my-courses.attached',
 				'd2l.my-courses.visible-organizations-complete'
 			);
-			this.performanceMark('d2l.my-courses.visible-images-complete');
-			this.performanceMeasure(
+			performanceMark('d2l.my-courses.visible-images-complete');
+			performanceMeasure(
 				'd2l.my-courses.hero',
 				'd2l.my-courses.attached',
 				'd2l.my-courses.visible-images-complete',
@@ -411,15 +408,15 @@ class MyCoursesContent extends mixinBehaviors([
 			requestAnimationFrame(() => {
 				this._getCardGrid().onResize();
 			});
-			this.performanceMark('d2l.my-courses.visible-organizations-complete');
-			this.performanceMeasure(
+			performanceMark('d2l.my-courses.visible-organizations-complete');
+			performanceMeasure(
 				'd2l.my-courses.meaningful.visible',
 				'd2l.my-courses.attached',
 				'd2l.my-courses.visible-organizations-complete'
 			);
 		} else if (this._courseTileOrganizationEventCount === this._enrollments.length) {
-			this.performanceMark('d2l.my-courses.all-organizations-complete');
-			this.performanceMeasure(
+			performanceMark('d2l.my-courses.all-organizations-complete');
+			performanceMeasure(
 				'd2l.my-courses.meaningful.all',
 				'd2l.my-courses.attached',
 				'd2l.my-courses.all-organizations-complete'
@@ -515,7 +512,7 @@ class MyCoursesContent extends mixinBehaviors([
 			promotePins: true,
 			embedDepth: 0
 		};
-		let enrollmentsSearchUrl = this.createActionUrl(this.enrollmentsSearchAction, query);
+		let enrollmentsSearchUrl = createActionUrl(this.enrollmentsSearchAction, query);
 
 		if (bustCache) {
 			if (enrollmentsSearchUrl && enrollmentsSearchUrl.indexOf('?') > -1) {
@@ -537,12 +534,12 @@ class MyCoursesContent extends mixinBehaviors([
 		if (!this.enrollmentsSearchAction) {
 			return;
 		}
-		this.performanceMark('d2l.my-courses.root-enrollments.request');
+		performanceMark('d2l.my-courses.root-enrollments.request');
 		this._fetchEnrollments();
 	}
 	_fetchEnrollments() {
-		this.performanceMark('d2l.my-courses.root-enrollments.response');
-		this.performanceMeasure(
+		performanceMark('d2l.my-courses.root-enrollments.response');
+		performanceMeasure(
 			'd2l.my-courses.root-enrollments',
 			'd2l.my-courses.root-enrollments.request',
 			'd2l.my-courses.root-enrollments.response'
@@ -551,13 +548,13 @@ class MyCoursesContent extends mixinBehaviors([
 		// The pinned tab gets added and removed and needs to be refreshed each time
 		// For other tabs, we know this is their first time loading and do not need to bust the cache
 		const enrollmentsSearchUrl = this._createFetchEnrollmentsUrl(this._isPinnedTab);
-		this.performanceMark('d2l.my-courses.search-enrollments.request');
+		performanceMark('d2l.my-courses.search-enrollments.request');
 
 		this._onEnrollmentsRootEntityChange(enrollmentsSearchUrl);
 	}
 	_enrollmentsResponsePerfMeasures(enrollmentsEntity) {
-		this.performanceMark('d2l.my-courses.search-enrollments.response');
-		this.performanceMeasure(
+		performanceMark('d2l.my-courses.search-enrollments.response');
+		performanceMeasure(
 			'd2l.my-courses.search-enrollments',
 			'd2l.my-courses.search-enrollments.request',
 			'd2l.my-courses.search-enrollments.response'

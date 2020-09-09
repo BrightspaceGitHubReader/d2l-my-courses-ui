@@ -2,7 +2,8 @@ describe('d2l-filter-list-item', function() {
 	let sandbox,
 		listItem,
 		enrollment,
-		organization;
+		organization,
+		fetchStub;
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
@@ -27,8 +28,8 @@ describe('d2l-filter-list-item', function() {
 		};
 
 		listItem = fixture('d2l-filter-list-item-fixture');
-		listItem.fetchSirenEntity = sandbox.stub().returns(Promise.resolve(
-			window.D2L.Hypermedia.Siren.Parse(organization)
+		fetchStub = sandbox.stub(window.d2lfetch, 'fetch').returns(Promise.resolve(
+			new Response(new Blob([JSON.stringify(organization, null, 2)], {type : 'application/json'}))
 		));
 	});
 
@@ -52,7 +53,8 @@ describe('d2l-filter-list-item', function() {
 		listItem.set('enrollmentEntity', window.D2L.Hypermedia.Siren.Parse(enrollment));
 
 		setTimeout(function() {
-			expect(listItem.fetchSirenEntity).to.have.been.calledWith('/organizations/1');
+			expect(fetchStub).to.have.been.calledOnce;
+			expect(fetchStub.getCall(0).args[0].url).to.include('/organizations/1');
 			expect(listItem._organizationUrl).to.equal('/organizations/1');
 			done();
 		});
@@ -65,6 +67,6 @@ describe('d2l-filter-list-item', function() {
 			expect(listItem.text).to.equal('foo');
 			expect(listItem.value).to.equal('bar');
 			done();
-		});
+		}, 50);
 	});
 });

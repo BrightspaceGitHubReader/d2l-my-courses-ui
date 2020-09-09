@@ -1,7 +1,8 @@
 describe('d2l-filter-menu-tab', function() {
 	let sandbox,
 		component,
-		organization;
+		organization,
+		fetchStub;
 
 	beforeEach(function() {
 		sandbox = sinon.sandbox.create();
@@ -15,6 +16,8 @@ describe('d2l-filter-menu-tab', function() {
 			rel: ['https://api.brightspace.com/rels/organization'],
 			href: '/organizations/1'
 		};
+
+		fetchStub = sandbox.stub(window.d2lfetch, 'fetch').returns(Promise.resolve());
 	});
 
 	afterEach(function() {
@@ -27,9 +30,9 @@ describe('d2l-filter-menu-tab', function() {
 		});
 
 		it('should show content once the tab has loaded', function() {
-			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({
-				entities: [organization]
-			}));
+			fetchStub.onFirstCall().returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({ entities: [organization] }, null, 2)], {type : 'application/json'}))
+			));
 
 			return component.load().then(function() {
 				expect(component.shadowRoot.querySelector('.no-items-text').getAttribute('hidden')).to.not.be.null;
@@ -132,29 +135,34 @@ describe('d2l-filter-menu-tab', function() {
 	});
 
 	describe('load', function() {
-		it('should not re-fetch data if it has already loaded it, and instead just clear the search', function() {
+		it('should not re-fetch data if it has already loaded it, and instead just clear the search', function(done) {
 			component.shadowRoot.querySelector('d2l-search-widget').clear = sandbox.stub();
-			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({}));
 			component._allFilters = [organization];
 
-			return component.load().then(function() {
-				expect(component.shadowRoot.querySelector('d2l-search-widget').clear).to.have.been.called;
-				expect(component.fetchSirenEntity).to.have.not.been.called;
+			requestAnimationFrame(() => {
+				fetchStub.reset();
+				component.load().then(function() {
+					expect(component.shadowRoot.querySelector('d2l-search-widget').clear).to.have.been.called;
+					expect(fetchStub).to.have.not.been.called;
+					done();
+				});
 			});
 		});
 
 		it('should fetch data if it has not already been loaded', function() {
-			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({}));
+			fetchStub.onFirstCall().returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({}, null, 2)], {type : 'application/json'}))
+			));
 
 			return component.load().then(function() {
-				expect(component.fetchSirenEntity).to.have.been.called;
+				expect(fetchStub).to.have.been.called;
 			});
 		});
 
 		it('should set _showContent to false if 0 filters are returned', function() {
-			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({
-				entities: []
-			}));
+			fetchStub.onFirstCall().returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({ entities: [] }, null, 2)], {type : 'application/json'}))
+			));
 			expect(component._showContent).to.be.false;
 
 			return component.load().then(function() {
@@ -163,9 +171,9 @@ describe('d2l-filter-menu-tab', function() {
 		});
 
 		it('should set _showContent to true if >0 filters are returned', function() {
-			component.fetchSirenEntity = sandbox.stub().returns(Promise.resolve({
-				entities: [organization]
-			}));
+			fetchStub.onFirstCall().returns(Promise.resolve(
+				new Response(new Blob([JSON.stringify({ entities: [organization] }, null, 2)], {type : 'application/json'}))
+			));
 			expect(component._showContent).to.be.false;
 
 			return component.load().then(function() {
