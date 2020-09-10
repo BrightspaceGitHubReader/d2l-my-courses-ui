@@ -438,8 +438,10 @@ class AllCourses extends mixinBehaviors([
 
 		if (roleFilters && e.detail.categoryChanged === 'roles') {
 			this._handleRolesFilterChange(roleFilters.selectedOptions);
-		} else if (semesterFilters && departmentFilters) {
-			const semesterDepartmentFilters = semesterFilters.selectedOptions.concat(departmentFilters.selectedOptions);
+		} else if ((semesterFilters && e.detail.categoryChanged === 'semesters') || (departmentFilters && e.detail.categoryChanged === 'departments')) {
+			const selectedSemesters = semesterFilters ? semesterFilters.selectedOptions : [];
+			const selectedDepartments = departmentFilters ? departmentFilters.selectedOptions : [];
+			const semesterDepartmentFilters = selectedSemesters.concat(selectedDepartments);
 			this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 				createActionUrl(this._enrollmentsSearchAction, {
 					orgUnitTypeId: this.orgUnitTypeIds,
