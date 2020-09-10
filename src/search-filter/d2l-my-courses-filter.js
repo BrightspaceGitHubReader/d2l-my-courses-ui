@@ -32,9 +32,6 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 				display: block;
 				padding: 0 1rem 1rem 1rem;
 			}
-			[hidden].d2l-my-courses-filter-no-options-text {
-				display: none;
-			}
 		`];
 	}
 
