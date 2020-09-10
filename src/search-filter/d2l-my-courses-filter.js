@@ -52,20 +52,18 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 	updated(changedProperties) {
 		super.updated(changedProperties);
 
-		changedProperties.forEach((oldValue, propName) => {
-			if (propName === 'filterCategories') {
-				for (let i = 0; i < this.filterCategories.length; i++) {
-					Object.assign(this.filterCategories[i], {
-						isSearched: false,
-						options: [],
-						optionsLoaded: false,
-						optionsLoadRequested: false,
-						selectedOptions: []
-					});
-				}
-				this._loadCategories();
+		if (changedProperties.has('filterCategories')) {
+			for (let i = 0; i < this.filterCategories.length; i++) {
+				Object.assign(this.filterCategories[i], {
+					isSearched: false,
+					options: [],
+					optionsLoaded: false,
+					optionsLoadRequested: false,
+					selectedOptions: []
+				});
 			}
-		});
+			this._loadCategories();
+		};
 	}
 
 	render() {
@@ -163,37 +161,25 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 	_fetchSearchOptions(category) {
 		let options = [];
 		if (category.optionsEntity && category.optionsEntity.entities) {
-			options = category.optionsEntity.entities.map(option => {
-				return {
-					key: option.href
-				};
-			});
+			options = category.optionsEntity.entities.map(option => ({ key: option.href }));
 		}
 
 		category.options = options;
 
-		const promises = [];
-		for (let j = 0; j < options.length; j++) {
-			promises.push(
-				this._fetchSirenEntity(options[j].key)
-					.then(result => {
-						category.options[j].name = result.properties.name;
-					})
-					.catch((e) => {
-						// eslint-disable-next-line no-console
-						console.log(e);
-					})
-			);
-		}
+		const promises = options.map(option => this._fetchSirenEntity(option.key)
+			.then(result => {
+				option.name = result.properties.name;
+			})
+			.catch((e) => {
+				// eslint-disable-next-line no-console
+				console.log(e);
+			})
+		);
 
 		Promise.all(promises)
 			.then(() => {
 				category.optionsLoaded = true;
 				this.requestUpdate();
-			})
-			.catch((e) => {
-				// eslint-disable-next-line no-console
-				console.log(e);
 			});
 	}
 
