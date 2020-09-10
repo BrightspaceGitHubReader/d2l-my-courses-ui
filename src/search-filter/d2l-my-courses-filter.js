@@ -63,7 +63,7 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 				});
 			}
 			this._loadCategories();
-		};
+		}
 	}
 
 	render() {
@@ -84,20 +84,20 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 						?disable-search="${this._hasFiltersClass(category) || (!category.isSearched && category.options && category.options.length === 0)}"
 						selected-option-count="${category.selectedOptions ? category.selectedOptions.length : 0}">
 
-						${category.options && category.options.map(option => html`
-							<d2l-filter-dropdown-option
-								?selected="${category.selectedOptions.findIndex(optionKey => optionKey === option.key) > -1}"
-								text="${ifDefined(option.name)}"
-								value="${option.key}">
-							</d2l-filter-dropdown-option>
-						`)}
-
 						${category.optionsLoaded ? html`
-							<div
-								class="d2l-my-courses-filter-no-options-text d2l-body-compact"
-								?hidden="${category.options && category.options.length > 0}">
-								${category.isSearched ? this.localize('noSearchResults') : category.noOptionsText}
-							</div>` : html`
+							${category.options && category.options.length > 0 ? html`
+								${category.options.map(option => html`
+									<d2l-filter-dropdown-option
+										?selected="${category.selectedOptions.findIndex(optionKey => optionKey === option.key) > -1}"
+										text="${ifDefined(option.name)}"
+										value="${option.key}">
+									</d2l-filter-dropdown-option>
+								`)}` : html`
+								<div class="d2l-my-courses-filter-no-options-text d2l-body-compact">
+									${category.isSearched ? this.localize('noSearchResults') : category.noOptionsText}
+								</div>
+							`}
+						` : html`
 							<d2l-loading-spinner></d2l-loading-spinner>
 						`}
 					</d2l-filter-dropdown-category>
