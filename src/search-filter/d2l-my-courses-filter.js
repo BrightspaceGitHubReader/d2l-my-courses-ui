@@ -29,7 +29,6 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 				width: 100%;
 			}
 			.d2l-my-courses-filter-no-options-text {
-				@apply --d2l-body-compact-text;
 				display: block;
 				padding: 0 1rem 1rem 1rem;
 			}
@@ -134,9 +133,9 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 				filter.optionsEntity = resultingEntity;
 				if (filter.optionsLoadRequested) {
 					if (this._hasFiltersClass(filter)) {
-						this._parseOptions(filter);
+						this._parseFilterOptions(filter);
 					} else {
-						this._fetchOptions(filter);
+						this._fetchSearchOptions(filter);
 					}
 				}
 			});
@@ -155,13 +154,13 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 		}
 
 		if (!this._hasFiltersClass(category)) {
-			this._fetchOptions(category);
+			this._fetchSearchOptions(category);
 		} else {
-			this._parseOptions(category);
+			this._parseFilterOptions(category);
 		}
 	}
 
-	_fetchOptions(category) {
+	_fetchSearchOptions(category) {
 		let options = [];
 		if (category.optionsEntity && category.optionsEntity.entities) {
 			options = category.optionsEntity.entities.map(option => {
@@ -198,12 +197,12 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 			});
 	}
 
-	_parseOptions(category) {
+	_parseFilterOptions(category) {
 		const options = [];
 		if (category.optionsEntity && category.optionsEntity.entities) {
 			const entities = category.optionsEntity.entities;
 			for (let i = 0; i < entities.length; i++) {
-				// Options with the same name should be grouped together for this filter type
+				// Options with the same name should be grouped together for this filter type (DE27982)
 				const alreadyAdded = options.find(option => option.key === entities[i].title);
 				if (!alreadyAdded) {
 					options.push({
@@ -237,7 +236,7 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 		this._fetchSirenEntity(searchActionHref).then((resultingEntity) => {
 			category.optionsEntity = resultingEntity;
 			// We don't need to check the filters class here, since if the filters class is present search is disabled
-			this._fetchOptions(category);
+			this._fetchSearchOptions(category);
 		});
 	}
 

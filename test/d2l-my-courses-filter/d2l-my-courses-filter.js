@@ -261,8 +261,8 @@ describe('d2l-my-courses-filter', () => {
 		});
 
 		it('should not reload the first tab\'s options if they have already been loaded', async() => {
-			const stubFetchOptions = sandbox.stub(component, '_fetchOptions');
-			const stubParseOptions = sandbox.stub(component, '_parseOptions');
+			const stubFetchSearchOptions = sandbox.stub(component, '_fetchSearchOptions');
+			const stubParseFilterOptions = sandbox.stub(component, '_parseFilterOptions');
 			component.filterCategories = [departmentFilterType];
 			await component.updateComplete;
 
@@ -273,8 +273,8 @@ describe('d2l-my-courses-filter', () => {
 
 			await timeout(0);
 			expect(component.filterCategories[0].optionsLoadRequested).to.be.false;
-			expect(stubFetchOptions).to.not.be.called;
-			expect(stubParseOptions).to.not.be.called;
+			expect(stubFetchSearchOptions).to.not.be.called;
+			expect(stubParseFilterOptions).to.not.be.called;
 		});
 	});
 
