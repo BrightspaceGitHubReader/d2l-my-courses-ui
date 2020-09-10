@@ -5,8 +5,6 @@ Polymer-based web component for the all courses overlay.
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@brightspace-ui/core/components/alert/alert.js';
-import '@brightspace-ui/core/components/dropdown/dropdown-button-subtle.js';
-import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/tabs/tabs.js';
@@ -16,7 +14,6 @@ import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdo
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import './d2l-my-courses-card-grid.js';
-import './search-filter/d2l-filter-menu.js';
 import './search-filter/d2l-my-courses-filter.js';
 import './search-filter/d2l-search-widget-custom.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
@@ -82,8 +79,6 @@ class AllCourses extends mixinBehaviors([
 					};
 				}
 			},
-			// Filter dropdown opener text
-			_filterText: String,
 			_hasEnrollmentsChanged: {
 				type: Boolean,
 				value: false
@@ -215,11 +210,11 @@ class AllCourses extends mixinBehaviors([
 						margin-top: 5px;
 					}
 				}
-				d2l-dropdown-button-subtle,
+				d2l-my-courses-filter,
 				d2l-sort-by-dropdown {
 					margin-left: 0.5rem;
 				}
-				:host(:dir(rtl)) d2l-dropdown-button-subtle,
+				:host(:dir(rtl)) d2l-my-courses-filter,
 				:host(:dir(rtl)) d2l-sort-by-dropdown {
 					margin-left: 0;
 					margin-right: 0.5rem;
@@ -253,26 +248,6 @@ class AllCourses extends mixinBehaviors([
 							</d2l-search-widget-custom>
 
 							<div id="filterAndSort">
-								<d2l-dropdown-button-subtle text="[[_filterText]]">
-									<d2l-dropdown-content
-										id="filterDropdownContent"
-										on-d2l-dropdown-open="_onFilterDropdownOpen"
-										on-d2l-dropdown-close="_onFilterDropdownClose"
-										no-padding
-										min-width="350"
-										render-content>
-
-										<d2l-filter-menu
-											id="filterMenu"
-											on-d2l-filter-menu-change="_onFilterChanged"
-											tab-search-type="[[tabSearchType]]"
-											org-unit-type-ids="[[orgUnitTypeIds]]"
-											my-enrollments-entity="[[_myEnrollmentsEntity]]"
-											filter-standard-semester-name="[[filterStandardSemesterName]]"
-											filter-standard-department-name="[[filterStandardDepartmentName]]">
-										</d2l-filter-menu>
-									</d2l-dropdown-content>
-								</d2l-dropdown-button-subtle>
 								<d2l-my-courses-filter
 									on-d2l-my-courses-filter-change="_onFilterChange"
 									on-d2l-my-courses-filter-clear="_onFilterClear"
@@ -329,11 +304,6 @@ class AllCourses extends mixinBehaviors([
 				<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
 				</d2l-loading-spinner>
 			</d2l-simple-overlay>`;
-	}
-
-	connectedCallback() {
-		super.connectedCallback();
-		this._filterText = this.localize('filtering.filter');
 	}
 
 	/*
@@ -427,30 +397,6 @@ class AllCourses extends mixinBehaviors([
 				}
 			}
 		}
-	}
-
-	_onFilterChanged(e) {
-		this._searchUrl = this._appendOrUpdateBustCacheQueryString(e.detail.url);
-		this._filterCounts = e.detail.filterCounts;
-	}
-
-	_onFilterDropdownClose() {
-		let text;
-		const totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
-
-		if (totalFilterCount === 0) {
-			text = this.localize('filtering.filter');
-		} else if (totalFilterCount === 1) {
-			text = this.localize('filtering.filterSingle');
-		} else {
-			text = this.localize('filtering.filterMultiple', 'num', totalFilterCount);
-		}
-		this.set('_filterText', text);
-	}
-
-	_onFilterDropdownOpen() {
-		this.set('_filterText', this.localize('filtering.filter'));
-		return this.$.filterMenu.open();
 	}
 
 	_onSortOrderChanged(e) {
@@ -600,8 +546,6 @@ class AllCourses extends mixinBehaviors([
 		}
 
 		this._clearSearchWidget();
-		this.$.filterMenu.clearFilters();
-		this._filterText = this.localize('filtering.filter');
 		this.shadowRoot.querySelector('d2l-my-courses-filter').clear();
 		this.shadowRoot.querySelector(`d2l-sort-by-dropdown-option[value=${this._sortMap[0].name}]`).click();
 
