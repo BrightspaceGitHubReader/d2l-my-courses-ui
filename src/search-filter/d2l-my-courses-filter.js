@@ -109,6 +109,13 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 		`;
 	}
 
+	/* Wrapped for easier test stubbing. Ideally, this will eventually use the entity store
+	 * (see the note in d2l-utility-helpers.js)
+	 */
+	_fetchSirenEntity(url) {
+		return fetchSirenEntity(url);
+	}
+
 	/* This filter supports two different types of HM filtering methods, which we distinguish throughout
 	 * by checking for the "filters" class on the entity containing the options
 	 */
@@ -123,7 +130,7 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 				continue;
 			}
 			const href = createActionUrl(filter.filterAction);
-			fetchSirenEntity(href).then(resultingEntity => {
+			this._fetchSirenEntity(href).then(resultingEntity => {
 				filter.optionsEntity = resultingEntity;
 				if (filter.optionsLoadRequested) {
 					if (this._hasFiltersClass(filter)) {
@@ -169,7 +176,7 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 		const promises = [];
 		for (let j = 0; j < options.length; j++) {
 			promises.push(
-				fetchSirenEntity(options[j].key)
+				this._fetchSirenEntity(options[j].key)
 					.then(result => {
 						category.options[j].name = result.properties.name;
 					})
@@ -227,7 +234,7 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 			search: encodeURIComponent(e.detail.value)
 		});
 
-		fetchSirenEntity(searchActionHref).then((resultingEntity) => {
+		this._fetchSirenEntity(searchActionHref).then((resultingEntity) => {
 			category.optionsEntity = resultingEntity;
 			// We don't need to check the filters class here, since if the filters class is present search is disabled
 			this._fetchOptions(category);
