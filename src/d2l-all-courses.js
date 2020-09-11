@@ -678,7 +678,7 @@ class AllCourses extends mixinBehaviors([
 		const bustCacheStr = 'bustCache=';
 		let index = url.indexOf(bustCacheStr);
 		if (index === -1) {
-			return `${url}${(url.indexOf('?') !== -1 ? '&' : '?')}bustCache=${this._bustCacheToken}`;
+			return `${url}${(url.indexOf('?') !== -1 ? '&' : '?')}bustCache=${this._bustCacheToken || ''}`;
 		}
 
 		index += bustCacheStr.length;
