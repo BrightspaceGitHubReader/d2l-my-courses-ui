@@ -451,47 +451,33 @@ class AllCourses extends mixinBehaviors([
 		}
 	}
 
-	_handleRolesFilterChange(selectedRoles) {
+	async _handleRolesFilterChange(selectedRoles) {
 		/* The role filter works by applying a single state change and then re-fetching,
-		 * so we need to build up a request chain and use the new entity each time for
+		 * so we need to wait for the request to return and use the new entity for
 		 * every filter that needs to be flipped to a different value
 		 */
-		const changeFilter = function(filter, actionName) {
-			const action = filter.getActionByName(actionName);
-			const url = createActionUrl(action);
-			return fetchSirenEntity(url);
-		}.bind(this);
-
-		let request;
-		const roleFilters = this._roleFiltersEntity.entities;
-		for (let i = 0; i < roleFilters.length; i++) {
-			const isSelected = selectedRoles.find(role => role === roleFilters[i].title);
-			if (isSelected && roleFilters[i].hasActionByName(Actions.enrollments.roleFilters.addFilter)) {
-				if (request) {
-					request = request.then((newFiltersEntity) => changeFilter(newFiltersEntity.entities[i], Actions.enrollments.roleFilters.addFilter));
-				} else {
-					request = changeFilter(roleFilters[i], Actions.enrollments.roleFilters.addFilter);
-				}
-			} else if (!isSelected && roleFilters[i].hasActionByName(Actions.enrollments.roleFilters.removeFilter)) {
-				if (request) {
-					request = request.then((newFiltersEntity) => changeFilter(newFiltersEntity.entities[i], Actions.enrollments.roleFilters.removeFilter));
-				} else {
-					request = changeFilter(roleFilters[i], Actions.enrollments.roleFilters.removeFilter);
-				}
+		let newEntity = this._roleFiltersEntity;
+		for (let i = 0; i < this._roleFiltersEntity.entities.length; i++) {
+			const roleFilter = newEntity.entities[i];
+			const isSelected = selectedRoles.find(role => role === roleFilter.title);
+			if (isSelected && roleFilter.hasActionByName(Actions.enrollments.roleFilters.addFilter)) {
+				const actionUrl = createActionUrl(roleFilter.getActionByName(Actions.enrollments.roleFilters.addFilter));
+				newEntity = await fetchSirenEntity(actionUrl);
+			} else if (!isSelected && roleFilter.hasActionByName(Actions.enrollments.roleFilters.removeFilter)) {
+				const actionUrl = createActionUrl(roleFilter.getActionByName(Actions.enrollments.roleFilters.removeFilter));
+				newEntity = await fetchSirenEntity(actionUrl);
 			}
 		}
 
-		return request
-			.then(newFiltersEntity => {
-				this._roleFiltersEntity = newFiltersEntity;
-				// Use the apply-role-filters action to create the new searchUrl
-				const applyAction = this._roleFiltersEntity.getActionByName(
-					Actions.enrollments.roleFilters.applyRoleFilters
-				);
+		this._roleFiltersEntity = newEntity;
 
-				const actionUrl = createActionUrl(applyAction);
-				this._searchUrl = this._appendOrUpdateBustCacheQueryString(actionUrl);
-			});
+		// Use the apply-role-filters action to create the new searchUrl
+		const applyAction = this._roleFiltersEntity.getActionByName(
+			Actions.enrollments.roleFilters.applyRoleFilters
+		);
+
+		const actionUrl = createActionUrl(applyAction);
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(actionUrl);
 	}
 
 	_onFilterClear() {
