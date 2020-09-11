@@ -68,7 +68,7 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('Loading', function() {
-		it('should show before content has loaded', function() {
+		it('should show loading spinner before content has loaded', function() {
 			expect(widget.shadowRoot.querySelector('d2l-loading-spinner:not(#lazyLoadSpinner)').hasAttribute('hidden')).to.be.false;
 		});
 	});

@@ -594,6 +594,7 @@ class AllCourses extends mixinBehaviors([
 
 	_myEnrollmentsEntityChanged(entity) {
 		const myEnrollmentsEntity = SirenParse(entity);
+		// Checking we have a valid entity - if this action is missing the overlay has not been opened yet
 		if (!myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMyEnrollments)) {
 			return;
 		}
