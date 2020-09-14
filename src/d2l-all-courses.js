@@ -5,8 +5,6 @@ Polymer-based web component for the all courses overlay.
 
 import '@polymer/iron-scroll-threshold/iron-scroll-threshold.js';
 import '@brightspace-ui/core/components/alert/alert.js';
-import '@brightspace-ui/core/components/dropdown/dropdown-button-subtle.js';
-import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import '@brightspace-ui/core/components/link/link.js';
 import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import '@brightspace-ui/core/components/tabs/tabs.js';
@@ -16,11 +14,11 @@ import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdo
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import './d2l-my-courses-card-grid.js';
-import './search-filter/d2l-filter-menu.js';
+import './search-filter/d2l-my-courses-filter.js';
 import './search-filter/d2l-search-widget-custom.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
+import { createActionUrl, fetchSirenEntity } from './d2l-utility-helpers.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { createActionUrl } from './d2l-utility-helpers.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
@@ -65,6 +63,11 @@ class AllCourses extends mixinBehaviors([
 			_bustCacheToken: Number,
 			// search-my-enrollments Action
 			_enrollmentsSearchAction: Object,
+			// Info about filter categories and options to pass down to the filter component
+			_filterCategories: {
+				type: Array,
+				value: function() { return []; }
+			},
 			// Used to set the correct message when no courses are shown and to handle tab loads
 			_filterCounts: {
 				type: Object,
@@ -76,8 +79,6 @@ class AllCourses extends mixinBehaviors([
 					};
 				}
 			},
-			// Filter dropdown opener text
-			_filterText: String,
 			_hasEnrollmentsChanged: {
 				type: Boolean,
 				value: false
@@ -209,11 +210,11 @@ class AllCourses extends mixinBehaviors([
 						margin-top: 5px;
 					}
 				}
-				d2l-dropdown-button-subtle,
+				d2l-my-courses-filter,
 				d2l-sort-by-dropdown {
 					margin-left: 0.5rem;
 				}
-				:host(:dir(rtl)) d2l-dropdown-button-subtle,
+				:host(:dir(rtl)) d2l-my-courses-filter,
 				:host(:dir(rtl)) d2l-sort-by-dropdown {
 					margin-left: 0;
 					margin-right: 0.5rem;
@@ -247,26 +248,11 @@ class AllCourses extends mixinBehaviors([
 							</d2l-search-widget-custom>
 
 							<div id="filterAndSort">
-								<d2l-dropdown-button-subtle text="[[_filterText]]">
-									<d2l-dropdown-content
-										id="filterDropdownContent"
-										on-d2l-dropdown-open="_onFilterDropdownOpen"
-										on-d2l-dropdown-close="_onFilterDropdownClose"
-										no-padding
-										min-width="350"
-										render-content>
-
-										<d2l-filter-menu
-											id="filterMenu"
-											on-d2l-filter-menu-change="_onFilterChanged"
-											tab-search-type="[[tabSearchType]]"
-											org-unit-type-ids="[[orgUnitTypeIds]]"
-											my-enrollments-entity="[[_myEnrollmentsEntity]]"
-											filter-standard-semester-name="[[filterStandardSemesterName]]"
-											filter-standard-department-name="[[filterStandardDepartmentName]]">
-										</d2l-filter-menu>
-									</d2l-dropdown-content>
-								</d2l-dropdown-button-subtle>
+								<d2l-my-courses-filter
+									on-d2l-my-courses-filter-change="_onFilterChange"
+									on-d2l-my-courses-filter-clear="_onFilterClear"
+									filter-categories="[[_filterCategories]]">
+								</d2l-my-courses-filter>
 
 								<d2l-sort-by-dropdown align="end" label="[[localize('sorting.sortBy')]]" value="[[_sortMap[0].name]]" on-d2l-sort-by-dropdown-change="_onSortOrderChanged">
 									<d2l-sort-by-dropdown-option value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-sort-by-dropdown-option>
@@ -318,11 +304,6 @@ class AllCourses extends mixinBehaviors([
 				<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
 				</d2l-loading-spinner>
 			</d2l-simple-overlay>`;
-	}
-
-	connectedCallback() {
-		super.connectedCallback();
-		this._filterText = this.localize('filtering.filter');
 	}
 
 	/*
@@ -418,30 +399,6 @@ class AllCourses extends mixinBehaviors([
 		}
 	}
 
-	_onFilterChanged(e) {
-		this._searchUrl = this._appendOrUpdateBustCacheQueryString(e.detail.url);
-		this._filterCounts = e.detail.filterCounts;
-	}
-
-	_onFilterDropdownClose() {
-		let text;
-		const totalFilterCount = this._filterCounts.departments + this._filterCounts.semesters + this._filterCounts.roles;
-
-		if (totalFilterCount === 0) {
-			text = this.localize('filtering.filter');
-		} else if (totalFilterCount === 1) {
-			text = this.localize('filtering.filterSingle');
-		} else {
-			text = this.localize('filtering.filterMultiple', 'num', totalFilterCount);
-		}
-		this.set('_filterText', text);
-	}
-
-	_onFilterDropdownOpen() {
-		this.set('_filterText', this.localize('filtering.filter'));
-		return this.$.filterMenu.open();
-	}
-
 	_onSortOrderChanged(e) {
 		const sortData = this._mapSortOption(e.detail.value, 'name');
 
@@ -468,6 +425,83 @@ class AllCourses extends mixinBehaviors([
 		}, 10);
 	}
 
+	_onFilterChange(e) {
+		const departmentFilters = e.detail.selectedFilters.find(filter => filter.key === 'departments');
+		const semesterFilters = e.detail.selectedFilters.find(filter => filter.key === 'semesters');
+		const roleFilters = e.detail.selectedFilters.find(filter => filter.key === 'roles');
+
+		this._filterCounts = {
+			departments: departmentFilters ? departmentFilters.selectedOptions.length : 0,
+			semesters: semesterFilters ? semesterFilters.selectedOptions.length : 0,
+			roles: roleFilters ? roleFilters.selectedOptions.length : 0
+		};
+
+		if (roleFilters && e.detail.categoryChanged === 'roles') {
+			this._handleRolesFilterChange(roleFilters.selectedOptions);
+		} else if ((semesterFilters && e.detail.categoryChanged === 'semesters') || (departmentFilters && e.detail.categoryChanged === 'departments')) {
+			const selectedSemesters = semesterFilters ? semesterFilters.selectedOptions : [];
+			const selectedDepartments = departmentFilters ? departmentFilters.selectedOptions : [];
+			const semesterDepartmentFilters = selectedSemesters.concat(selectedDepartments);
+			this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+				createActionUrl(this._enrollmentsSearchAction, {
+					orgUnitTypeId: this.orgUnitTypeIds,
+					parentOrganizations: semesterDepartmentFilters.join(',')
+				})
+			);
+		}
+	}
+
+	async _handleRolesFilterChange(selectedRoles) {
+		/* The role filter works by applying a single state change and then re-fetching,
+		 * so we need to wait for the request to return and use the new entity for
+		 * every filter that needs to be flipped to a different value
+		 */
+		let newEntity = this._roleFiltersEntity;
+		for (let i = 0; i < this._roleFiltersEntity.entities.length; i++) {
+			const roleFilter = newEntity.entities[i];
+			const isSelected = selectedRoles.find(role => role === roleFilter.title);
+			if (isSelected && roleFilter.hasActionByName(Actions.enrollments.roleFilters.addFilter)) {
+				const actionUrl = createActionUrl(roleFilter.getActionByName(Actions.enrollments.roleFilters.addFilter));
+				newEntity = await fetchSirenEntity(actionUrl);
+			} else if (!isSelected && roleFilter.hasActionByName(Actions.enrollments.roleFilters.removeFilter)) {
+				const actionUrl = createActionUrl(roleFilter.getActionByName(Actions.enrollments.roleFilters.removeFilter));
+				newEntity = await fetchSirenEntity(actionUrl);
+			}
+		}
+
+		this._roleFiltersEntity = newEntity;
+
+		// Use the apply-role-filters action to create the new searchUrl
+		const applyAction = this._roleFiltersEntity.getActionByName(
+			Actions.enrollments.roleFilters.applyRoleFilters
+		);
+
+		const actionUrl = createActionUrl(applyAction);
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(actionUrl);
+	}
+
+	_onFilterClear() {
+		this._filterCounts = {
+			departments: 0,
+			semesters: 0,
+			roles: 0
+		};
+
+		const params = {};
+		// Only clear if My Courses is not grouped by semesters/departments
+		if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment') {
+			params.parentOrganizations = '';
+		}
+		// Only clear if My Courses is not grouped by role
+		if (this.tabSearchType !== 'ByRoleAlias') {
+			params.roles = '';
+		}
+
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+			createActionUrl(this._enrollmentsSearchAction, params)
+		);
+	}
+
 	_onSimpleOverlayOpening() {
 		if (this._hasEnrollmentsChanged) {
 			this._hasEnrollmentsChanged = false;
@@ -489,11 +523,18 @@ class AllCourses extends mixinBehaviors([
 			if (this._enrollmentsSearchAction.hasFieldByName('promotePins')) {
 				this._enrollmentsSearchAction.getFieldByName('promotePins').value = this._sortMap[0].promotePins;
 			}
+			// Only clear if My Courses is not grouped by semesters/departments
+			if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment' && this._enrollmentsSearchAction.hasFieldByName('parentOrganizations')) {
+				this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value = '';
+			}
+			// Only clear if My Courses is not grouped by role
+			if (this.tabSearchType !== 'ByRoleAlias' && this._enrollmentsSearchAction.hasFieldByName('roles')) {
+				this._enrollmentsSearchAction.getFieldByName('roles').value = '';
+			}
 		}
 
 		this._clearSearchWidget();
-		this.$.filterMenu.clearFilters();
-		this._filterText = this.localize('filtering.filter');
+		this.shadowRoot.querySelector('d2l-my-courses-filter').clear();
 		this.shadowRoot.querySelector(`d2l-sort-by-dropdown-option[value=${this._sortMap[0].name}]`).click();
 
 		this.dispatchEvent(new CustomEvent('d2l-all-courses-close'));
@@ -553,12 +594,77 @@ class AllCourses extends mixinBehaviors([
 
 	_myEnrollmentsEntityChanged(entity) {
 		const myEnrollmentsEntity = SirenParse(entity);
+		// Checking we have a valid entity - if this action is missing the overlay has not been opened yet
 		if (!myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMyEnrollments)) {
 			return;
 		}
 
 		const searchAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
 		this._enrollmentsSearchAction = searchAction;
+
+		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.setRoleFilters)) {
+			const href = createActionUrl(myEnrollmentsEntity.getActionByName(Actions.enrollments.setRoleFilters));
+			fetchSirenEntity(href).then(entity => {
+				this._roleFiltersEntity = entity;
+			});
+		}
+
+		// We only need to make the filter categories once
+		if (this._filterCategories.length === 0) {
+			this._createFilterCategories(myEnrollmentsEntity);
+		}
+	}
+
+	_createFilterCategories(myEnrollmentsEntity) {
+		if (!myEnrollmentsEntity) {
+			return;
+		}
+
+		let searchSemestersAction,
+			searchDepartmentsAction,
+			roleFiltersAction;
+
+		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMySemesters)) {
+			searchSemestersAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMySemesters);
+		}
+		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMyDepartments)) {
+			searchDepartmentsAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMyDepartments);
+		}
+		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.setRoleFilters)) {
+			roleFiltersAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.setRoleFilters);
+		}
+
+		const filterCategories = [];
+
+		// If My Courses is grouped by semesters/departments, don't show either of these tabs
+		if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment' && searchSemestersAction) {
+			filterCategories.push({
+				key: 'semesters',
+				name: this.filterStandardSemesterName,
+				noOptionsText: this.localize('filtering.noSemesters', 'semester', this.filterStandardSemesterName),
+				filterAction: searchSemestersAction
+			});
+		}
+		if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment' && searchDepartmentsAction) {
+			filterCategories.push({
+				key: 'departments',
+				name: this.filterStandardDepartmentName,
+				noOptionsText: this.localize('filtering.noDepartments', 'department', this.filterStandardDepartmentName),
+				filterAction: searchDepartmentsAction
+			});
+		}
+
+		// If My Courses is grouped by role alias, don't show the Role tab
+		if (this.tabSearchType !== 'ByRoleAlias') {
+			filterCategories.push({
+				key: 'roles',
+				name: this.localize('filtering.roles'),
+				noOptionsText: this.localize('filtering.noRoles'),
+				filterAction: roleFiltersAction
+			});
+		}
+
+		this._filterCategories = filterCategories;
 	}
 
 	/*
@@ -573,7 +679,7 @@ class AllCourses extends mixinBehaviors([
 		const bustCacheStr = 'bustCache=';
 		let index = url.indexOf(bustCacheStr);
 		if (index === -1) {
-			return `${url}${(url.indexOf('?') !== -1 ? '&' : '?')}bustCache=${this._bustCacheToken}`;
+			return `${url}${(url.indexOf('?') !== -1 ? '&' : '?')}bustCache=${this._bustCacheToken || ''}`;
 		}
 
 		index += bustCacheStr.length;
