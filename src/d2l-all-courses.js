@@ -14,7 +14,6 @@ import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdo
 import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import './d2l-my-courses-card-grid.js';
-import './search-filter/d2l-my-courses-filter.js';
 import './search-filter/d2l-search-widget-custom.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
 import { createActionUrl, fetchSirenEntity } from './d2l-utility-helpers.js';
@@ -22,6 +21,7 @@ import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { MyCoursesFilterCategory } from './search-filter/d2l-my-courses-filter.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 import SirenParse from 'siren-parser';
 
@@ -638,30 +638,30 @@ class AllCourses extends mixinBehaviors([
 
 		// If My Courses is grouped by semesters/departments, don't show either of these tabs
 		if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment' && searchSemestersAction) {
-			filterCategories.push({
-				key: 'semesters',
-				name: this.filterStandardSemesterName,
-				noOptionsText: this.localize('filtering.noSemesters', 'semester', this.filterStandardSemesterName),
-				filterAction: searchSemestersAction
-			});
+			filterCategories.push(new MyCoursesFilterCategory(
+				'semesters',
+				this.filterStandardSemesterName,
+				this.localize('filtering.noSemesters', 'semester', this.filterStandardSemesterName),
+				searchSemestersAction
+			));
 		}
 		if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment' && searchDepartmentsAction) {
-			filterCategories.push({
-				key: 'departments',
-				name: this.filterStandardDepartmentName,
-				noOptionsText: this.localize('filtering.noDepartments', 'department', this.filterStandardDepartmentName),
-				filterAction: searchDepartmentsAction
-			});
+			filterCategories.push(new MyCoursesFilterCategory(
+				'departments',
+				this.filterStandardDepartmentName,
+				this.localize('filtering.noDepartments', 'department', this.filterStandardDepartmentName),
+				searchDepartmentsAction
+			));
 		}
 
 		// If My Courses is grouped by role alias, don't show the Role tab
 		if (this.tabSearchType !== 'ByRoleAlias') {
-			filterCategories.push({
-				key: 'roles',
-				name: this.localize('filtering.roles'),
-				noOptionsText: this.localize('filtering.noRoles'),
-				filterAction: roleFiltersAction
-			});
+			filterCategories.push(new MyCoursesFilterCategory(
+				'roles',
+				this.localize('filtering.roles'),
+				this.localize('filtering.noRoles'),
+				roleFiltersAction
+			));
 		}
 
 		this._filterCategories = filterCategories;

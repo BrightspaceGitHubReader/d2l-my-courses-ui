@@ -52,7 +52,12 @@ describe('d2l-all-courses', function() {
 			class: ['enrollments', 'collection']
 		};
 
-		fetchStub = sandbox.stub(window.d2lfetch, 'fetch').returns(Promise.resolve());
+		fetchStub = sandbox.stub(window.d2lfetch, 'fetch').returns(Promise.resolve({
+			ok: true,
+			json: function() {
+				return Promise.resolve({});
+			}
+		}));
 
 		flush();
 		requestAnimationFrame(() => {
@@ -733,6 +738,7 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should hide tab contents when loading a tab\'s contents', function(done) {
+			fetchStub.returns(Promise.resolve({})); // Simulate waiting for content fetch
 			widget._showTabContent = true;
 			widget.shadowRoot.querySelector('d2l-tabs').dispatchEvent(new CustomEvent('d2l-tab-panel-selected'));
 

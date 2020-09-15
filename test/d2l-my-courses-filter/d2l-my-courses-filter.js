@@ -1,3 +1,4 @@
+import { MyCoursesFilterCategory } from '../../src/search-filter/d2l-my-courses-filter';
 import sinon from 'sinon';
 
 let sandbox,
@@ -21,11 +22,11 @@ function timeout(ms) {
 }
 
 beforeEach(() => {
-	semesterFilterType = {
-		key: 'semesters',
-		name: 'Semesters',
-		noOptionsText: 'No Semesters',
-		filterAction: {
+	semesterFilterType = new MyCoursesFilterCategory(
+		'semesters',
+		'Semesters',
+		'No Semesters',
+		{
 			name: 'search-my-semesters',
 			href: '/semesters',
 			fields: [{
@@ -33,7 +34,7 @@ beforeEach(() => {
 				value: ''
 			}]
 		}
-	};
+	);
 	semesterEntity = {
 		actions: [{
 			name: 'search-my-semesters',
@@ -59,11 +60,11 @@ beforeEach(() => {
 		}
 	};
 
-	departmentFilterType = {
-		key: 'departments',
-		name: 'Departments',
-		noOptionsText: 'No Departments',
-		filterAction: {
+	departmentFilterType = new MyCoursesFilterCategory(
+		'departments',
+		'Departments',
+		'No Departments',
+		{
 			name: 'search-my-departments',
 			href: '/departments',
 			fields: [{
@@ -71,7 +72,7 @@ beforeEach(() => {
 				value: ''
 			}]
 		}
-	};
+	);
 	departmentEntity = {
 		actions: [{
 			name: 'search-my-departments',
@@ -80,11 +81,11 @@ beforeEach(() => {
 		class: ['collection', 'organization'],
 	};
 
-	roleFilterType = {
-		key: 'roles',
-		name: 'Roles',
-		noOptionsText: 'No Roles',
-		filterAction: {
+	roleFilterType = new MyCoursesFilterCategory(
+		'roles',
+		'Roles',
+		'No Roles',
+		{
 			name: 'set-role-filters',
 			href: '/role-filters',
 			fields: [{
@@ -92,7 +93,7 @@ beforeEach(() => {
 				value: ''
 			}]
 		}
-	};
+	);
 	roleEntity = {
 		actions: [{
 			name: 'apply-role-filters',

@@ -50,15 +50,6 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 		super.updated(changedProperties);
 
 		if (changedProperties.has('filterCategories')) {
-			for (let i = 0; i < this.filterCategories.length; i++) {
-				Object.assign(this.filterCategories[i], {
-					isSearched: false,
-					options: [],
-					optionsLoaded: false,
-					optionsLoadRequested: false,
-					selectedOptions: []
-				});
-			}
 			this._loadCategories();
 		}
 	}
@@ -278,3 +269,18 @@ class MyCoursesFilter extends MyCoursesLocalizeMixin(LitElement) {
 }
 
 window.customElements.define('d2l-my-courses-filter', MyCoursesFilter);
+
+export class MyCoursesFilterCategory {
+	constructor(key, name, noOptionsText, filterAction) {
+		this.key = key;
+		this.name = name;
+		this.noOptionsText = noOptionsText;
+		this.filterAction = filterAction;
+
+		this.isSearched = false;
+		this.options = [];
+		this.optionsLoaded = false;
+		this.optionsLoadRequested = false;
+		this.selectedOptions = [];
+	}
+}
