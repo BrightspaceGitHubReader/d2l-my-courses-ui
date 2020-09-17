@@ -1,3 +1,4 @@
+import { MyCoursesFilterCategory } from '../../src/search-filter/d2l-my-courses-filter';
 import sinon from 'sinon';
 
 let sandbox,
@@ -21,11 +22,11 @@ function timeout(ms) {
 }
 
 beforeEach(() => {
-	semesterFilterType = {
-		key: 'semesters',
-		name: 'Semesters',
-		noOptionsText: 'No Semesters',
-		filterAction: {
+	semesterFilterType = new MyCoursesFilterCategory(
+		'semesters',
+		'Semesters',
+		'No Semesters',
+		{
 			name: 'search-my-semesters',
 			href: '/semesters',
 			fields: [{
@@ -33,7 +34,7 @@ beforeEach(() => {
 				value: ''
 			}]
 		}
-	};
+	);
 	semesterEntity = {
 		actions: [{
 			name: 'search-my-semesters',
@@ -59,11 +60,11 @@ beforeEach(() => {
 		}
 	};
 
-	departmentFilterType = {
-		key: 'departments',
-		name: 'Departments',
-		noOptionsText: 'No Departments',
-		filterAction: {
+	departmentFilterType = new MyCoursesFilterCategory(
+		'departments',
+		'Departments',
+		'No Departments',
+		{
 			name: 'search-my-departments',
 			href: '/departments',
 			fields: [{
@@ -71,7 +72,7 @@ beforeEach(() => {
 				value: ''
 			}]
 		}
-	};
+	);
 	departmentEntity = {
 		actions: [{
 			name: 'search-my-departments',
@@ -80,11 +81,11 @@ beforeEach(() => {
 		class: ['collection', 'organization'],
 	};
 
-	roleFilterType = {
-		key: 'roles',
-		name: 'Roles',
-		noOptionsText: 'No Roles',
-		filterAction: {
+	roleFilterType = new MyCoursesFilterCategory(
+		'roles',
+		'Roles',
+		'No Roles',
+		{
 			name: 'set-role-filters',
 			href: '/role-filters',
 			fields: [{
@@ -92,7 +93,7 @@ beforeEach(() => {
 				value: ''
 			}]
 		}
-	};
+	);
 	roleEntity = {
 		actions: [{
 			name: 'apply-role-filters',
@@ -211,6 +212,32 @@ describe('d2l-my-courses-filter', () => {
 			expect(category.options.length).to.equal(1);
 			expect(category.options[0].key).to.equal('/semester/1');
 			expect(category.options[0].name).to.equal('Semester 1');
+		});
+
+		it('should still load the rest of the options if one fails', async() => {
+			const consoleSpy = sandbox.spy(console, 'log');
+			semesterEntity.entities.push({
+				class: ['active', 'semester'],
+				href: '/semester/2',
+				rel: ['https://api.brightspace.com/rels/organization']
+			});
+			fetchStub.withArgs(sinon.match(/\/semesters\?search=$/)).returns(Promise.resolve(sirenParse(semesterEntity)));
+			fetchStub.withArgs(sinon.match(/\/semester\/1/)).returns(Promise.reject('something went wrong'));
+
+			component.filterCategories = [semesterFilterType];
+			await component.updateComplete;
+			component._onDropdownOpen();
+			await timeout(0);
+
+			expect(fetchStub.callCount).to.equal(3); // Once for the filter and once for each semester option
+			const category = component.filterCategories[0];
+			expect(category.optionsEntity.entities.length).to.equal(2);
+			expect(category.options.length).to.equal(2);
+			expect(category.options[0].key).to.equal('/semester/1');
+			expect(category.options[0].name).to.be.undefined;
+			expect(consoleSpy).to.have.been.calledWith('something went wrong');
+			expect(category.options[1].key).to.equal('/semester/2');
+			expect(category.options[1].name).to.equal('Semester 2');
 		});
 
 		it('should properly load the options that require parsing and combine duplicates', async() => {
