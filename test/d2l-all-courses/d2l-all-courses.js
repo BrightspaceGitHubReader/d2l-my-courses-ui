@@ -61,11 +61,11 @@ describe('d2l-all-courses', function() {
 		}));
 
 		function afterTabsReady() {
-			flush();
-			requestAnimationFrame(() => {
-				done();
-			});
 			widget.shadowRoot.querySelector('d2l-tabs').removeEventListener('d2l-tab-panel-selected', afterTabsReady);
+			flush();
+			setTimeout(() => {
+				done();
+			}, 0);
 		}
 
 		widget.shadowRoot.querySelector('d2l-tabs').addEventListener('d2l-tab-panel-selected', afterTabsReady);

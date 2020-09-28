@@ -193,12 +193,12 @@ describe('d2l-my-courses', () => {
 			};
 
 			component._changedCourseEnrollment = null;
-			requestAnimationFrame(() => {
+			setTimeout(() => {
 				component._onCourseEnrollmentChange(event);
 				expect(component._changedCourseEnrollment.orgUnitId).to.equal(testCase.orgUnitId);
 				expect(component._changedCourseEnrollment.isPinned).to.equal(testCase.isPinned);
 				done();
-			});
+			}, 0);
 		});
 	});
 
@@ -265,12 +265,12 @@ describe('d2l-my-courses', () => {
 
 			expect(verifySpy).to.have.been.calledOnce;
 
-			requestAnimationFrame(() => {
+			setTimeout(() => {
 				expect(component._tabSearchActions.length).to.equal(2);
 				expect(component._tabSearchActions[0].name).to.equal('search-my-enrollments');
 				expect(component._tabSearchActions[1].name).to.equal('search-my-pinned-enrollments');
 				done();
-			});
+			}, 0);
 		});
 
 		it('should remove the pinned tab if we verify there actually is no pinned courses', done => {
@@ -286,11 +286,11 @@ describe('d2l-my-courses', () => {
 
 			expect(verifySpy).to.have.been.calledOnce;
 
-			requestAnimationFrame(() => {
+			setTimeout(() => {
 				expect(component._tabSearchActions.length).to.equal(1);
 				expect(component._tabSearchActions[0].name).to.equal('search-my-enrollments');
 				done();
-			});
+			}, 0);
 		});
 
 		describe('_addPinnedTab', () => {
@@ -301,7 +301,7 @@ describe('d2l-my-courses', () => {
 					enrollmentsSearchAction: searchAction
 				}];
 
-				requestAnimationFrame(() => {
+				setTimeout(() => {
 					const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
 					const contentRefreshStub = sandbox.stub(component._getContentComponent(), 'requestRefresh');
 
@@ -312,7 +312,7 @@ describe('d2l-my-courses', () => {
 					expect(contentRefreshStub).to.have.been.called;
 					expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': true});
 					done();
-				});
+				}, 0);
 			});
 			it('should add the pinned tab to all-courses as well if it has been opened already', () => {
 				const allCourses = component._getAllCoursesComponent();
@@ -347,7 +347,7 @@ describe('d2l-my-courses', () => {
 					name: 'search-my-pinned-enrollments'
 				}];
 
-				requestAnimationFrame(() => {
+				setTimeout(() => {
 					const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
 					const contentRefreshStub = sandbox.stub(component._getContentComponent(), 'requestRefresh');
 					component._tabSearchActions = [{ name: 'search-my-enrollments'}, { name: 'search-my-pinned-enrollments'}];
@@ -359,7 +359,7 @@ describe('d2l-my-courses', () => {
 					expect(contentRefreshStub).to.have.been.called;
 					expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': false});
 					done();
-				});
+				}, 0);
 			});
 			it('should remove the pinned tab from all-courses as well if it has been opened already', () => {
 				const allCourses = component._getAllCoursesComponent();
@@ -391,28 +391,28 @@ describe('d2l-my-courses', () => {
 				component.promotedSearches = null;
 				component._onEnrollmentAndUserSettingsEntityChange();
 				flush(() => {
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
 						const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
 						component.courseImageUploadCompleted(false);
 						expect(stubContent).to.not.have.been.called;
 						expect(stubAllCourses).to.not.have.been.called;
 						done();
-					});
+					}, 0);
 				});
 			});
 			it('should call refreshCardGridImages on the content and all-courses (just all tab)', done => {
 				component.promotedSearches = null;
 				component._onEnrollmentAndUserSettingsEntityChange();
 				flush(() => {
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
 						const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
 						component.courseImageUploadCompleted(true);
 						expect(stubContent).to.have.been.called;
 						expect(stubAllCourses).to.have.been.called;
 						done();
-					});
+					}, 0);
 				});
 			});
 			it('should call refreshCardGridImages on the content and all-courses (grouped by semesters)', done => {
@@ -420,14 +420,14 @@ describe('d2l-my-courses', () => {
 				component._onPromotedSearchEntityChange();
 				component._currentTabId = 'panel-6607';
 				flush(() => {
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
 						const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
 						component.courseImageUploadCompleted(true);
 						expect(stubContent).to.have.been.called;
 						expect(stubAllCourses).to.have.been.called;
 						done();
-					});
+					}, 0);
 				});
 			});
 		});
@@ -521,11 +521,11 @@ describe('d2l-my-courses', () => {
 			}];
 			component._showImageError = true;
 
-			requestAnimationFrame(() => {
+			setTimeout(() => {
 				component._onAllCoursesClose();
 				expect(component._showImageError).to.be.false;
 				done();
-			});
+			}, 0);
 		});
 	});
 
@@ -574,10 +574,10 @@ describe('d2l-my-courses', () => {
 				const spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'open');
 
 				component.addEventListener('open-change-image-view', function() {
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						expect(spy).to.have.been.called;
 						done();
-					});
+					}, 0);
 				});
 
 				component.dispatchEvent(event);
@@ -591,15 +591,15 @@ describe('d2l-my-courses', () => {
 			it('should return correct org unit id if course tile used', done => {
 
 				component.addEventListener('open-change-image-view', function() {
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						expect(component.getLastOrgUnitId()).to.equal('1');
 						done();
-					});
+					}, 0);
 				});
 
-				requestAnimationFrame(() => {
+				setTimeout(() => {
 					component.dispatchEvent(event);
-				});
+				}, 0);
 			});
 
 		});
@@ -613,10 +613,10 @@ describe('d2l-my-courses', () => {
 
 					const event = new CustomEvent('clear-image-scroll-threshold');
 					component.dispatchEvent(event);
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						expect(spy).to.have.been.calledOnce;
 						done();
-					});
+					}, 0);
 				});
 
 			});
