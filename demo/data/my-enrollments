@@ -186,5 +186,10 @@
       "rel": ["next"],
       "href": "../data/my-enrollments-next"
     }
-  ]
+  ],
+    "actions": [{
+    "name": "search-my-enrollments",
+    "href": "../data/my-enrollments",
+    "method": "GET"
+  }]
 }
