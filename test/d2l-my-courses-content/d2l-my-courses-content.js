@@ -586,8 +586,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should fetch enrollments using the constructed enrollmentsSearchUrl', done => {
-			component.noTabs = true;
-			component._enrollmentSearchActionChanged();
+			component._onTabSelected({ composedPath: () => [{ id: component.parentElement.id }] });
 
 			requestAnimationFrame(() => {
 				expect(fetchStub).to.have.been.calledWith(sinon.match('autoPinCourses=false'));
