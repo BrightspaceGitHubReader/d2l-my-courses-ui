@@ -35,8 +35,6 @@ class AllCourses extends mixinBehaviors([
 		return {
 			// URL that directs to the advanced search page
 			advancedSearchUrl: String,
-			// Initial search action, should combine with _enrollmentsSearchAction
-			enrollmentsSearchAction: Object,
 			// Standard Department OU Type name to be displayed in the filter dropdown
 			filterStandardDepartmentName: String,
 			// Standard Semester OU Type name to be displayed in the filter dropdown
@@ -113,10 +111,6 @@ class AllCourses extends mixinBehaviors([
 			_showContent: {
 				type: Boolean,
 				value: false
-			},
-			_showGroupByTabs: {
-				type: Boolean,
-				computed: '_computeShowGroupByTabs(tabSearchActions.length)'
 			},
 			_showTabContent: {
 				type: Boolean,
@@ -274,30 +268,22 @@ class AllCourses extends mixinBehaviors([
 						[[localize('error.settingImage')]]
 					</d2l-alert>
 
-					<template is="dom-if" if="[[_showGroupByTabs]]">
-						<d2l-tabs on-d2l-tab-panel-selected="_onTabSelected">
-							<template items="[[tabSearchActions]]" is="dom-repeat">
-								<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
-									<div hidden$="[[!_showTabContent]]">
-										<d2l-my-courses-card-grid token="[[token]]" presentation-url="[[presentationUrl]]">
-											<span id="infoMessage" hidden$="[[!_infoMessageText]]">
-												[[_infoMessageText]]
-											</span>
-										</d2l-my-courses-card-grid>
-									</div>
-									<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
-									</d2l-loading-spinner>
-								</d2l-tab-panel>
-							</template>
-						</d2l-tabs>
-					</template>
-					<template is="dom-if" if="[[!_showGroupByTabs]]">
-						<d2l-my-courses-card-grid token="[[token]]" presentation-url="[[presentationUrl]]">
-							<span id="infoMessage" hidden$="[[!_infoMessageText]]">
-								[[_infoMessageText]]
-							</span>
-						</d2l-my-courses-card-grid>
-					</template>
+					<d2l-tabs on-d2l-tab-panel-selected="_onTabSelected">
+						<template items="[[tabSearchActions]]" is="dom-repeat">
+							<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
+								<div hidden$="[[!_showTabContent]]">
+									<d2l-my-courses-card-grid token="[[token]]" presentation-url="[[presentationUrl]]">
+										<span id="infoMessage" hidden$="[[!_infoMessageText]]">
+											[[_infoMessageText]]
+										</span>
+									</d2l-my-courses-card-grid>
+								</div>
+								<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
+								</d2l-loading-spinner>
+							</d2l-tab-panel>
+						</template>
+					</d2l-tabs>
+
 					<d2l-loading-spinner id="lazyLoadSpinner" hidden$="[[!_hasMoreEnrollments]]" size="100">
 					</d2l-loading-spinner>
 				</div>
@@ -311,7 +297,7 @@ class AllCourses extends mixinBehaviors([
 	*/
 
 	courseEnrollmentChanged(newValue) {
-		if (this._showGroupByTabs) {
+		if (this.tabSearchActions.length > 0) {
 			this._bustCacheToken = Math.random();
 			const actionName = this._selectedTabId.replace('all-courses-tab-', '');
 			if (!newValue.isPinned && actionName === Actions.enrollments.searchMyPinnedEnrollments && this._searchUrl) {
@@ -325,24 +311,6 @@ class AllCourses extends mixinBehaviors([
 	load() {
 		this.$['all-courses-scroll-threshold'].scrollTarget = this.$['all-courses'].scrollRegion;
 		this.$['all-courses-scroll-threshold'].clearTriggers();
-		if (this._showGroupByTabs) {
-			return;
-		}
-		this._showTabContent = true;
-
-		if (!this.enrollmentsSearchAction) {
-			return;
-		}
-
-		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			createActionUrl(this.enrollmentsSearchAction, {
-				autoPinCourses: false,
-				orgUnitTypeId: this.orgUnitTypeIds,
-				embedDepth: 0,
-				sort: this._sortMap[0].action,
-				promotePins: this._sortMap[0].promotePins
-			})
-		);
 	}
 
 	open() {
@@ -362,9 +330,7 @@ class AllCourses extends mixinBehaviors([
 	}
 
 	_getCardGrid() {
-		return this._showGroupByTabs
-			? this.shadowRoot.querySelector(`#${this._selectedTabId} d2l-my-courses-card-grid`)
-			: this.shadowRoot.querySelector('d2l-my-courses-card-grid');
+		return this.shadowRoot.querySelector(`#${this._selectedTabId} d2l-my-courses-card-grid`);
 	}
 
 	/*
@@ -705,10 +671,6 @@ class AllCourses extends mixinBehaviors([
 
 	_computeShowAdvancedSearchLink(link) {
 		return !!link;
-	}
-
-	_computeShowGroupByTabs(tabLength) {
-		return tabLength > 0;
 	}
 
 	_mapSortOption(identifier, identifierName) {
