@@ -408,6 +408,7 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 	_onInitiallyVisibleCourseTile() {
 		this._initiallyVisibleCourseTileCount++;
 	}
+	// Triggered when the tabs are first rendered, which then fetches the enrollment data
 	_onTabSelected(e) {
 		// Only handle if tab selected corresponds to this panel
 		if (!this.parentElement || e.composedPath()[0].id !== this.parentElement.id) {

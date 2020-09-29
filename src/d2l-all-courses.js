@@ -297,6 +297,7 @@ class AllCourses extends mixinBehaviors([
 	*/
 
 	courseEnrollmentChanged(newValue) {
+		// Only bust the cache and reload the pinned tab if the tabs have been set (ie the overlay has been opened)
 		if (this.tabSearchActions.length > 0) {
 			this._bustCacheToken = Math.random();
 			const actionName = this._selectedTabId.replace('all-courses-tab-', '');
@@ -315,8 +316,8 @@ class AllCourses extends mixinBehaviors([
 
 	open() {
 		// Initially hide the content, until we have some data to show
-		// (set back to true in _onSearchResultsChanged). The exception
-		// to this is when the overlay is closed then reopened - we want
+		// (triggered by _onTabSelected and set back to true in _onSearchResultsChanged).
+		// The exception to this is when the overlay is closed then reopened - we want
 		// to immediately show the already-loaded content.
 		this._showContent = !!this._searchUrl;
 
@@ -506,6 +507,7 @@ class AllCourses extends mixinBehaviors([
 		this.dispatchEvent(new CustomEvent('d2l-all-courses-close'));
 	}
 
+	// Triggered when the tabs are first rendered, which then fetches the enrollment data by setting _searchUrl
 	_onTabSelected(e) {
 		e.stopPropagation();
 
