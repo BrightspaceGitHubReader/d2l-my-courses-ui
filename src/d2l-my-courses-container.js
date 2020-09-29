@@ -54,10 +54,6 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 			_currentTabId: String,
 			_enrollmentsSearchAction: Object,
 			_pinnedTabAction: Object,
-			_showGroupByTabs: {
-				type: Boolean,
-				value: false
-			},
 			_tabSearchActions: {
 				type: Array,
 				value: []
@@ -105,45 +101,32 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 					display: none;
 				}
 			</style>
-			<template is="dom-if" if="[[_showGroupByTabs]]">
-				<div class="spinner-container">
-					<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
-					</d2l-loading-spinner>
-				</div>
-				<d2l-tabs hidden$="[[!_showContent]]">
-					<template items="[[_tabSearchActions]]" is="dom-repeat">
-						<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
-						<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
-							<d2l-my-courses-content
-								on-d2l-my-courses-content-open-all-courses="_openAllCoursesOverlay"
-								presentation-url="[[_presentationUrl]]"
-								show-image-error="[[_showImageError]]"
-								token="[[token]]"
-								enrollments-search-action="[[item.enrollmentsSearchAction]]"
-								org-unit-type-ids="[[orgUnitTypeIds]]"
-								tab-search-type="[[_tabSearchType]]"
-								update-user-settings-action="[[_updateUserSettingsAction]]">
-							</d2l-my-courses-content>
-						</d2l-tab-panel>
-					</template>
-				</d2l-tabs>
-			</template>
-			<template is="dom-if" if="[[!_showGroupByTabs]]">
-				<d2l-my-courses-content
-					no-tabs
-					on-d2l-my-courses-content-open-all-courses="_openAllCoursesOverlay"
-					presentation-url="[[_presentationUrl]]"
-					show-image-error="[[_showImageError]]"
-					token="[[token]]"
-					org-unit-type-ids="[[orgUnitTypeIds]]"
-					enrollments-search-action="[[_enrollmentsSearchAction]]">
-				</d2l-my-courses-content>
-			</template>
+
+			<div class="spinner-container">
+				<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
+				</d2l-loading-spinner>
+			</div>
+			<d2l-tabs hidden$="[[!_showContent]]">
+				<template items="[[_tabSearchActions]]" is="dom-repeat">
+					<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
+					<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
+						<d2l-my-courses-content
+							on-d2l-my-courses-content-open-all-courses="_openAllCoursesOverlay"
+							presentation-url="[[_presentationUrl]]"
+							show-image-error="[[_showImageError]]"
+							token="[[token]]"
+							enrollments-search-action="[[item.enrollmentsSearchAction]]"
+							org-unit-type-ids="[[orgUnitTypeIds]]"
+							tab-search-type="[[_tabSearchType]]"
+							update-user-settings-action="[[_updateUserSettingsAction]]">
+						</d2l-my-courses-content>
+					</d2l-tab-panel>
+				</template>
+			</d2l-tabs>
 
 			<d2l-all-courses
 				on-d2l-all-courses-close="_onAllCoursesClose"
 				advanced-search-url="[[advancedSearchUrl]]"
-				enrollments-search-action="[[_enrollmentsSearchAction]]"
 				filter-standard-department-name="[[standardDepartmentName]]"
 				filter-standard-semester-name="[[standardSemesterName]]"
 				org-unit-type-ids="[[orgUnitTypeIds]]"
@@ -210,7 +193,10 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 		if (success) {
 			this.$['basic-image-selector-overlay'].close();
 
-			this._getContentComponent().refreshCardGridImages(this._setImageOrg);
+			const contentComponent = this._getContentComponent();
+			if (contentComponent) {
+				contentComponent.refreshCardGridImages(this._setImageOrg);
+			}
 			this._getAllCoursesComponent().refreshCardGridImages(this._setImageOrg);
 		}
 	}
@@ -251,9 +237,7 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 	}
 
 	_getContentComponent() {
-		return this._showGroupByTabs === false || !this._currentTabId
-			? this.shadowRoot.querySelector('d2l-my-courses-content')
-			: this.shadowRoot.querySelector(`#${this._currentTabId} d2l-my-courses-content`);
+		return this.shadowRoot.querySelector(`#${this._currentTabId} d2l-my-courses-content`);
 	}
 	_getAllCoursesComponent() {
 		return this.shadowRoot.querySelector('d2l-all-courses');
@@ -271,7 +255,10 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 	}
 	_onAllCoursesClose() {
 		this._showImageError = false; // Clear image error when opening and closing the all courses overlay
-		this._getContentComponent().allCoursesOverlayClosed();
+		const contentComponent = this._getContentComponent();
+		if (contentComponent) {
+			contentComponent.allCoursesOverlayClosed();
+		}
 	}
 
 	_onEnrollmentAndUserSettingsEntityChange() {
@@ -297,7 +284,6 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 		this._updateUserSettingsAction = userSettingsEntity.userSettingsAction();
 
-		this._showGroupByTabs = !!(this.promotedSearches || (this._enrollmentsSearchAction && this._pinnedTabAction));
 		this._fetchTabSearchActions();
 	}
 	_onPromotedSearchEntityChange() {
@@ -312,11 +298,7 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 		this._showContent = true;
 		if (!promotedSearchesEntity.actions()) {
-			if ((this._enrollmentsSearchAction && this._pinnedTabAction)) {
-				this._tabSearchActions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
-			} else {
-				this._showGroupByTabs = false;
-			}
+			this._tabSearchActions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
 			return;
 		}
 
@@ -456,7 +438,7 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 			return;
 		}
 
-		if (!this.promotedSearches && this._enrollmentsSearchAction && this._pinnedTabAction) {
+		if (!this.promotedSearches) {
 			const lastEnrollmentsSearchName = this._userSettingsEntity.mostRecentEnrollmentsSearchName();
 			this._tabSearchActions = this._getPinTabAndAllTabActions(lastEnrollmentsSearchName);
 			this._showContent = true;

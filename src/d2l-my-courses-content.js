@@ -41,11 +41,6 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 			presentationUrl: String,
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
 			token: String,
-			// Once the pinned tab feature flag is removed, we can remove this code path
-			noTabs: {
-				type: Boolean,
-				value: false
-			},
 			_courseTileOrganizationEventCount: {
 				type: Number,
 				value: 0
@@ -140,12 +135,6 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 				value: false
 			}
 		};
-	}
-
-	static get observers() {
-		return [
-			'_enrollmentSearchActionChanged(enrollmentsSearchAction)'
-		];
 	}
 
 	static get template() {
@@ -259,7 +248,7 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 			updateEntity(changedEnrollmentId, this.token);
 		}
 
-		if (this.noTabs || this._thisTabSelected) {
+		if (this._thisTabSelected) {
 			// Only want to move pinned/unpinned enrollment if it exists in the panel
 			if (!changedEnrollmentId) {
 				this._refetchEnrollments();
@@ -284,13 +273,6 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 
 	_getCardGrid() {
 		return this.shadowRoot.querySelector('d2l-my-courses-card-grid');
-	}
-	_enrollmentSearchActionChanged() {
-		if (this.noTabs) {
-			// We only need to manually fetch if we're not using tabs;
-			// otherwise, the fetch is initiated when a tab is selected.
-			this._fetchRoot();
-		}
 	}
 	_computeCourseInfoAlertText(enrollmentsLength, viewableEnrollmentsLength, hidePastCourses) {
 		if (enrollmentsLength === 0) {
@@ -426,6 +408,7 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 	_onInitiallyVisibleCourseTile() {
 		this._initiallyVisibleCourseTileCount++;
 	}
+	// Triggered when the tabs are first rendered, which then fetches the enrollment data
 	_onTabSelected(e) {
 		// Only handle if tab selected corresponds to this panel
 		if (!this.parentElement || e.composedPath()[0].id !== this.parentElement.id) {

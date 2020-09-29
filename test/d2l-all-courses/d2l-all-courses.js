@@ -23,17 +23,6 @@ describe('d2l-all-courses', function() {
 
 		widget = fixture('d2l-all-courses-fixture');
 		widget.$['search-widget']._setSearchUrl = sandbox.stub();
-		widget._enrollmentsSearchAction = {
-			name: 'search-my-enrollments',
-			href: '/enrollments/users/169',
-			fields: [{
-				name: 'parentOrganizations',
-				value: ''
-			}, {
-				name: 'sort',
-				value: ''
-			}]
-		};
 
 		enrollmentsEntity = {
 			actions: [
@@ -47,10 +36,22 @@ describe('d2l-all-courses', function() {
 					name: 'set-role-filters',
 					href: '/setRoles',
 				},
-				widget._enrollmentsSearchAction
+				{
+					name: 'search-my-enrollments',
+					href: '/enrollments/users/169',
+					fields: [{
+						name: 'parentOrganizations',
+						value: ''
+					}, {
+						name: 'sort',
+						value: ''
+					}]
+				}
 			],
 			class: ['enrollments', 'collection']
 		};
+
+		widget._enrollmentsSearchAction = SirenParse(enrollmentsEntity).actions.find(action => action.name === 'search-my-enrollments');
 
 		fetchStub = sandbox.stub(window.d2lfetch, 'fetch').returns(Promise.resolve({
 			ok: true,
@@ -59,10 +60,18 @@ describe('d2l-all-courses', function() {
 			}
 		}));
 
-		flush();
-		requestAnimationFrame(() => {
-			done();
-		});
+		function afterTabsReady() {
+			widget.shadowRoot.querySelector('d2l-tabs').removeEventListener('d2l-tab-panel-selected', afterTabsReady);
+			flush();
+			setTimeout(() => {
+				done();
+			}, 0);
+		}
+
+		widget.shadowRoot.querySelector('d2l-tabs').addEventListener('d2l-tab-panel-selected', afterTabsReady);
+
+		widget._selectedTabId = 'all-courses-tab-search-my-enrollments';
+		widget.tabSearchActions = [{name: 'search-my-enrollments'}];
 	});
 
 	afterEach(function() {
@@ -73,8 +82,13 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('Loading', function() {
-		it('should show loading spinner before content has loaded', function() {
-			expect(widget.shadowRoot.querySelector('d2l-loading-spinner:not(#lazyLoadSpinner)').hasAttribute('hidden')).to.be.false;
+		it('should show loading spinner before content has loaded', function(done) {
+			widget.tabSearchActions = null;
+			widget.open();
+			requestAnimationFrame(() => {
+				expect(widget.shadowRoot.querySelector('d2l-loading-spinner:not(#lazyLoadSpinner)').hasAttribute('hidden')).to.be.false;
+				done();
+			});
 		});
 	});
 
@@ -211,11 +225,11 @@ describe('d2l-all-courses', function() {
 				it(`should not set _searchUrl if the categoryChanged is "${testCase.categoryChanged}" but its selected filters info is missing`, function(done) {
 					const spy = sandbox.spy(widget, '_appendOrUpdateBustCacheQueryString');
 					fireEvent(widget.shadowRoot.querySelector('d2l-my-courses-filter'), 'd2l-my-courses-filter-change', {
-						categoryChanged: 'testCase.categoryChanged',
+						categoryChanged: testCase.categoryChanged,
 						selectedFilters: []
 					});
 					requestAnimationFrame(() => {
-						expect(widget._searchUrl).to.be.undefined;
+						expect(widget._searchUrl).to.be.null;
 						expect(spy).to.not.be.called;
 						done();
 					});
@@ -541,14 +555,15 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('Sorting', function() {
-		it('should set the _searchUrl', function() {
+		it('should set the _searchUrl', function(done) {
 			fireEvent(widget.shadowRoot.querySelector('d2l-sort-by-dropdown'), 'd2l-sort-by-dropdown-change', {
 				value: 'LastAccessed'
 			});
-
-			expect(widget._searchUrl).to.include('/enrollments/users/169?parentOrganizations=&sort=LastAccessed');
+			requestAnimationFrame(() => {
+				expect(widget._searchUrl).to.include('/enrollments/users/169?parentOrganizations=&sort=LastAccessed');
+				done();
+			});
 		});
-
 	});
 
 	describe('Info Message', function() {
@@ -632,7 +647,7 @@ describe('d2l-all-courses', function() {
 
 	describe('Closing the Overlay', function() {
 
-		it('should prep _enrollmentsSearchAction for component resets', function() {
+		it('should prep _enrollmentsSearchAction for component resets', function(done) {
 			const entity = window.D2L.Hypermedia.Siren.Parse({
 				actions: [{
 					name: 'search-my-enrollments',
@@ -648,28 +663,33 @@ describe('d2l-all-courses', function() {
 				}]
 			});
 			widget._enrollmentsSearchAction = entity.actions[0];
-
 			widget._onSimpleOverlayClosed();
 
-			expect(widget._enrollmentsSearchAction.getFieldByName('search').value).to.be.equal('');
-			expect(widget._enrollmentsSearchAction.getFieldByName('sort').value).to.be.equal('Current');
-			expect(widget._enrollmentsSearchAction.getFieldByName('promotePins').value).to.be.true;
-			expect(widget._enrollmentsSearchAction.getFieldByName('parentOrganizations').value).to.equal('');
-			expect(widget._enrollmentsSearchAction.getFieldByName('roles').value).to.equal('');
+			requestAnimationFrame(() => {
+				expect(widget._enrollmentsSearchAction.getFieldByName('search').value).to.be.equal('');
+				expect(widget._enrollmentsSearchAction.getFieldByName('sort').value).to.be.equal('Current');
+				expect(widget._enrollmentsSearchAction.getFieldByName('promotePins').value).to.be.true;
+				expect(widget._enrollmentsSearchAction.getFieldByName('parentOrganizations').value).to.equal('');
+				expect(widget._enrollmentsSearchAction.getFieldByName('roles').value).to.equal('');
+				done();
+			});
 		});
 
-		it('should clear search text', function() {
+		it('should clear search text', function(done) {
 			const spy = sandbox.spy(widget, '_clearSearchWidget');
 			const searchField = widget.$['search-widget'];
 
 			searchField._getSearchWidget()._getSearchInput().value = 'foo';
 			widget._onSimpleOverlayClosed();
 
-			expect(spy.called).to.be.true;
-			expect(searchField._getSearchWidget()._getSearchInput().value).to.equal('');
+			requestAnimationFrame(() => {
+				expect(spy.called).to.be.true;
+				expect(searchField._getSearchWidget()._getSearchInput().value).to.equal('');
+				done();
+			});
 		});
 
-		it('should clear filters', function() {
+		it('should clear filters', function(done) {
 			const spy = sandbox.spy(widget.shadowRoot.querySelector('d2l-my-courses-filter'), 'clear');
 
 			widget._filterCounts = {
@@ -679,15 +699,19 @@ describe('d2l-all-courses', function() {
 			};
 
 			widget._onSimpleOverlayClosed();
-			expect(spy.called).to.be.true;
-			expect(widget._filterCounts).to.deep.equal({
-				departments: 0,
-				semesters: 0,
-				roles: 0
+
+			requestAnimationFrame(() => {
+				expect(spy.called).to.be.true;
+				expect(widget._filterCounts).to.deep.equal({
+					departments: 0,
+					semesters: 0,
+					roles: 0
+				});
+				done();
 			});
 		});
 
-		it('should clear sort', function() {
+		it('should clear sort', function(done) {
 			const sortDropdown = widget.shadowRoot.querySelector('d2l-sort-by-dropdown');
 
 			const event = {
@@ -700,15 +724,20 @@ describe('d2l-all-courses', function() {
 			expect(widget._searchUrl).to.contain('sort=OrgUnitCode,OrgUnitId');
 
 			widget._onSimpleOverlayClosed();
-			expect(widget._searchUrl).to.contain('sort=Current');
+			requestAnimationFrame(() => {
+				expect(widget._searchUrl).to.contain('sort=Current');
+				done();
+			});
 		});
-
 	});
 
-	describe('Tabbed View', function() {
+	describe('Multiple Tabs', function() {
+
 		beforeEach(function(done) {
-			widget.updatedSortLogic = true;
 			widget.tabSearchActions = [{
+				name: 'search-my-enrollments',
+				selected: false
+			}, {
 				name: '12345',
 				title: 'Search Foo Action',
 				selected: true,
@@ -765,8 +794,9 @@ describe('d2l-all-courses', function() {
 				enrollmentsSearchAction: {}
 			});
 
-			expect(widget.tabSearchActions[0].selected).to.be.true;
-			expect(widget.tabSearchActions[1].selected).to.be.false;
+			expect(widget.tabSearchActions[0].selected).to.be.false;
+			expect(widget.tabSearchActions[1].selected).to.be.true;
+			expect(widget.tabSearchActions[2].selected).to.be.false;
 
 			widget._onTabSelected({
 				type: 'd2l-tab-panel-selected',
@@ -775,7 +805,8 @@ describe('d2l-all-courses', function() {
 			});
 
 			expect(widget.tabSearchActions[0].selected).to.be.false;
-			expect(widget.tabSearchActions[1].selected).to.be.true;
+			expect(widget.tabSearchActions[1].selected).to.be.false;
+			expect(widget.tabSearchActions[2].selected).to.be.true;
 		});
 	});
 });

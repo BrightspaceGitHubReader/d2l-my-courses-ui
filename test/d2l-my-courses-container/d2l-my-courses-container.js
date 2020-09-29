@@ -113,6 +113,7 @@ describe('d2l-my-courses', () => {
 		component = fixture('d2l-my-courses-container-fixture');
 		setLocalStorageStub = sandbox.stub(component, '_trySetItemLocalStorage');
 		sandbox.stub(component, '_setUserSettingsEntity');
+		sandbox.stub(component, '_setEnrollmentCollectionEntity');
 
 		setTimeout(() => {
 			component.enrollmentsUrl = enrollmentsHref;
@@ -192,12 +193,12 @@ describe('d2l-my-courses', () => {
 			};
 
 			component._changedCourseEnrollment = null;
-			requestAnimationFrame(() => {
+			setTimeout(() => {
 				component._onCourseEnrollmentChange(event);
 				expect(component._changedCourseEnrollment.orgUnitId).to.equal(testCase.orgUnitId);
 				expect(component._changedCourseEnrollment.isPinned).to.equal(testCase.isPinned);
 				done();
-			});
+			}, 0);
 		});
 	});
 
@@ -264,12 +265,12 @@ describe('d2l-my-courses', () => {
 
 			expect(verifySpy).to.have.been.calledOnce;
 
-			requestAnimationFrame(() => {
+			setTimeout(() => {
 				expect(component._tabSearchActions.length).to.equal(2);
 				expect(component._tabSearchActions[0].name).to.equal('search-my-enrollments');
 				expect(component._tabSearchActions[1].name).to.equal('search-my-pinned-enrollments');
 				done();
-			});
+			}, 0);
 		});
 
 		it('should remove the pinned tab if we verify there actually is no pinned courses', done => {
@@ -285,25 +286,33 @@ describe('d2l-my-courses', () => {
 
 			expect(verifySpy).to.have.been.calledOnce;
 
-			requestAnimationFrame(() => {
+			setTimeout(() => {
 				expect(component._tabSearchActions.length).to.equal(1);
 				expect(component._tabSearchActions[0].name).to.equal('search-my-enrollments');
 				done();
-			});
+			}, 0);
 		});
 
 		describe('_addPinnedTab', () => {
-			it('should add the pinned tab to content and force each tab to refresh because of dom-repeat issues', () => {
-				const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
-				const contentRefreshStub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'requestRefresh');
-				component._tabSearchActions = [{ name: 'search-my-enrollments'}];
+			it('should add the pinned tab to content and force each tab to refresh because of dom-repeat issues', (done) => {
+				component._currentTabId = 'panel-search-my-enrollments';
+				component._tabSearchActions = [{
+					name: 'search-my-enrollments',
+					enrollmentsSearchAction: searchAction
+				}];
 
-				component._addPinnedTab();
+				setTimeout(() => {
+					const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
+					const contentRefreshStub = sandbox.stub(component._getContentComponent(), 'requestRefresh');
 
-				expect(component._tabSearchActions.length).to.equal(2);
-				expect(allCoursesSpliceStub).to.not.have.been.called;
-				expect(contentRefreshStub).to.have.been.called;
-				expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': true});
+					component._addPinnedTab();
+
+					expect(component._tabSearchActions.length).to.equal(2);
+					expect(allCoursesSpliceStub).to.not.have.been.called;
+					expect(contentRefreshStub).to.have.been.called;
+					expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': true});
+					done();
+				}, 0);
 			});
 			it('should add the pinned tab to all-courses as well if it has been opened already', () => {
 				const allCourses = component._getAllCoursesComponent();
@@ -328,17 +337,29 @@ describe('d2l-my-courses', () => {
 		});
 
 		describe('_removePinnedTab', () => {
-			it('should remove the pinned tab to content and force each tab to refresh because of dom-repeat issues', () => {
-				const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
-				const contentRefreshStub = sandbox.stub(component.shadowRoot.querySelector('d2l-my-courses-content'), 'requestRefresh');
-				component._tabSearchActions = [{ name: 'search-my-enrollments'}, { name: 'search-my-pinned-enrollments'}];
+			it('should remove the pinned tab to content and force each tab to refresh because of dom-repeat issues', (done) => {
+				component._currentTabId = 'panel-search-my-enrollments';
+				component._tabSearchActions = [{
+					name: 'search-my-enrollments',
+					enrollmentsSearchAction: searchAction
+				},
+				{
+					name: 'search-my-pinned-enrollments'
+				}];
 
-				component._removePinnedTab();
+				setTimeout(() => {
+					const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
+					const contentRefreshStub = sandbox.stub(component._getContentComponent(), 'requestRefresh');
+					component._tabSearchActions = [{ name: 'search-my-enrollments'}, { name: 'search-my-pinned-enrollments'}];
 
-				expect(component._tabSearchActions.length).to.equal(1);
-				expect(allCoursesSpliceStub).to.not.have.been.called;
-				expect(contentRefreshStub).to.have.been.called;
-				expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': false});
+					component._removePinnedTab();
+
+					expect(component._tabSearchActions.length).to.equal(1);
+					expect(allCoursesSpliceStub).to.not.have.been.called;
+					expect(contentRefreshStub).to.have.been.called;
+					expect(setLocalStorageStub).to.have.been.calledWith('myCourses.pinnedTab', {'previouslyShown': false});
+					done();
+				}, 0);
 			});
 			it('should remove the pinned tab from all-courses as well if it has been opened already', () => {
 				const allCourses = component._getAllCoursesComponent();
@@ -367,45 +388,54 @@ describe('d2l-my-courses', () => {
 
 		describe('courseImageUploadCompleted', () => {
 			it('should do nothing if image setting was not a success', done => {
-				component._showGroupByTabs = false;
+				component.promotedSearches = null;
+				component._onEnrollmentAndUserSettingsEntityChange();
 				flush(() => {
-					const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
-					const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
-					component.courseImageUploadCompleted(false);
-					expect(stubContent).to.not.have.been.called;
-					expect(stubAllCourses).to.not.have.been.called;
-					done();
+					setTimeout(() => {
+						const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
+						const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
+						component.courseImageUploadCompleted(false);
+						expect(stubContent).to.not.have.been.called;
+						expect(stubAllCourses).to.not.have.been.called;
+						done();
+					}, 10);
 				});
 			});
-			it('should call refreshCardGridImages on the content and all-courses (not grouped by tab)', done => {
-				component._showGroupByTabs = false;
+			it('should call refreshCardGridImages on the content and all-courses (just all tab)', done => {
+				component.promotedSearches = null;
+				component._onEnrollmentAndUserSettingsEntityChange();
 				flush(() => {
-					const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
-					const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
-					component.courseImageUploadCompleted(true);
-					expect(stubContent).to.have.been.called;
-					expect(stubAllCourses).to.have.been.called;
-					done();
+					setTimeout(() => {
+						const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
+						const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
+						component.courseImageUploadCompleted(true);
+						expect(stubContent).to.have.been.called;
+						expect(stubAllCourses).to.have.been.called;
+						done();
+					}, 10);
 				});
 			});
-			it('should call refreshCardGridImages on the content and all-courses (grouped by tab)', done => {
+			it('should call refreshCardGridImages on the content and all-courses (grouped by semesters)', done => {
 				component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
 				component._onPromotedSearchEntityChange();
-				component._currentTabId = '6607';
+				component._currentTabId = 'panel-6607';
 				flush(() => {
-					const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
-					const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
-					component.courseImageUploadCompleted(true);
-					expect(stubContent).to.have.been.called;
-					expect(stubAllCourses).to.have.been.called;
-					done();
+					setTimeout(() => {
+						const stubContent = sandbox.stub(component._getContentComponent(), 'refreshCardGridImages');
+						const stubAllCourses = sandbox.stub(component._getAllCoursesComponent(), 'refreshCardGridImages');
+						component.courseImageUploadCompleted(true);
+						expect(stubContent).to.have.been.called;
+						expect(stubAllCourses).to.have.been.called;
+						done();
+					}, 10);
 				});
 			});
 		});
 
 		describe('getLastOrgUnitId', () => {
-			it('should get the orgunit id from the organization entity in _setImageOrg (not grouped by tab)', done => {
-				component._showGroupByTabs = false;
+			it('should get the orgunit id from the organization entity in _setImageOrg (just all tab)', done => {
+				component.promotedSearches = null;
+				component._onEnrollmentAndUserSettingsEntityChange();
 				component._setImageOrg = window.D2L.Hypermedia.Siren.Parse({
 					properties: {
 						name: 'Course One'
@@ -422,7 +452,7 @@ describe('d2l-my-courses', () => {
 				});
 			});
 
-			it('should get the orgunit id from the organization entity in _setImageOrg (grouped by tab)', done => {
+			it('should get the orgunit id from the organization entity in _setImageOrg (grouped by semesters)', done => {
 				component._promotedSearchEntity = new PromotedSearchEntity(promotedSearchMultipleResponse);
 				component._onPromotedSearchEntityChange();
 				component._currentTabId = '6607';
@@ -483,11 +513,19 @@ describe('d2l-my-courses', () => {
 			expect(component._showImageError).to.be.false;
 		});
 
-		it('should remove a course image failure alert when the all courses overlay is closed', function() {
+		it('should remove a course image failure alert when the all courses overlay is closed', function(done) {
+			component._currentTabId = 'panel-search-my-enrollments';
+			component._tabSearchActions = [{
+				name: 'search-my-enrollments',
+				enrollmentsSearchAction: searchAction
+			}];
 			component._showImageError = true;
 
-			component._onAllCoursesClose();
-			expect(component._showImageError).to.be.false;
+			setTimeout(() => {
+				component._onAllCoursesClose();
+				expect(component._showImageError).to.be.false;
+				done();
+			}, 0);
 		});
 	});
 
@@ -536,10 +574,10 @@ describe('d2l-my-courses', () => {
 				const spy = sandbox.spy(component.$['basic-image-selector-overlay'], 'open');
 
 				component.addEventListener('open-change-image-view', function() {
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						expect(spy).to.have.been.called;
 						done();
-					});
+					}, 0);
 				});
 
 				component.dispatchEvent(event);
@@ -553,15 +591,15 @@ describe('d2l-my-courses', () => {
 			it('should return correct org unit id if course tile used', done => {
 
 				component.addEventListener('open-change-image-view', function() {
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						expect(component.getLastOrgUnitId()).to.equal('1');
 						done();
-					});
+					}, 0);
 				});
 
-				requestAnimationFrame(() => {
+				setTimeout(() => {
 					component.dispatchEvent(event);
-				});
+				}, 0);
 			});
 
 		});
@@ -575,10 +613,10 @@ describe('d2l-my-courses', () => {
 
 					const event = new CustomEvent('clear-image-scroll-threshold');
 					component.dispatchEvent(event);
-					requestAnimationFrame(() => {
+					setTimeout(() => {
 						expect(spy).to.have.been.calledOnce;
 						done();
-					});
+					}, 0);
 				});
 
 			});
@@ -602,18 +640,25 @@ describe('d2l-my-courses', () => {
 
 		describe('d2l-all-courses-close', () => {
 			it('should remove an existing course image failure alert and tell d2l-my-courses-content that the overlay closed', done => {
-				const stub = sandbox.stub(component._getContentComponent(), 'allCoursesOverlayClosed');
-				component._showImageError = true;
+				component._currentTabId = 'panel-search-my-enrollments';
+				component._tabSearchActions = [{
+					name: 'search-my-enrollments',
+					enrollmentsSearchAction: searchAction
+				}];
 
-				const event = new CustomEvent('d2l-all-courses-close');
-				component._getAllCoursesComponent().dispatchEvent(event);
+				requestAnimationFrame(() => {
+					const stub = sandbox.stub(component._getContentComponent(), 'allCoursesOverlayClosed');
+					component._showImageError = true;
 
-				setTimeout(() => {
-					expect(stub).to.have.been.called;
-					expect(component._showImageError).to.be.false;
-					done();
+					const event = new CustomEvent('d2l-all-courses-close');
+					component._getAllCoursesComponent().dispatchEvent(event);
+
+					setTimeout(() => {
+						expect(stub).to.have.been.called;
+						expect(component._showImageError).to.be.false;
+						done();
+					});
 				});
-
 			});
 		});
 
@@ -669,7 +714,7 @@ describe('d2l-my-courses', () => {
 			let _enrollmentEntity,
 				event;
 
-			beforeEach(() => {
+			beforeEach((done) => {
 				_enrollmentEntity = {
 					_entity: {},
 					organizationHref: function() { return '1234'; },
@@ -682,8 +727,13 @@ describe('d2l-my-courses', () => {
 					}
 				});
 
+				component._currentTabId = 'panel-search-my-enrollments';
 				component._enrollmentsSearchAction = searchAction;
 				component._onPromotedSearchEntityChange();
+
+				requestAnimationFrame(() => {
+					done();
+				});
 			});
 
 			[

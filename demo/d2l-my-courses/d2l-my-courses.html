@@ -6,6 +6,11 @@
 		<script type="module">
 			import '@brightspace-ui/core/components/demo/demo-page.js';
 			import '../../d2l-my-courses.js';
+
+			// Turn off the PUT call to attempt to update the user settings on tab change
+			window.D2L.Siren.ActionQueue.enqueue = function() {
+				return Promise.resolve();
+			};
 		</script>
 		<title>d2l-my-courses - Demo</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
