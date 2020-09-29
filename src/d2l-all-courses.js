@@ -327,7 +327,10 @@ class AllCourses extends mixinBehaviors([
 
 	// After a user-uploaded image is set, this is called to try to update the image
 	refreshCardGridImages(organization) {
-		this._getCardGrid().refreshCardGridImages(organization);
+		const cardGrid = this._getCardGrid();
+		if (cardGrid) {
+			cardGrid.refreshCardGridImages(organization);
+		}
 	}
 
 	_getCardGrid() {

@@ -193,7 +193,10 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 		if (success) {
 			this.$['basic-image-selector-overlay'].close();
 
-			this._getContentComponent().refreshCardGridImages(this._setImageOrg);
+			const contentComponent = this._getContentComponent();
+			if (contentComponent) {
+				contentComponent.refreshCardGridImages(this._setImageOrg);
+			}
 			this._getAllCoursesComponent().refreshCardGridImages(this._setImageOrg);
 		}
 	}
@@ -252,7 +255,10 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 	}
 	_onAllCoursesClose() {
 		this._showImageError = false; // Clear image error when opening and closing the all courses overlay
-		this._getContentComponent().allCoursesOverlayClosed();
+		const contentComponent = this._getContentComponent();
+		if (contentComponent) {
+			contentComponent.allCoursesOverlayClosed();
+		}
 	}
 
 	_onEnrollmentAndUserSettingsEntityChange() {
