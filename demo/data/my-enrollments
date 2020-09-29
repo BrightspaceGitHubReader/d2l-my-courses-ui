@@ -187,9 +187,11 @@
       "href": "../data/my-enrollments-next"
     }
   ],
-    "actions": [{
-    "name": "search-my-enrollments",
-    "href": "../data/my-enrollments",
-    "method": "GET"
-  }]
+  "actions": [
+    {
+      "name": "search-my-enrollments",
+      "href": "../data/my-enrollments",
+      "method": "GET"
+    }
+  ]
 }
