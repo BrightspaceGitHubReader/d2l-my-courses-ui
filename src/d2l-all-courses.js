@@ -172,37 +172,36 @@ class AllCourses extends mixinBehaviors([
 					width: 100%;
 				}
 				#search-and-filter {
-					margin-bottom: 50px;
-				}
-				.search-and-filter-row {
 					display: flex;
+					flex-wrap: wrap;
 					justify-content: space-between;
+					margin-bottom: 1rem;
+					margin-top: -0.5rem;
 				}
 				.advanced-search-link {
 					font-size: 0.8rem;
 					margin-top: 3px;
-					flex: 1;
 				}
 				.advanced-search-link[hidden] {
 					display: none;
 				}
 				d2l-search-widget-custom {
+					min-width: 300px;
+					width: 100%;
+				}
+				#searchAndLink,
+				#filterAndSort {
+					display: flex;
+					margin-top: 0.5rem;
+				}
+				#searchAndLink {
 					flex: 1;
+					flex-direction: row;
+					flex-wrap: wrap;
 				}
 				#filterAndSort {
 					flex: 1.4;
-					display: flex;
 					justify-content: flex-end;
-					align-items: center;
-				}
-				@media screen and (max-width: 767px) {
-					#filterAndSort {
-						display: none;
-					}
-					.advanced-search-link {
-						text-align: right;
-						margin-top: 5px;
-					}
 				}
 				d2l-my-courses-filter,
 				d2l-sort-by-dropdown {
@@ -232,7 +231,7 @@ class AllCourses extends mixinBehaviors([
 					</iron-scroll-threshold>
 
 					<div id="search-and-filter">
-						<div class="search-and-filter-row">
+						<div id="searchAndLink">
 							<d2l-search-widget-custom
 								id="search-widget"
 								on-d2l-search-widget-results-changed="_onSearchResultsChanged"
@@ -240,27 +239,24 @@ class AllCourses extends mixinBehaviors([
 								search-action="[[_enrollmentsSearchAction]]"
 								search-url="[[_searchUrl]]">
 							</d2l-search-widget-custom>
-
-							<div id="filterAndSort">
-								<d2l-my-courses-filter
-									on-d2l-my-courses-filter-change="_onFilterChange"
-									on-d2l-my-courses-filter-clear="_onFilterClear"
-									filter-categories="[[_filterCategories]]">
-								</d2l-my-courses-filter>
-
-								<d2l-sort-by-dropdown align="end" label="[[localize('sorting.sortBy')]]" value="[[_sortMap[0].name]]" on-d2l-sort-by-dropdown-change="_onSortOrderChanged">
-									<d2l-sort-by-dropdown-option value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-sort-by-dropdown-option>
-									<d2l-sort-by-dropdown-option value="OrgUnitName" text="[[localize('sorting.sortCourseName')]]"></d2l-sort-by-dropdown-option>
-									<d2l-sort-by-dropdown-option value="OrgUnitCode" text="[[localize('sorting.sortCourseCode')]]"></d2l-sort-by-dropdown-option>
-									<d2l-sort-by-dropdown-option value="PinDate" text="[[localize('sorting.sortDatePinned')]]"></d2l-sort-by-dropdown-option>
-									<d2l-sort-by-dropdown-option value="LastAccessed" text="[[localize('sorting.sortLastAccessed')]]"></d2l-sort-by-dropdown-option>
-									<d2l-sort-by-dropdown-option value="EnrollmentDate" text="[[localize('sorting.sortEnrollmentDate')]]"></d2l-sort-by-dropdown-option>
-								</d2l-sort-by-dropdown>
-
-							</div>
+							<d2l-link class="advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]" href$="[[advancedSearchUrl]]">[[localize('advancedSearch')]]</d2l-link>
 						</div>
-						<div class="search-and-filter-row advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]">
-							<d2l-link href$="[[advancedSearchUrl]]">[[localize('advancedSearch')]]</d2l-link>
+
+						<div id="filterAndSort">
+							<d2l-my-courses-filter
+								on-d2l-my-courses-filter-change="_onFilterChange"
+								on-d2l-my-courses-filter-clear="_onFilterClear"
+								filter-categories="[[_filterCategories]]">
+							</d2l-my-courses-filter>
+
+							<d2l-sort-by-dropdown align="end" label="[[localize('sorting.sortBy')]]" value="[[_sortMap[0].name]]" on-d2l-sort-by-dropdown-change="_onSortOrderChanged">
+								<d2l-sort-by-dropdown-option value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-sort-by-dropdown-option>
+								<d2l-sort-by-dropdown-option value="OrgUnitName" text="[[localize('sorting.sortCourseName')]]"></d2l-sort-by-dropdown-option>
+								<d2l-sort-by-dropdown-option value="OrgUnitCode" text="[[localize('sorting.sortCourseCode')]]"></d2l-sort-by-dropdown-option>
+								<d2l-sort-by-dropdown-option value="PinDate" text="[[localize('sorting.sortDatePinned')]]"></d2l-sort-by-dropdown-option>
+								<d2l-sort-by-dropdown-option value="LastAccessed" text="[[localize('sorting.sortLastAccessed')]]"></d2l-sort-by-dropdown-option>
+								<d2l-sort-by-dropdown-option value="EnrollmentDate" text="[[localize('sorting.sortEnrollmentDate')]]"></d2l-sort-by-dropdown-option>
+							</d2l-sort-by-dropdown>
 						</div>
 					</div>
 
