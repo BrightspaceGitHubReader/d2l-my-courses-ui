@@ -7,7 +7,6 @@ import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import { css, html, LitElement } from 'lit-element';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntity.js';
-import { repeat } from 'lit-html/directives/repeat.js';
 import { styleMap } from 'lit-html/directives/style-map';
 
 class MyCoursesCardGrid extends LitElement {
@@ -116,8 +115,9 @@ class MyCoursesCardGrid extends LitElement {
 
 	connectedCallback() {
 		super.connectedCallback();
+
+		window.addEventListener('resize', this.onResize);
 		requestAnimationFrame(() => {
-			window.addEventListener('resize', this.onResize);
 			// Sets initial number of columns
 			this.onResize();
 		});
@@ -146,7 +146,7 @@ class MyCoursesCardGrid extends LitElement {
 		return html`
 			<slot></slot>
 			<div class="course-card-grid columns-${this._numColumns}">
-				${repeat(this.filteredEnrollments, (enrollment) => enrollment, (item, index) => html`
+				${this.filteredEnrollments.map((item, index) => html`
 					<d2l-enrollment-card
 						style=${styleMap(msGridStyle(index))}
 						href="${item}"
