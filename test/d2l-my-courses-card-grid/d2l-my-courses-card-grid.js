@@ -65,19 +65,43 @@ describe('d2l-my-courses-card-grid', function() {
 			sandbox.restore();
 		});
 
-		it('refreshCardGridImages should call refreshImage on each course image card', () => {
-			const courseCards = widget.shadowRoot.querySelectorAll('d2l-enrollment-card');
+		describe('refreshCardGridImages', function() {
+			it('should call refreshImage on each course image card', () => {
+				const courseCards = widget.shadowRoot.querySelectorAll('d2l-enrollment-card');
 
-			const stub1 = sandbox.stub(courseCards[0], 'refreshImage');
-			const stub2 = sandbox.stub(courseCards[1], 'refreshImage');
-			const stub3 = sandbox.stub(courseCards[2], 'refreshImage');
+				const stub1 = sandbox.stub(courseCards[0], 'refreshImage');
+				const stub2 = sandbox.stub(courseCards[1], 'refreshImage');
+				const stub3 = sandbox.stub(courseCards[2], 'refreshImage');
 
-			widget.refreshCardGridImages();
+				widget.refreshCardGridImages();
 
-			expect(stub1).to.have.been.calledOnce;
-			expect(stub2).to.have.been.calledOnce;
-			expect(stub3).to.have.been.calledOnce;
+				expect(stub1).to.have.been.calledOnce;
+				expect(stub2).to.have.been.calledOnce;
+				expect(stub3).to.have.been.calledOnce;
+			});
 		});
 
+		describe('spliceEnrollments', function() {
+			it('should splice the filteredEnrollments array properly and request a re-render', () => {
+				const spy = sandbox.spy(widget, 'requestUpdate');
+
+				widget.spliceEnrollments(1, 1);
+
+				expect(spy).to.have.been.calledOnce;
+				expect(widget.filteredEnrollments).to.deep.equal(['org1', 'org3']);
+
+				spy.reset();
+				widget.spliceEnrollments(1, 0, 'org4');
+
+				expect(spy).to.have.been.calledOnce;
+				expect(widget.filteredEnrollments).to.deep.equal(['org1', 'org4', 'org3']);
+
+				spy.reset();
+				widget.spliceEnrollments(0, 2, 'org5');
+
+				expect(spy).to.have.been.calledOnce;
+				expect(widget.filteredEnrollments).to.deep.equal(['org5', 'org3']);
+			});
+		});
 	});
 });

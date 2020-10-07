@@ -305,18 +305,20 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 			return;
 		}
 
+		const cardGrid = this._getCardGrid();
 		const hide = this._hidePastCourses && (enrollmentCardStatusDetails.status.closed);
 		const index = this._enrollments.indexOf(enrollmentCardStatusDetails.enrollmentUrl);
 
 		if (hide && index !== -1 && index > this._lastPinnedIndex) {
-			this.splice('_enrollments', index, 1);
+			cardGrid.spliceEnrollments(index, 1);
+			this.notifyPath('_enrollments.length');
 		}
 
 		if (this._enrollments.length < this._widgetMaxCardVisible && this._nextEnrollmentEntityUrl) {
 			this._onEnrollmentsEntityChange(this._nextEnrollmentEntityUrl);
 		}
 
-		this._getCardGrid().onResize();
+		cardGrid.onResize();
 	}
 	_fetchEnrollmentCardStatus(url, enrollmentCollectionEntity) {
 		if (!url || !enrollmentCollectionEntity) {
@@ -448,6 +450,7 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 		return actionName === Actions.enrollments.searchMyPinnedEnrollments;
 	}
 	_rearrangeAfterPinning(changedEnrollmentId, isPinned) {
+		const cardGrid = this._getCardGrid();
 		this._isRefetchNeeded = false;
 
 		const removalIndex = this._enrollments.indexOf(changedEnrollmentId);
@@ -462,12 +465,13 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 		}
 
 		if (removalIndex === insertIndex) {
-			this._getCardGrid().onResize();
+			cardGrid.onResize();
 			return;
 		}
 
 		if (removalIndex !== -1) {
-			this.splice('_enrollments', removalIndex, 1);
+			cardGrid.spliceEnrollments(removalIndex, 1);
+			this.notifyPath('_enrollments.length');
 
 			if (removalIndex < insertIndex) {
 				insertIndex--;
@@ -477,10 +481,11 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 		if (this._isPinnedTab) {
 			this._numberOfEnrollments--;
 		} else {
-			this.splice('_enrollments', insertIndex, 0, changedEnrollmentId);
+			cardGrid.spliceEnrollments(insertIndex, 0, changedEnrollmentId);
+			this.notifyPath('_enrollments.length');
 		}
 
-		this._getCardGrid().onResize();
+		cardGrid.onResize();
 	}
 	/*
 	* Utility/helper functions

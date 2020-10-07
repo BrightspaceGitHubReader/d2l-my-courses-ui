@@ -1,90 +1,44 @@
 /*
 `d2l-my-courses-card-grid`
-Polymer-based web component for the grid of enrollment cards.
+Lit web component for the grid of enrollment cards.
 */
 
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
-import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { css, html, LitElement } from 'lit-element';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { PresentationEntity } from 'siren-sdk/src/presentation/PresentationEntity.js';
+import { styleMap } from 'lit-html/directives/style-map';
 
-class MyCoursesCardGrid extends PolymerElement {
-
-	static get is() { return 'd2l-my-courses-card-grid'; }
+class MyCoursesCardGrid extends LitElement {
 
 	static get properties() {
 		return {
 			// Array of courses to show
-			filteredEnrollments: Array,
+			filteredEnrollments: { type: Array },
 			// If true, will hide courses that are "closed" (only needed if a closed course was just unpinned,
 			// since we remove closed courses from the filteredEnrollments array on load)
-			hidePastCourses: {
-				type: Boolean,
-				value: false,
-				reflectToAttribute: true
-			},
-			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
-			token: String,
+			hidePastCourses: { attribute: 'hide-past-courses', reflect: true, type: Boolean },
 			// URL to fetch widget settings
-			presentationUrl: String,
+			presentationUrl: { type: String },
+			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
+			token: { type: Object },
 			// Limit the number of cards shown to 12 (unless more than 12 are pinned)
-			widgetView: {
-				type: Boolean,
-				value: false,
-				reflectToAttribute: true
-			},
-			/*
-			* Presentation Attributes
-			*/
-			_hideCourseStartDate: {
-				type: Boolean,
-				value: false
-			},
-			_hideCourseEndDate: {
-				type: Boolean,
-				value: false
-			},
-			_showOrganizationCode: {
-				type: Boolean,
-				value: false
-			},
-			_showSemesterName: {
-				type: Boolean,
-				value: false
-			},
-			_showDropboxUnreadFeedback: {
-				type: Boolean,
-				value: false
-			},
-			_showUnattemptedQuizzes: {
-				type: Boolean,
-				value: false
-			},
-			_showUngradedQuizAttempts: {
-				type: Boolean,
-				value: false
-			},
-			_showUnreadDiscussionMessages: {
-				type: Boolean,
-				value: false
-			},
-			_showUnreadDropboxSubmissions: {
-				type: Boolean,
-				value: false
-			}
+			widgetView: { attribute: 'widget-view', reflect: true, type: Boolean },
+			_hideCourseStartDate: { attribute: false, type: Boolean },
+			_hideCourseEndDate: { attribute: false, type: Boolean },
+			_numColumns: { attribute: false, type: Number },
+			_showOrganizationCode: { attribute: false, type: Boolean },
+			_showSemesterName: { attribute: false, type: Boolean },
+			_showDropboxUnreadFeedback: { attribute: false, type: Boolean },
+			_showUnattemptedQuizzes: { attribute: false, type: Boolean },
+			_showUngradedQuizAttempts: { attribute: false, type: Boolean },
+			_showUnreadDiscussionMessages: { attribute: false, type: Boolean },
+			_showUnreadDropboxSubmissions: { attribute: false, type: Boolean }
 		};
 	}
 
-	static get observers() {
-		return [
-			'_onPresentationEntityChange(presentationUrl)'
-		];
-	}
-
-	static get template() {
-		return html`
-		<style>
+	static get styles() {
+		return [css`
 			:host {
 				display: block;
 
@@ -129,36 +83,41 @@ class MyCoursesCardGrid extends PolymerElement {
 			:host([hide-past-courses]) .course-card-grid d2l-enrollment-card[closed]:not([pinned]) {
 				display: none;
 			}
-		</style>
-		<slot></slot>
-		<div class="course-card-grid">
-			<template is="dom-repeat" items="[[filteredEnrollments]]">
-				<d2l-enrollment-card
-					href="[[item]]"
-					token="[[token]]"
-					hide-course-start-date="[[_hideCourseStartDate]]"
-					hide-course-end-date="[[_hideCourseEndDate]]"
-					show-organization-code="[[_showOrganizationCode]]"
-					show-semester-name="[[_showSemesterName]]"
-					show-dropbox-unread-feedback="[[_showDropboxUnreadFeedback]]"
-					show-unattempted-quizzes="[[_showUnattemptedQuizzes]]"
-					show-ungraded-quiz-attempts="[[_showUngradedQuizAttempts]]"
-					show-unread-discussion-messages="[[_showUnreadDiscussionMessages]]"
-					show-unread-dropbox-submissions="[[_showUnreadDropboxSubmissions]]">
-				</d2l-enrollment-card>
-			</template>
-		</div>`;
+		`];
 	}
 
-	ready() {
-		super.ready();
+	constructor() {
+		super();
 		this.onResize = this.onResize.bind(this);
+
+		this.filteredEnrollments = [];
+		this.hidePastCourses = false;
+		this.widgetView = false;
+		this._hideCourseStartDate = false;
+		this._hideCourseEndDate = false;
+		this._numColumns = 0;
+		this._showOrganizationCode = false;
+		this._showSemesterName = false;
+		this._showDropboxUnreadFeedback = false;
+		this._showUnattemptedQuizzes = false;
+		this._showUngradedQuizAttempts = false;
+		this._showUnreadDiscussionMessages = false;
+		this._showUnreadDropboxSubmissions = false;
+	}
+
+	updated(changedProperties) {
+		super.updated(changedProperties);
+
+		if (changedProperties.has('presentationUrl')) {
+			this._onPresentationEntityChange();
+		}
 	}
 
 	connectedCallback() {
 		super.connectedCallback();
-		afterNextRender(this, () => {
-			window.addEventListener('resize', this.onResize);
+
+		window.addEventListener('resize', this.onResize);
+		requestAnimationFrame(() => {
 			// Sets initial number of columns
 			this.onResize();
 		});
@@ -169,7 +128,45 @@ class MyCoursesCardGrid extends PolymerElement {
 		window.removeEventListener('resize', this.onResize);
 	}
 
-	onResize(ie11retryCount) {
+	render() {
+		let msGridStyle = () => { return {};};
+		const cssGridStyle = document.body.style['grid-template-columns'];
+		// Can be empty string, hence the strict comparison
+		if (cssGridStyle === undefined) {
+			// Need for Legacy Edge 15 and below
+			msGridStyle = (index) => {
+				return {
+					// The (* 2 - 1) accounts for the grid-gap-esque columns
+					'-ms-grid-column': (index % this._numColumns + 1) * 2 - 1,
+					'-ms-grid-row': Math.floor(index / this._numColumns) + 1
+				};
+			};
+		}
+
+		return html`
+			<slot></slot>
+			<div class="course-card-grid columns-${this._numColumns}">
+				${this.filteredEnrollments.map((item, index) => html`
+					<d2l-enrollment-card
+						style=${styleMap(msGridStyle(index))}
+						href="${item}"
+						.token="${this.token}"
+						?hide-course-start-date="${this._hideCourseStartDate}"
+						?hide-course-end-date="${this._hideCourseEndDate}"
+						?show-organization-code="${this._showOrganizationCode}"
+						?show-semester-name="${this._showSemesterName}"
+						?show-dropbox-unread-feedback="${this._showDropboxUnreadFeedback}"
+						?show-unattempted-quizzes="${this._showUnattemptedQuizzes}"
+						?show-ungraded-quiz-attempts="${this._showUngradedQuizAttempts}"
+						?show-unread-discussion-messages="${this._showUnreadDiscussionMessages}"
+						?show-unread-dropbox-submissions="${this._showUnreadDropboxSubmissions}">
+					</d2l-enrollment-card>
+				`)}
+			</div>
+		`;
+	}
+
+	onResize() {
 		const courseCardGrid = this.shadowRoot.querySelector('.course-card-grid');
 		if (!courseCardGrid) {
 			return;
@@ -185,46 +182,11 @@ class MyCoursesCardGrid extends PolymerElement {
 			return;
 		}
 
-		const numColumns = Math.min(Math.floor(containerWidth / 350), 4) + 1;
-		const columnClass = `columns-${numColumns}`;
-		if (courseCardGrid.classList.toString().indexOf(columnClass) === -1) {
-			courseCardGrid.classList.remove('columns-1');
-			courseCardGrid.classList.remove('columns-2');
-			courseCardGrid.classList.remove('columns-3');
-			courseCardGrid.classList.remove('columns-4');
-			courseCardGrid.classList.add(`columns-${numColumns}`);
-		}
+		this._numColumns = Math.min(Math.floor(containerWidth / 350), 4) + 1;
 
-		this.updateStyles({'--course-image-card-height': `${containerWidth / numColumns * 0.43}px`});
-
-		const cssGridStyle = document.body.style['grid-template-columns'];
-		// Can be empty string, hence the strict comparison
-		if (cssGridStyle !== undefined) {
-			// Non-IE11 browsers support grid-template-columns, so we're done
-			return;
-		}
-
-		const courseCardDivs = this.shadowRoot.querySelectorAll('.course-card-grid d2l-enrollment-card');
-		ie11retryCount = ie11retryCount || 0;
-		if (
-			ie11retryCount < 20
-			&& courseCardDivs.length === 0
-		) {
-			// If course cards haven't yet rendered, try again for up to one second
-			// (only happens sometimes, only in IE)
-			setTimeout(this.onResize.bind(this, ++ie11retryCount), 250);
-			return;
-		}
-
-		for (let i = 0, position = 0; i < courseCardDivs.length; i++, position++) {
-			const div = courseCardDivs[i];
-
-			// The (* 2 - 1) accounts for the grid-gap-esque columns
-			const column = (position % numColumns + 1) * 2 - 1;
-			const row = Math.floor(position / numColumns) + 1;
-			div.style['-ms-grid-column'] = column;
-			div.style['-ms-grid-row'] = row;
-		}
+		// For old version of Legacy Edge
+		if (window.ShadyCSS) window.ShadyCSS.styleSubtree(this, { '--course-image-card-height': `${containerWidth / this._numColumns * 0.43}px` });
+		else this.style.setProperty('--course-image-card-height', `${containerWidth / this._numColumns * 0.43}px`);
 	}
 
 	refreshCardGridImages(organization) {
@@ -234,8 +196,17 @@ class MyCoursesCardGrid extends PolymerElement {
 		}
 	}
 
-	_onPresentationEntityChange(url) {
-		entityFactory(PresentationEntity, url, this.token, entity => {
+	spliceEnrollments(index, deleteCount, itemToAdd) {
+		if (itemToAdd) {
+			this.filteredEnrollments.splice(index, deleteCount, itemToAdd);
+		} else {
+			this.filteredEnrollments.splice(index, deleteCount);
+		}
+		this.requestUpdate();
+	}
+
+	_onPresentationEntityChange() {
+		entityFactory(PresentationEntity, this.presentationUrl, this.token, entity => {
 			this._hideCourseStartDate = entity.hideCourseStartDate();
 			this._hideCourseEndDate = entity.hideCourseEndDate();
 			this._showOrganizationCode = entity.showOrganizationCode();
@@ -250,4 +221,4 @@ class MyCoursesCardGrid extends PolymerElement {
 
 }
 
-window.customElements.define(MyCoursesCardGrid.is, MyCoursesCardGrid);
+window.customElements.define('d2l-my-courses-card-grid', MyCoursesCardGrid);
