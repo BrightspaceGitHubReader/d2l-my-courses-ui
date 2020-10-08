@@ -340,27 +340,15 @@ class AllCourses extends mixinBehaviors([
 	_onAllCoursesLowerThreshold() {
 		if (this.$['all-courses'].opened && this._lastEnrollmentsSearchResponse) {
 			const lastResponseEntity = this._lastEnrollmentsSearchResponse;
-			if (!lastResponseEntity._entity) {
-				if (lastResponseEntity && lastResponseEntity.hasLinkByRel('next')) {
-					const url = lastResponseEntity.getLinkByRel('next').href;
-					this.$.lazyLoadSpinner.scrollIntoView();
-					entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
-						if (entity) {
-							this._updateFilteredEnrollments(entity, true);
-						}
-					});
-				}
-			}
-			else {
-				if (lastResponseEntity && lastResponseEntity._entity.hasLinkByRel('next')) {
-					const url = lastResponseEntity._entity.getLinkByRel('next').href;
-					this.$.lazyLoadSpinner.scrollIntoView();
-					entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
-						if (entity) {
-							this._updateFilteredEnrollments(entity, true);
-						}
-					});
-				}
+
+			if (lastResponseEntity && lastResponseEntity.hasLinkByRel('next')) {
+				const url = lastResponseEntity.getLinkByRel('next').href;
+				this.$.lazyLoadSpinner.scrollIntoView();
+				entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
+					if (entity) {
+						this._updateFilteredEnrollments(entity, true);
+					}
+				});
 			}
 		}
 	}
@@ -666,7 +654,6 @@ class AllCourses extends mixinBehaviors([
 			return false;
 		}
 
-		lastResponse = SirenParse(lastResponse);
 		return lastResponse.hasLinkByRel('next');
 	}
 
@@ -688,12 +675,14 @@ class AllCourses extends mixinBehaviors([
 	_updateFilteredEnrollments(enrollments, append) {
 		let gridEntities;
 		if (!enrollments._entity) {
+			this._lastEnrollmentsSearchResponse = enrollments;
 			const enrollmentEntities = enrollments.getSubEntitiesByClass(Classes.enrollments.enrollment);
 			gridEntities = enrollmentEntities.map((value) => {
 				return value.href;
 			});
 		}
 		else {
+			this._lastEnrollmentsSearchResponse = enrollments._entity;
 			gridEntities = enrollments.enrollmentsHref();
 		}
 
@@ -706,9 +695,8 @@ class AllCourses extends mixinBehaviors([
 
 		this._updateInfoMessage(cardGrid.filteredEnrollments.length);
 
-		this._lastEnrollmentsSearchResponse = enrollments;
 		requestAnimationFrame(() => {
-			window.dispatchEvent(new Event('resize')); // doing this so ie11 and older edge browser will get ms-grid style assigned
+			window.dispatchEvent(new Event('resize')); // doing this older edge browser will get ms-grid style assigned
 			this.$['all-courses-scroll-threshold'].clearTriggers();
 		});
 	}
