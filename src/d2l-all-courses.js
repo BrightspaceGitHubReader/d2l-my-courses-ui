@@ -23,7 +23,6 @@ import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesFilterCategory } from './search-filter/d2l-my-courses-filter.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
-import SirenParse from 'siren-parser';
 
 class AllCourses extends mixinBehaviors([
 	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior
@@ -97,7 +96,6 @@ class AllCourses extends mixinBehaviors([
 			// Entity returned from my-enrollments Link from the enrollments root
 			_myEnrollmentsEntity: {
 				type: Object,
-				value: function() { return {}; },
 				observer: '_myEnrollmentsEntityChanged'
 			},
 			// URL passed to search widget, called for searching
@@ -547,18 +545,12 @@ class AllCourses extends mixinBehaviors([
 	* Observers
 	*/
 
-	_myEnrollmentsEntityChanged(entity) {
-		const myEnrollmentsEntity = SirenParse(entity);
-		// Checking we have a valid entity - if this action is missing the overlay has not been opened yet
-		if (!myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMyEnrollments)) {
-			return;
-		}
-
-		const searchAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
+	_myEnrollmentsEntityChanged(enrollmentsEntity) {
+		const searchAction = enrollmentsEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
 		this._enrollmentsSearchAction = searchAction;
 
-		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.setRoleFilters)) {
-			const href = createActionUrl(myEnrollmentsEntity.getActionByName(Actions.enrollments.setRoleFilters));
+		if (enrollmentsEntity.hasActionByName(Actions.enrollments.setRoleFilters)) {
+			const href = createActionUrl(enrollmentsEntity.getActionByName(Actions.enrollments.setRoleFilters));
 			fetchSirenEntity(href).then(entity => {
 				this._roleFiltersEntity = entity;
 			});
@@ -566,12 +558,12 @@ class AllCourses extends mixinBehaviors([
 
 		// We only need to make the filter categories once
 		if (this._filterCategories.length === 0) {
-			this._createFilterCategories(myEnrollmentsEntity);
+			this._createFilterCategories(enrollmentsEntity);
 		}
 	}
 
-	_createFilterCategories(myEnrollmentsEntity) {
-		if (!myEnrollmentsEntity) {
+	_createFilterCategories(enrollmentsEntity) {
+		if (!enrollmentsEntity) {
 			return;
 		}
 
@@ -579,14 +571,14 @@ class AllCourses extends mixinBehaviors([
 			searchDepartmentsAction,
 			roleFiltersAction;
 
-		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMySemesters)) {
-			searchSemestersAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMySemesters);
+		if (enrollmentsEntity.hasActionByName(Actions.enrollments.searchMySemesters)) {
+			searchSemestersAction = enrollmentsEntity.getActionByName(Actions.enrollments.searchMySemesters);
 		}
-		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.searchMyDepartments)) {
-			searchDepartmentsAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.searchMyDepartments);
+		if (enrollmentsEntity.hasActionByName(Actions.enrollments.searchMyDepartments)) {
+			searchDepartmentsAction = enrollmentsEntity.getActionByName(Actions.enrollments.searchMyDepartments);
 		}
-		if (myEnrollmentsEntity.hasActionByName(Actions.enrollments.setRoleFilters)) {
-			roleFiltersAction = myEnrollmentsEntity.getActionByName(Actions.enrollments.setRoleFilters);
+		if (enrollmentsEntity.hasActionByName(Actions.enrollments.setRoleFilters)) {
+			roleFiltersAction = enrollmentsEntity.getActionByName(Actions.enrollments.setRoleFilters);
 		}
 
 		const filterCategories = [];
