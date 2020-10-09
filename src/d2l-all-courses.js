@@ -11,22 +11,18 @@ import '@brightspace-ui/core/components/tabs/tabs.js';
 import '@brightspace-ui/core/components/tabs/tab-panel.js';
 import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdown.js';
 import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdown-option.js';
-import 'd2l-organization-hm-behavior/d2l-organization-hm-behavior.js';
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import './d2l-my-courses-card-grid.js';
-import './search-filter/d2l-search-widget-custom.js';
+import './search-filter/d2l-my-courses-search.js';
 import { Actions, Classes } from 'd2l-hypermedia-constants';
 import { createActionUrl, fetchSirenEntity } from './d2l-utility-helpers.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { MyCoursesFilterCategory } from './search-filter/d2l-my-courses-filter.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
 
-class AllCourses extends mixinBehaviors([
-	D2L.PolymerBehaviors.Hypermedia.OrganizationHMBehavior
-], MyCoursesLocalizeBehavior(PolymerElement)) {
+class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	static get is() { return 'd2l-all-courses'; }
 
@@ -178,21 +174,21 @@ class AllCourses extends mixinBehaviors([
 				.advanced-search-link[hidden] {
 					display: none;
 				}
-				d2l-search-widget-custom {
+				d2l-my-courses-search {
 					min-width: 300px;
 					width: 100%;
 				}
-				#searchAndLink,
-				#filterAndSort {
+				#search-and-link,
+				#filter-and-sort {
 					display: flex;
 					margin-top: 0.5rem;
 				}
-				#searchAndLink {
+				#search-and-link {
 					flex: 1;
 					flex-direction: row;
 					flex-wrap: wrap;
 				}
-				#filterAndSort {
+				#filter-and-sort {
 					flex: 1.4;
 					justify-content: flex-end;
 				}
@@ -224,18 +220,18 @@ class AllCourses extends mixinBehaviors([
 					</iron-scroll-threshold>
 
 					<div id="search-and-filter">
-						<div id="searchAndLink">
-							<d2l-search-widget-custom
+						<div id="search-and-link">
+							<d2l-my-courses-search
 								id="search-widget"
-								on-d2l-search-widget-results-changed="_onSearchResultsChanged"
+								on-d2l-search-widget-results-changed="_onSearchChange"
 								org-unit-type-ids="[[orgUnitTypeIds]]"
 								search-action="[[_enrollmentsSearchAction]]"
 								search-url="[[_searchUrl]]">
-							</d2l-search-widget-custom>
+							</d2l-my-courses-search>
 							<d2l-link class="advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]" href$="[[advancedSearchUrl]]">[[localize('advancedSearch')]]</d2l-link>
 						</div>
 
-						<div id="filterAndSort">
+						<div id="filter-and-sort">
 							<d2l-my-courses-filter
 								on-d2l-my-courses-filter-change="_onFilterChange"
 								on-d2l-my-courses-filter-clear="_onFilterClear"
@@ -355,7 +351,7 @@ class AllCourses extends mixinBehaviors([
 		);
 	}
 
-	_onSearchResultsChanged(e) {
+	_onSearchChange(e) {
 		this._isSearched = !!e.detail.searchValue;
 
 		this._handleNewEnrollmentsEntity(e.detail.searchResponse);
@@ -469,7 +465,7 @@ class AllCourses extends mixinBehaviors([
 			}
 		}
 
-		this._clearSearchWidget();
+		this.shadowRoot.querySelector('d2l-my-courses-search').clear();
 		this.shadowRoot.querySelector('d2l-my-courses-filter').clear();
 		this.shadowRoot.querySelector(`d2l-sort-by-dropdown-option[value=${this._sortMap[0].name}]`).click();
 
@@ -625,10 +621,6 @@ class AllCourses extends mixinBehaviors([
 		index = suffix.indexOf('&');
 		suffix = index === -1 ? '' : suffix.substring(index, suffix.length);
 		return prefix + this._bustCacheToken + suffix;
-	}
-
-	_clearSearchWidget() {
-		this.$['search-widget'].clear();
 	}
 
 	_computeHasMoreEnrollments(lastResponse, showTabContent) {

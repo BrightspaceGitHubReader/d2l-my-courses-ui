@@ -1,8 +1,8 @@
 /*
-`d2l-search-widget-custom`
-Polymer-based web component for the search widget, with added "Recent Searches" functionality.
-Should be converted to a new input shared component.
+`d2l-my-courses-search`
+Polymer-based web component for the search input, with added "Recent Searches" functionality.
 */
+
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
 import 'd2l-search-widget/d2l-search-widget.js';
@@ -14,9 +14,7 @@ import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { isComposedAncestor } from '@brightspace-ui/core/helpers/dom.js';
 import { MyCoursesLocalizeBehavior } from '../localize-behavior.js';
 
-class SearchWidgetCustom extends MyCoursesLocalizeBehavior(PolymerElement) {
-
-	static get is() { return 'd2l-search-widget-custom'; }
+class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	static get properties() {
 		return {
@@ -65,7 +63,7 @@ class SearchWidgetCustom extends MyCoursesLocalizeBehavior(PolymerElement) {
 			d2l-dropdown-content {
 				--d2l-dropdown-verticaloffset: 5px;
 			}
-			.d2l-search-widget-custom-item {
+			.d2l-search-custom-item {
 				@apply --d2l-body-compact-text;
 			}
 		</style>
@@ -88,7 +86,7 @@ class SearchWidgetCustom extends MyCoursesLocalizeBehavior(PolymerElement) {
 					<d2l-search-listbox>
 						<div data-list-title disabled>[[localize('recentSearches')]]</div>
 						<template is="dom-repeat" items="[[_previousSearches]]">
-							<div class="d2l-search-widget-custom-item" selectable data-text$="[[item]]" role="option">
+							<div class="d2l-search-custom-item" selectable data-text$="[[item]]" role="option">
 								[[item]]
 							</div>
 						</template>
@@ -235,7 +233,7 @@ class SearchWidgetCustom extends MyCoursesLocalizeBehavior(PolymerElement) {
 	}
 	_onSearchInputBlur(e) {
 		const className = e.relatedTarget ? e.relatedTarget.className : '';
-		if (e.relatedTarget !== this._getListbox() && className.indexOf('d2l-search-widget-custom-item') === -1) {
+		if (e.relatedTarget !== this._getListbox() && className.indexOf('d2l-search-custom-item') === -1) {
 			this.$.dropdown.close();
 		}
 	}
@@ -253,4 +251,4 @@ class SearchWidgetCustom extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 }
 
-window.customElements.define(SearchWidgetCustom.is, SearchWidgetCustom);
+window.customElements.define('d2l-my-courses-search', MyCoursesSearch);
