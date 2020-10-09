@@ -222,7 +222,6 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 					<div id="search-and-filter">
 						<div id="search-and-link">
 							<d2l-my-courses-search
-								id="search-widget"
 								on-d2l-search-widget-results-changed="_onSearchChange"
 								org-unit-type-ids="[[orgUnitTypeIds]]"
 								search-action="[[_enrollmentsSearchAction]]"

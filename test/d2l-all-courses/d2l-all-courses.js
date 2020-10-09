@@ -22,7 +22,7 @@ describe('d2l-all-courses', function() {
 		sandbox = sinon.sandbox.create();
 
 		widget = fixture('d2l-all-courses-fixture');
-		sandbox.stub(widget, '_onSearchResultsChanged');
+		sandbox.stub(widget, '_onSearchChange');
 
 		enrollmentsEntity = {
 			actions: [
@@ -681,15 +681,15 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should clear search text', function(done) {
-			const spy = sandbox.spy(widget, '_clearSearchWidget');
-			const searchField = widget.$['search-widget'];
+			const search = widget.shadowRoot.querySelector('d2l-my-courses-search');
+			const spy = sandbox.spy(search, 'clear');
 
-			searchField._getSearchWidget()._getSearchInput().value = 'foo';
+			search._getSearchWidget()._getSearchInput().value = 'foo';
 			widget._onSimpleOverlayClosed();
 
 			requestAnimationFrame(() => {
 				expect(spy.called).to.be.true;
-				expect(searchField._getSearchWidget()._getSearchInput().value).to.equal('');
+				expect(search._getSearchWidget()._getSearchInput().value).to.equal('');
 				done();
 			});
 		});

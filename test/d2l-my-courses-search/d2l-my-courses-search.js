@@ -1,4 +1,4 @@
-describe('<d2l-search-widget-custom>', function() {
+describe('d2l-my-courses-search', function() {
 	let sandbox,
 		widget,
 		clock;
@@ -36,8 +36,7 @@ describe('<d2l-search-widget-custom>', function() {
 		clock = sinon.useFakeTimers();
 
 		sandbox.stub(window.d2lfetch, 'fetch').returns(Promise.resolve());
-		widget = fixture('d2l-search-widget-custom-fixture');
-		widget._searchResultsCache = {};
+		widget = fixture('d2l-my-courses-search-fixture');
 		widget.searchAction = searchAction;
 		widget.searchFieldName = searchFieldName;
 	});
