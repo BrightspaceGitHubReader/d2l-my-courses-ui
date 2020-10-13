@@ -1,3 +1,4 @@
+import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { flush } from '@polymer/polymer/lib/utils/render-status.js';
 import SirenParse from 'siren-parser';
 
@@ -132,7 +133,7 @@ describe('d2l-all-courses', function() {
 	describe('Filtering', function() {
 		let entity;
 		beforeEach(() => {
-			entity = SirenParse(enrollmentsEntity);
+			entity = new EnrollmentCollectionEntity(SirenParse(enrollmentsEntity));
 		});
 		describe('Loading', function() {
 			it('should create filter categories from the enrollment entity', function() {
@@ -172,7 +173,7 @@ describe('d2l-all-courses', function() {
 				entity = enrollmentsEntity;
 				entity.actions = enrollmentsEntity.actions.filter(action => action.name !== 'search-my-semesters');
 
-				widget._handleNewEnrollmentsEntity(SirenParse(entity));
+				widget._handleNewEnrollmentsEntity(new EnrollmentCollectionEntity(SirenParse(entity)));
 				expect(widget._filterCategories.length).to.equal(2);
 				expect(widget._filterCategories[0].key).to.equal('departments');
 				expect(widget._filterCategories[1].key).to.equal('roles');

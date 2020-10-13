@@ -79,7 +79,7 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			// True when there are more enrollments to fetch (i.e. current page of enrollments has a `next` link)
 			_hasMoreEnrollments: {
 				type: Boolean,
-				computed: '_computeHasMoreEnrollments(_lastEnrollmentsSearchResponse, _showTabContent)'
+				computed: '_computeHasMoreEnrollments(_lastEnrollmentCollectionResponse, _showTabContent)'
 			},
 			_infoMessageText: {
 				type: String,
@@ -87,8 +87,8 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			},
 			// Used to set the correct message when no courses are shown
 			_isSearched: Boolean,
-			// Object containing the last response from an enrollments search request
-			_lastEnrollmentsSearchResponse: Object,
+			// Object containing the last response from an enrollments fetch
+			_lastEnrollmentCollectionResponse: Object,
 			// URL passed to search widget, called for searching
 			_searchUrl: String,
 			_selectedTabId: String,
@@ -323,13 +323,12 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 	*/
 
 	_onAllCoursesLowerThreshold() {
-		if (this.$['all-courses'].opened && this._lastEnrollmentsSearchResponse) {
-			const lastResponseEntity = this._lastEnrollmentsSearchResponse;
+		if (this.$['all-courses'].opened && this._lastEnrollmentCollectionResponse) {
+			const nextHref = this._lastEnrollmentCollectionResponse.getNextEnrollmentHref();
 
-			if (lastResponseEntity && lastResponseEntity.hasLinkByRel('next')) {
-				const url = lastResponseEntity.getLinkByRel('next').href;
+			if (nextHref) {
 				this.$.lazyLoadSpinner.scrollIntoView();
-				entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
+				entityFactory(EnrollmentCollectionEntity, nextHref, this.token, entity => {
 					if (entity) {
 						this._updateFilteredEnrollments(entity, true);
 					}
@@ -353,7 +352,8 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 	_onSearchChange(e) {
 		this._isSearched = !!e.detail.searchValue;
 
-		this._handleNewEnrollmentsEntity(e.detail.searchResponse);
+		const enrollmentsEntity = new EnrollmentCollectionEntity(e.detail.searchResponse, this.token);
+		this._handleNewEnrollmentsEntity(enrollmentsEntity);
 	}
 
 	_onFilterChange(e) {
@@ -523,11 +523,11 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 	_handleNewEnrollmentsEntity(enrollmentsEntity) {
 		this._updateFilteredEnrollments(enrollmentsEntity, false);
 
-		const searchAction = enrollmentsEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
-		this._enrollmentsSearchAction = searchAction;
+		this._enrollmentsSearchAction = enrollmentsEntity.getSearchEnrollmentsActions();
 
-		if (enrollmentsEntity.hasActionByName(Actions.enrollments.setRoleFilters)) {
-			const href = createActionUrl(enrollmentsEntity.getActionByName(Actions.enrollments.setRoleFilters));
+		const entity = enrollmentsEntity._entity;
+		if (entity.hasActionByName(Actions.enrollments.setRoleFilters)) {
+			const href = createActionUrl(entity.getActionByName(Actions.enrollments.setRoleFilters));
 			fetchSirenEntity(href).then(entity => {
 				this._roleFiltersEntity = entity;
 			});
@@ -535,7 +535,7 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 		// We only need to make the filter categories once
 		if (this._filterCategories.length === 0) {
-			this._createFilterCategories(enrollmentsEntity);
+			this._createFilterCategories(entity);
 		}
 
 		this._showContent = true;
@@ -627,7 +627,7 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			return false;
 		}
 
-		return lastResponse.hasLinkByRel('next');
+		return lastResponse.hasMoreEnrollments();
 	}
 
 	_computeShowAdvancedSearchLink(link) {
@@ -645,19 +645,9 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 		return this._sortMap[0];
 	}
 
-	_updateFilteredEnrollments(enrollments, append) {
-		let gridEntities;
-		if (!enrollments._entity) {
-			this._lastEnrollmentsSearchResponse = enrollments;
-			const enrollmentEntities = enrollments.getSubEntitiesByClass(Classes.enrollments.enrollment);
-			gridEntities = enrollmentEntities.map((value) => {
-				return value.href;
-			});
-		}
-		else {
-			this._lastEnrollmentsSearchResponse = enrollments._entity;
-			gridEntities = enrollments.enrollmentsHref();
-		}
+	_updateFilteredEnrollments(enrollmentsEntity, append) {
+		this._lastEnrollmentCollectionResponse = enrollmentsEntity;
+		const gridEntities = enrollmentsEntity.enrollmentsHref();
 
 		const cardGrid = this._getCardGrid();
 		if (append) {
