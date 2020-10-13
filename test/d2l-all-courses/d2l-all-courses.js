@@ -138,7 +138,7 @@ describe('d2l-all-courses', function() {
 			it('should create filter categories from the enrollment entity', function() {
 				widget.filterStandardSemesterName = 'Semester Filter Name';
 				widget.filterStandardDepartmentName = 'Department Filter Name';
-				widget._myEnrollmentsEntityChanged(entity);
+				widget._handleNewEnrollmentsEntity(entity);
 
 				expect(widget._filterCategories.length).to.equal(3);
 				expect(widget._filterCategories[0].key).to.equal('semesters');
@@ -164,7 +164,7 @@ describe('d2l-all-courses', function() {
 				const stub = sandbox.stub(widget, '_createFilterCategories');
 				widget._filterCategories = ['category'];
 
-				widget._myEnrollmentsEntityChanged(entity);
+				widget._handleNewEnrollmentsEntity(entity);
 				expect(stub).to.not.be.called;
 			});
 
@@ -172,7 +172,7 @@ describe('d2l-all-courses', function() {
 				entity = enrollmentsEntity;
 				entity.actions = enrollmentsEntity.actions.filter(action => action.name !== 'search-my-semesters');
 
-				widget._myEnrollmentsEntityChanged(SirenParse(entity));
+				widget._handleNewEnrollmentsEntity(SirenParse(entity));
 				expect(widget._filterCategories.length).to.equal(2);
 				expect(widget._filterCategories[0].key).to.equal('departments');
 				expect(widget._filterCategories[1].key).to.equal('roles');
@@ -180,7 +180,7 @@ describe('d2l-all-courses', function() {
 			it('should not add the role filter if grouped by roles', function() {
 				widget.tabSearchType = 'ByRoleAlias';
 
-				widget._myEnrollmentsEntityChanged(entity);
+				widget._handleNewEnrollmentsEntity(entity);
 				expect(widget._filterCategories.length).to.equal(2);
 				expect(widget._filterCategories[0].key).to.equal('semesters');
 				expect(widget._filterCategories[1].key).to.equal('departments');
@@ -188,14 +188,14 @@ describe('d2l-all-courses', function() {
 			it('should not add the semester and department filters if grouped by semester', function() {
 				widget.tabSearchType = 'BySemester';
 
-				widget._myEnrollmentsEntityChanged(entity);
+				widget._handleNewEnrollmentsEntity(entity);
 				expect(widget._filterCategories.length).to.equal(1);
 				expect(widget._filterCategories[0].key).to.equal('roles');
 			});
 			it('should not add the semester and department filters if grouped by department', function() {
 				widget.tabSearchType = 'ByDepartment';
 
-				widget._myEnrollmentsEntityChanged(entity);
+				widget._handleNewEnrollmentsEntity(entity);
 				expect(widget._filterCategories.length).to.equal(1);
 				expect(widget._filterCategories[0].key).to.equal('roles');
 			});
@@ -724,7 +724,6 @@ describe('d2l-all-courses', function() {
 				value: 'OrgUnitCode'
 			};
 
-			widget.load();
 			fireEvent(sortDropdown, 'd2l-sort-by-dropdown-change', event);
 			expect(widget._searchUrl).to.contain('sort=OrgUnitCode,OrgUnitId');
 

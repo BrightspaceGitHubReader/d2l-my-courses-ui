@@ -93,11 +93,6 @@ class AllCourses extends mixinBehaviors([
 			_isSearched: Boolean,
 			// Object containing the last response from an enrollments search request
 			_lastEnrollmentsSearchResponse: Object,
-			// Entity returned from my-enrollments Link from the enrollments root
-			_myEnrollmentsEntity: {
-				type: Object,
-				observer: '_myEnrollmentsEntityChanged'
-			},
 			// URL passed to search widget, called for searching
 			_searchUrl: String,
 			_selectedTabId: String,
@@ -303,20 +298,17 @@ class AllCourses extends mixinBehaviors([
 		this._hasEnrollmentsChanged = true;
 	}
 
-	load() {
-		this.$['all-courses-scroll-threshold'].scrollTarget = this.$['all-courses'].scrollRegion;
-		this.$['all-courses-scroll-threshold'].clearTriggers();
-	}
-
 	open() {
 		// Initially hide the content, until we have some data to show
-		// (triggered by _onTabSelected and set back to true in _onSearchResultsChanged).
+		// (triggered by _onTabSelected and set back to true in _handleNewEnrollmentsEntity).
 		// The exception to this is when the overlay is closed then reopened - we want
 		// to immediately show the already-loaded content.
 		this._showContent = !!this._searchUrl;
 
 		this.shadowRoot.querySelector('#all-courses').open();
-		this.load();
+
+		this.$['all-courses-scroll-threshold'].scrollTarget = this.$['all-courses'].scrollRegion;
+		this.$['all-courses-scroll-threshold'].clearTriggers();
 	}
 
 	// After a user-uploaded image is set, this is called to try to update the image
@@ -365,16 +357,8 @@ class AllCourses extends mixinBehaviors([
 
 	_onSearchResultsChanged(e) {
 		this._isSearched = !!e.detail.searchValue;
-		this._updateFilteredEnrollments(e.detail.searchResponse, false);
-		this._myEnrollmentsEntity = e.detail.searchResponse;
 
-		this._showContent = true;
-		this._showTabContent = true;
-
-		setTimeout(() => {
-			// Triggers the course tiles to resize after switching tab
-			window.dispatchEvent(new Event('resize'));
-		}, 10);
+		this._handleNewEnrollmentsEntity(e.detail.searchResponse);
 	}
 
 	_onFilterChange(e) {
@@ -541,11 +525,9 @@ class AllCourses extends mixinBehaviors([
 		);
 	}
 
-	/*
-	* Observers
-	*/
+	_handleNewEnrollmentsEntity(enrollmentsEntity) {
+		this._updateFilteredEnrollments(enrollmentsEntity, false);
 
-	_myEnrollmentsEntityChanged(enrollmentsEntity) {
 		const searchAction = enrollmentsEntity.getActionByName(Actions.enrollments.searchMyEnrollments);
 		this._enrollmentsSearchAction = searchAction;
 
@@ -560,6 +542,14 @@ class AllCourses extends mixinBehaviors([
 		if (this._filterCategories.length === 0) {
 			this._createFilterCategories(enrollmentsEntity);
 		}
+
+		this._showContent = true;
+		this._showTabContent = true;
+
+		setTimeout(() => {
+			// Triggers the course tiles to resize after switching tab
+			window.dispatchEvent(new Event('resize'));
+		}, 10);
 	}
 
 	_createFilterCategories(enrollmentsEntity) {
