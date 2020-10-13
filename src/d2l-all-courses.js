@@ -14,9 +14,9 @@ import 'd2l-facet-filter-sort/components/d2l-sort-by-dropdown/d2l-sort-by-dropdo
 import 'd2l-simple-overlay/d2l-simple-overlay.js';
 import './d2l-my-courses-card-grid.js';
 import './search-filter/d2l-my-courses-search.js';
-import { Actions, Classes } from 'd2l-hypermedia-constants';
 import { createActionUrl, fetchSirenEntity } from './d2l-utility-helpers.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { Actions } from 'd2l-hypermedia-constants';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { MyCoursesFilterCategory } from './search-filter/d2l-my-courses-filter.js';
