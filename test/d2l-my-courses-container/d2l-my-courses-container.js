@@ -398,7 +398,7 @@ describe('d2l-my-courses', () => {
 						expect(stubContent).to.not.have.been.called;
 						expect(stubAllCourses).to.not.have.been.called;
 						done();
-					}, 10);
+					}, 20);
 				});
 			});
 			it('should call refreshCardGridImages on the content and all-courses (just all tab)', done => {
@@ -412,7 +412,7 @@ describe('d2l-my-courses', () => {
 						expect(stubContent).to.have.been.called;
 						expect(stubAllCourses).to.have.been.called;
 						done();
-					}, 10);
+					}, 20);
 				});
 			});
 			it('should call refreshCardGridImages on the content and all-courses (grouped by semesters)', done => {
@@ -427,7 +427,7 @@ describe('d2l-my-courses', () => {
 						expect(stubContent).to.have.been.called;
 						expect(stubAllCourses).to.have.been.called;
 						done();
-					}, 10);
+					}, 20);
 				});
 			});
 		});
