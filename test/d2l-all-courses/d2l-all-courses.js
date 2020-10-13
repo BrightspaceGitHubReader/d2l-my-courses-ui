@@ -22,7 +22,7 @@ describe('d2l-all-courses', function() {
 		sandbox = sinon.sandbox.create();
 
 		widget = fixture('d2l-all-courses-fixture');
-		widget.$['search-widget']._setSearchUrl = sandbox.stub();
+		sandbox.stub(widget, '_onSearchResultsChanged');
 
 		enrollmentsEntity = {
 			actions: [
@@ -130,11 +130,15 @@ describe('d2l-all-courses', function() {
 	});
 
 	describe('Filtering', function() {
+		let entity;
+		beforeEach(() => {
+			entity = SirenParse(enrollmentsEntity);
+		});
 		describe('Loading', function() {
 			it('should create filter categories from the enrollment entity', function() {
 				widget.filterStandardSemesterName = 'Semester Filter Name';
 				widget.filterStandardDepartmentName = 'Department Filter Name';
-				widget._myEnrollmentsEntityChanged(enrollmentsEntity);
+				widget._myEnrollmentsEntityChanged(entity);
 
 				expect(widget._filterCategories.length).to.equal(3);
 				expect(widget._filterCategories[0].key).to.equal('semesters');
@@ -160,14 +164,15 @@ describe('d2l-all-courses', function() {
 				const stub = sandbox.stub(widget, '_createFilterCategories');
 				widget._filterCategories = ['category'];
 
-				widget._myEnrollmentsEntityChanged(enrollmentsEntity);
+				widget._myEnrollmentsEntityChanged(entity);
 				expect(stub).to.not.be.called;
 			});
 
 			it('should not add a filter missing its filterAction', function() {
-				enrollmentsEntity.actions = enrollmentsEntity.actions.filter(action => action.name !== 'search-my-semesters');
+				entity = enrollmentsEntity;
+				entity.actions = enrollmentsEntity.actions.filter(action => action.name !== 'search-my-semesters');
 
-				widget._myEnrollmentsEntityChanged(enrollmentsEntity);
+				widget._myEnrollmentsEntityChanged(SirenParse(entity));
 				expect(widget._filterCategories.length).to.equal(2);
 				expect(widget._filterCategories[0].key).to.equal('departments');
 				expect(widget._filterCategories[1].key).to.equal('roles');
@@ -175,7 +180,7 @@ describe('d2l-all-courses', function() {
 			it('should not add the role filter if grouped by roles', function() {
 				widget.tabSearchType = 'ByRoleAlias';
 
-				widget._myEnrollmentsEntityChanged(enrollmentsEntity);
+				widget._myEnrollmentsEntityChanged(entity);
 				expect(widget._filterCategories.length).to.equal(2);
 				expect(widget._filterCategories[0].key).to.equal('semesters');
 				expect(widget._filterCategories[1].key).to.equal('departments');
@@ -183,14 +188,14 @@ describe('d2l-all-courses', function() {
 			it('should not add the semester and department filters if grouped by semester', function() {
 				widget.tabSearchType = 'BySemester';
 
-				widget._myEnrollmentsEntityChanged(enrollmentsEntity);
+				widget._myEnrollmentsEntityChanged(entity);
 				expect(widget._filterCategories.length).to.equal(1);
 				expect(widget._filterCategories[0].key).to.equal('roles');
 			});
 			it('should not add the semester and department filters if grouped by department', function() {
 				widget.tabSearchType = 'ByDepartment';
 
-				widget._myEnrollmentsEntityChanged(enrollmentsEntity);
+				widget._myEnrollmentsEntityChanged(entity);
 				expect(widget._filterCategories.length).to.equal(1);
 				expect(widget._filterCategories[0].key).to.equal('roles');
 			});
@@ -648,7 +653,7 @@ describe('d2l-all-courses', function() {
 	describe('Closing the Overlay', function() {
 
 		it('should prep _enrollmentsSearchAction for component resets', function(done) {
-			const entity = window.D2L.Hypermedia.Siren.Parse({
+			const entity = SirenParse({
 				actions: [{
 					name: 'search-my-enrollments',
 					method: 'GET',
@@ -767,6 +772,7 @@ describe('d2l-all-courses', function() {
 		});
 
 		it('should hide tab contents when loading a tab\'s contents', function(done) {
+			sandbox.stub(widget, '_computeHasMoreEnrollments');
 			fetchStub.returns(Promise.resolve({})); // Simulate waiting for content fetch
 			widget._showTabContent = true;
 			widget.shadowRoot.querySelector('d2l-tabs').dispatchEvent(new CustomEvent('d2l-tab-panel-selected'));
