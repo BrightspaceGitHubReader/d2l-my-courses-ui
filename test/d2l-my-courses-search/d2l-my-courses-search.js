@@ -1,58 +1,34 @@
 describe('d2l-my-courses-search', function() {
-	let sandbox,
-		widget,
-		clock;
+	let widget;
 
-	const searchAction = {
-			name: 'search-my-enrollments',
-			method: 'GET',
-			href: '/enrollments/users/169',
-			fields: [{
-				name: 'search',
-				type: 'search',
-				value: ''
-			}, {
-				name: 'pageSize',
-				type: 'number',
-				value: 20
-			}, {
-				name: 'embedDepth',
-				type: 'number',
-				value: 0
-			}, {
-				name: 'sort',
-				type: 'text',
-				value: 'OrgUnitName,OrgUnitId'
-			}, {
-				name: 'parentOrganizations',
-				type: 'hidden',
-				value: ''
-			}]
-		},
-		searchFieldName = 'search';
-
-	beforeEach(function() {
-		sandbox = sinon.sandbox.create();
-		clock = sinon.useFakeTimers();
-
-		sandbox.stub(window.d2lfetch, 'fetch').returns(Promise.resolve());
+	beforeEach(function(done) {
 		widget = fixture('d2l-my-courses-search-fixture');
-		widget.searchAction = searchAction;
-		widget.searchFieldName = searchFieldName;
-	});
-
-	afterEach(function() {
-		sandbox.restore();
-		clock.restore();
-	});
-
-	it('should perform a search when the searchUrl changes', function(done) {
-		requestAnimationFrame(function() {
-			const spy = sandbox.spy(widget, '_handleSearchUrlChange');
-			widget.searchUrl = '/organizations/1234';
-			clock.tick(501);
-			expect(spy.called).to.be.true;
+		requestAnimationFrame(() => {
 			done();
+		});
+	});
+
+	describe('Event', function() {
+		it('should fire an event when a search is done', function(done) {
+			widget.addEventListener('d2l-my-courses-search-change', (e) => {
+				expect(e.detail.value).to.equal('test');
+				done();
+			});
+
+			widget._getSearchInput().value = 'test';
+			widget._getSearchInput().search();
+		});
+	});
+
+	describe('Clear', function() {
+		it('should fire an event and clear the search input', function(done) {
+			widget.addEventListener('d2l-my-courses-search-change', (e) => {
+				expect(e.detail.value).to.equal('');
+				done();
+			});
+
+			widget._getSearchInput().value = 'test';
+			widget.clear();
 		});
 	});
 });

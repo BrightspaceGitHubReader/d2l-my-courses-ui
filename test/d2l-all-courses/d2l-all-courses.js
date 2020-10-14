@@ -23,7 +23,6 @@ describe('d2l-all-courses', function() {
 		sandbox = sinon.sandbox.create();
 
 		widget = fixture('d2l-all-courses-fixture');
-		sandbox.stub(widget, '_onSearchChange');
 
 		enrollmentsEntity = {
 			actions: [
@@ -45,6 +44,9 @@ describe('d2l-all-courses', function() {
 						value: ''
 					}, {
 						name: 'sort',
+						value: ''
+					}, {
+						name: 'search',
 						value: ''
 					}]
 				}
@@ -255,7 +257,7 @@ describe('d2l-all-courses', function() {
 						}]
 					});
 					requestAnimationFrame(() => {
-						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=1,2,3&sort=&bustCache=');
+						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=1,2,3&sort=&search=&bustCache=');
 						done();
 					});
 				});
@@ -272,7 +274,7 @@ describe('d2l-all-courses', function() {
 						}]
 					});
 					requestAnimationFrame(() => {
-						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=4,5,6&sort=&bustCache=');
+						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=4,5,6&sort=&search=&bustCache=');
 						done();
 					});
 				});
@@ -292,7 +294,7 @@ describe('d2l-all-courses', function() {
 						}]
 					});
 					requestAnimationFrame(() => {
-						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=1,2,3,4,5,6&sort=&bustCache=');
+						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=1,2,3,4,5,6&sort=&search=&bustCache=');
 						done();
 					});
 				});
@@ -566,7 +568,19 @@ describe('d2l-all-courses', function() {
 				value: 'LastAccessed'
 			});
 			requestAnimationFrame(() => {
-				expect(widget._searchUrl).to.include('/enrollments/users/169?parentOrganizations=&sort=LastAccessed');
+				expect(widget._searchUrl).to.include('/enrollments/users/169?parentOrganizations=&sort=LastAccessed&search=');
+				done();
+			});
+		});
+	});
+
+	describe('Searching', function() {
+		it('should set the _searchUrl', function(done) {
+			fireEvent(widget.shadowRoot.querySelector('d2l-my-courses-search'), 'd2l-my-courses-search-change', {
+				value: 'testing'
+			});
+			requestAnimationFrame(() => {
+				expect(widget._searchUrl).to.include('/enrollments/users/169?parentOrganizations=&sort=&search=testing');
 				done();
 			});
 		});
@@ -654,6 +668,7 @@ describe('d2l-all-courses', function() {
 	describe('Closing the Overlay', function() {
 
 		it('should prep _enrollmentsSearchAction for component resets', function(done) {
+			sandbox.stub(widget, '_handleNewEnrollmentsEntity');
 			const entity = SirenParse({
 				actions: [{
 					name: 'search-my-enrollments',
@@ -685,12 +700,12 @@ describe('d2l-all-courses', function() {
 			const search = widget.shadowRoot.querySelector('d2l-my-courses-search');
 			const spy = sandbox.spy(search, 'clear');
 
-			search._getSearchWidget()._getSearchInput().value = 'foo';
+			search._getSearchInput().value = 'foo';
 			widget._onSimpleOverlayClosed();
 
 			requestAnimationFrame(() => {
 				expect(spy.called).to.be.true;
-				expect(search._getSearchWidget()._getSearchInput().value).to.equal('');
+				expect(search._getSearchInput().value).to.equal('');
 				done();
 			});
 		});

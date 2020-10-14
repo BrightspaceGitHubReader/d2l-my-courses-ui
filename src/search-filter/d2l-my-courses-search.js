@@ -5,7 +5,7 @@ Polymer-based web component for the search input, with added "Recent Searches" f
 
 import '@brightspace-ui/core/components/dropdown/dropdown.js';
 import '@brightspace-ui/core/components/dropdown/dropdown-content.js';
-import 'd2l-search-widget/d2l-search-widget.js';
+import '@brightspace-ui/core/components/inputs/input-search.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-search-listbox.js';
 
@@ -18,18 +18,6 @@ class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	static get properties() {
 		return {
-			// URL to use to search. Updated by the search field, as well as external sources like sort/filter menus
-			searchUrl: {
-				type: String,
-				observer: '_handleSearchUrlChange'
-			},
-			// URL to use to search. Updated by the search field, as well as external sources like sort/filter menus
-			searchAction: {
-				type: Object
-			},
-			orgUnitTypeIds: {
-				type: Array
-			},
 			// List of strings containing previously searched terms/selected courses
 			_previousSearches: {
 				type: Array,
@@ -52,14 +40,9 @@ class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 	static get template() {
 		return html`
 		<style>
-			.dropdown-content {
-				background: transparent;
-			}
-
 			d2l-dropdown {
 				min-width: 100%;
 			}
-
 			d2l-dropdown-content {
 				--d2l-dropdown-verticaloffset: 5px;
 			}
@@ -69,29 +52,25 @@ class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 		</style>
 
 		<d2l-dropdown no-auto-open>
-			<div class="search-bar d2l-dropdown-opener" id="opener">
-				<d2l-search-widget
-					search-action="[[searchAction]]"
-					search-query="[[_computeSearchQuery(orgUnitTypeIds)]]"
-					search-label="[[localize('search.searchCourses')]]"
-					placeholder-text="[[localize('courseSearchInputPlaceholder')]]"
-					on-keydown="_onSearchInputKeyPressed"
+			<div class="d2l-dropdown-opener">
+				<d2l-input-search
+					on-d2l-input-search-searched="_onInputSearched"
+					on-blur="_onSearchInputBlur"
 					on-focus="_onSearchInputFocused"
-					on-blur="_onSearchInputBlur">
-				</d2l-search-widget>
+					on-keydown="_onSearchInputKeyPressed"
+					label="[[localize('search.searchCourses')]]"
+					placeholder="[[localize('courseSearchInputPlaceholder')]]">
+				</d2l-input-search>
 			</div>
-			<d2l-dropdown-content id="dropdown" min-width="[[_dropdownWidth]]" max-width="[[_dropdownWidth]]" no-pointer no-auto-close no-auto-focus no-padding>
-
-				<div class="dropdown-content">
-					<d2l-search-listbox>
-						<div data-list-title disabled>[[localize('recentSearches')]]</div>
-						<template is="dom-repeat" items="[[_previousSearches]]">
-							<div class="d2l-search-custom-item" selectable data-text$="[[item]]" role="option">
-								[[item]]
-							</div>
-						</template>
-					</d2l-search-listbox>
-				</div>
+			<d2l-dropdown-content min-width="[[_dropdownWidth]]" max-width="[[_dropdownWidth]]" no-pointer no-auto-close no-auto-focus no-padding>
+				<d2l-search-listbox>
+					<div data-list-title disabled>[[localize('recentSearches')]]</div>
+					<template is="dom-repeat" items="[[_previousSearches]]">
+						<div class="d2l-search-custom-item" selectable data-text$="[[item]]" role="option">
+							[[item]]
+						</div>
+					</template>
+				</d2l-search-listbox>
 			</d2l-dropdown-content>
 		</d2l-dropdown>`;
 	}
@@ -100,7 +79,6 @@ class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 		super.ready();
 		this._handleFocusBound = this._handleFocus.bind(this);
 		this._handleClickBound = this._handleClick.bind(this);
-		this._handleSearch = this._handleSearch.bind(this);
 	}
 	connectedCallback() {
 		super.connectedCallback();
@@ -109,7 +87,6 @@ class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 		afterNextRender(this, () => {
 			this.addEventListener('iron-activate', this._onIronActivate);
-			this._getSearchWidget().addEventListener('d2l-search-widget-results-changed', this._handleSearch);
 		});
 
 		this._initializePreviousSearches();
@@ -119,46 +96,29 @@ class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 		document.body.removeEventListener('focus', this._handleFocusBound, true);
 		document.body.removeEventListener('click', this._handleClickBound, true);
 	}
-	search() {
-		this._getSearchWidget().search();
-	}
+
 	clear() {
-		this._getSearchWidget().clear();
+		const searchInput = this._getSearchInput();
+		searchInput.value = '';
+		searchInput.search();
 	}
-	_computeSearchQuery(orgUnitTypeIds) {
-		return {
-			page: 1,
-			orgUnitTypeId: orgUnitTypeIds,
-			pageSize: 20
-		};
-	}
-	_getSearchWidget() {
-		return this.shadowRoot.querySelector('d2l-search-widget');
+
+	_getSearchInput() {
+		return this.shadowRoot.querySelector('d2l-input-search');
 	}
 	_getListbox() {
 		return this.shadowRoot.querySelector('d2l-search-listbox');
 	}
-	_handleSearch(e) {
-		this._addSearchToHistory(e.detail.searchValue);
+	_getDropdownContent() {
+		return this.shadowRoot.querySelector('d2l-dropdown-content');
 	}
-	_handleSearchUrlChange(url) {
-		this._getSearchWidget()._searchUrl = url;
-	}
-	_onSearchInputKeyPressed(e) {
-		switch (e.keyCode) {
-			case this._keyCodes.DOWN:
-				if (this._getListbox().hasItems()) {
-					this._getListbox().focus();
-				}
-				e.preventDefault();
-				break;
-			case this._keyCodes.UP:
-				if (this._getListbox().hasItems()) {
-					this._getListbox().focusLast();
-				}
-				e.preventDefault();
-				break;
-		}
+
+	_onInputSearched(e) {
+		this._addSearchToHistory(e.detail.value);
+		this.dispatchEvent(new CustomEvent(
+			'd2l-my-courses-search-change',
+			{ bubbles: true, composed: false, detail: { value: e.detail.value } }
+		));
 	}
 
 	/*
@@ -213,28 +173,46 @@ class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 	_onIronActivate(e) {
 		const text = e.detail.item.dataset.text;
 		if (text) {
-			this._getSearchWidget()._getSearchInput().value = text;
-			this.search();
+			const searchInput = this._getSearchInput();
+			searchInput.value = text;
+			searchInput.search();
 		}
 		e.stopPropagation();
 	}
 	// Called when an element within the search bar gains focus, to open the dropdown if required
 	_onSearchInputFocused() {
-		if (this.$.dropdown.opened) {
+		const dropdown = this._getDropdownContent();
+		if (dropdown.opened) {
 			return;
 		}
 
-		this.set('_dropdownWidth', this.shadowRoot.querySelector('d2l-search-widget').offsetWidth);
+		this.set('_dropdownWidth', this._getSearchInput().offsetWidth);
 
 		// We want to open the previous searches, but only if there are some
 		if (this._previousSearches.length > 0) {
-			this.$.dropdown.open();
+			dropdown.open();
+		}
+	}
+	_onSearchInputKeyPressed(e) {
+		switch (e.keyCode) {
+			case this._keyCodes.DOWN:
+				if (this._getListbox().hasItems()) {
+					this._getListbox().focus();
+				}
+				e.preventDefault();
+				break;
+			case this._keyCodes.UP:
+				if (this._getListbox().hasItems()) {
+					this._getListbox().focusLast();
+				}
+				e.preventDefault();
+				break;
 		}
 	}
 	_onSearchInputBlur(e) {
 		const className = e.relatedTarget ? e.relatedTarget.className : '';
 		if (e.relatedTarget !== this._getListbox() && className.indexOf('d2l-search-custom-item') === -1) {
-			this.$.dropdown.close();
+			this._getDropdownContent().close();
 		}
 	}
 	_handleFocus() {
@@ -244,8 +222,9 @@ class MyCoursesSearch extends MyCoursesLocalizeBehavior(PolymerElement) {
 		this._checkFocusLost(e.composedPath()[0]);
 	}
 	_checkFocusLost(focusedElement) {
-		if (this.$.dropdown.opened && !isComposedAncestor(this, focusedElement)) {
-			this.$.dropdown.close();
+		const dropdown = this._getDropdownContent();
+		if (dropdown.opened && !isComposedAncestor(this, focusedElement)) {
+			dropdown.close();
 		}
 	}
 
