@@ -35,7 +35,10 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			// Standard Semester OU Type name to be displayed in the filter dropdown
 			filterStandardSemesterName: String,
 			// Configuration value passed in to toggle Learning Paths code
-			orgUnitTypeIds: Array,
+			orgUnitTypeIds: {
+				type: Array,
+				observer: '_onOrgUnitTypeIdsChange'
+			},
 			// URL to fetch widget settings
 			presentationUrl: String,
 			// Set by the image selector when it experiences an error trying to set a new course image
@@ -278,8 +281,8 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			</d2l-simple-overlay>`;
 	}
 
-	connectedCallback() {
-		super.connectedCallback();
+	ready() {
+		super.ready();
 		this._actionParams = {
 			autoPinCourses: false,
 			embedDepth: 0,
@@ -349,6 +352,12 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 					}
 				});
 			}
+		}
+	}
+
+	_onOrgUnitTypeIdsChange(newValue) {
+		if (this._actionParams) {
+			this._actionParams.orgUnitTypeId = newValue;
 		}
 	}
 
