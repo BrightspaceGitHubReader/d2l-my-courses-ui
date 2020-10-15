@@ -257,7 +257,7 @@ describe('d2l-all-courses', function() {
 						}]
 					});
 					requestAnimationFrame(() => {
-						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=1,2,3&sort=&search=&bustCache=');
+						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=1,2,3&sort=Current&search=&bustCache=');
 						done();
 					});
 				});
@@ -274,7 +274,7 @@ describe('d2l-all-courses', function() {
 						}]
 					});
 					requestAnimationFrame(() => {
-						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=4,5,6&sort=&search=&bustCache=');
+						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=4,5,6&sort=Current&search=&bustCache=');
 						done();
 					});
 				});
@@ -294,7 +294,7 @@ describe('d2l-all-courses', function() {
 						}]
 					});
 					requestAnimationFrame(() => {
-						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=1,2,3,4,5,6&sort=&search=&bustCache=');
+						expect(widget._searchUrl).to.equal('/enrollments/users/169?parentOrganizations=1,2,3,4,5,6&sort=Current&search=&bustCache=');
 						done();
 					});
 				});
@@ -479,6 +479,11 @@ describe('d2l-all-courses', function() {
 			});
 
 			it('should clear expected _searchUrl params', function(done) {
+				Object.assign(widget._actionParams, {
+					parentOrganizations: '123',
+					roles: '456',
+					sort: 'LastAccessed'
+				});
 				widget._enrollmentsSearchAction = {
 					name: 'search-my-enrollments',
 					href: '/enrollments/users/169',
@@ -501,6 +506,10 @@ describe('d2l-all-courses', function() {
 			});
 
 			it('should not clear parentOrganizations param if grouped by semesters', function(done) {
+				Object.assign(widget._actionParams, {
+					parentOrganizations: '123',
+					roles: '456'
+				});
 				widget.tabSearchType = 'BySemester';
 				widget._enrollmentsSearchAction = {
 					name: 'search-my-enrollments',
@@ -521,6 +530,10 @@ describe('d2l-all-courses', function() {
 			});
 
 			it('should not clear parentOrganizations param if grouped by departments', function(done) {
+				Object.assign(widget._actionParams, {
+					parentOrganizations: '123',
+					roles: '456'
+				});
 				widget.tabSearchType = 'ByDepartment';
 				widget._enrollmentsSearchAction = {
 					name: 'search-my-enrollments',
@@ -541,6 +554,10 @@ describe('d2l-all-courses', function() {
 			});
 
 			it('should not clear roles param if grouped by role', function(done) {
+				Object.assign(widget._actionParams, {
+					parentOrganizations: '123',
+					roles: '456'
+				});
 				widget.tabSearchType = 'ByRoleAlias';
 				widget._enrollmentsSearchAction = {
 					name: 'search-my-enrollments',
@@ -580,7 +597,7 @@ describe('d2l-all-courses', function() {
 				value: 'testing'
 			});
 			requestAnimationFrame(() => {
-				expect(widget._searchUrl).to.include('/enrollments/users/169?parentOrganizations=&sort=&search=testing');
+				expect(widget._searchUrl).to.include('/enrollments/users/169?parentOrganizations=&sort=Current&search=testing');
 				done();
 			});
 		});
@@ -667,31 +684,23 @@ describe('d2l-all-courses', function() {
 
 	describe('Closing the Overlay', function() {
 
-		it('should prep _enrollmentsSearchAction for component resets', function(done) {
-			sandbox.stub(widget, '_handleNewEnrollmentsEntity');
-			const entity = SirenParse({
-				actions: [{
-					name: 'search-my-enrollments',
-					method: 'GET',
-					href: '/enrollments/users/169',
-					fields: [
-						{ name: 'search', type: 'search', value: 'testing' },
-						{ name: 'sort', type: 'text', value: 'LastAccessed' },
-						{ name: 'promotePins', type: 'checkbox', value: false },
-						{ name: 'parentOrganizations', type: 'hidden', value: '123' },
-						{ name: 'roles', type: 'hidden', value: '456' }
-					]
-				}]
+		it('should prep _actionParams for component resets', function(done) {
+			Object.assign(widget._actionParams, {
+				search: 'testing',
+				sort: 'LastAccessed',
+				parentOrganizations: '123',
+				promotePins: false,
+				roles: '456'
 			});
-			widget._enrollmentsSearchAction = entity.actions[0];
+
 			widget._onSimpleOverlayClosed();
 
 			requestAnimationFrame(() => {
-				expect(widget._enrollmentsSearchAction.getFieldByName('search').value).to.be.equal('');
-				expect(widget._enrollmentsSearchAction.getFieldByName('sort').value).to.be.equal('Current');
-				expect(widget._enrollmentsSearchAction.getFieldByName('promotePins').value).to.be.true;
-				expect(widget._enrollmentsSearchAction.getFieldByName('parentOrganizations').value).to.equal('');
-				expect(widget._enrollmentsSearchAction.getFieldByName('roles').value).to.equal('');
+				expect(widget._actionParams.search).to.be.equal('');
+				expect(widget._actionParams.sort).to.be.equal('Current');
+				expect(widget._actionParams.promotePins).to.be.true;
+				expect(widget._actionParams.parentOrganizations).to.equal('');
+				expect(widget._actionParams.roles).to.equal('');
 				done();
 			});
 		});
