@@ -89,8 +89,11 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			_isSearched: Boolean,
 			// Object containing the last response from an enrollments fetch
 			_lastEnrollmentCollectionResponse: Object,
-			// URL passed to search widget, called for searching
-			_searchUrl: String,
+			// URL to fetch enrollments, set by filtering, sorting, searching, and selecting a tab
+			_searchUrl: {
+				type: String,
+				observer: '_fetchEnrollments'
+			},
 			_selectedTabId: String,
 			_showAdvancedSearchLink: {
 				type: Boolean,
@@ -222,10 +225,7 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 					<div id="search-and-filter">
 						<div id="search-and-link">
 							<d2l-my-courses-search
-								on-d2l-search-widget-results-changed="_onSearchChange"
-								org-unit-type-ids="[[orgUnitTypeIds]]"
-								search-action="[[_enrollmentsSearchAction]]"
-								search-url="[[_searchUrl]]">
+								on-d2l-my-courses-search-change="_onSearchChange">
 							</d2l-my-courses-search>
 							<d2l-link class="advanced-search-link" hidden$="[[!_showAdvancedSearchLink]]" href$="[[advancedSearchUrl]]">[[localize('advancedSearch')]]</d2l-link>
 						</div>
@@ -350,10 +350,14 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 	}
 
 	_onSearchChange(e) {
-		this._isSearched = !!e.detail.searchValue;
+		this._isSearched = !!e.detail.value;
 
-		const enrollmentsEntity = new EnrollmentCollectionEntity(e.detail.searchResponse, this.token);
-		this._handleNewEnrollmentsEntity(enrollmentsEntity);
+		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
+			createActionUrl(this._enrollmentsSearchAction, {
+				orgUnitTypeId: this.orgUnitTypeIds,
+				search: encodeURIComponent(e.detail.value)
+			})
+		);
 	}
 
 	_onFilterChange(e) {
@@ -506,7 +510,8 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			autoPinCourses: false,
 			sort: sortData.action,
 			embedDepth: 0,
-			promotePins: sortData.promotePins
+			promotePins: sortData.promotePins,
+			pageSize: 20
 		};
 		if ((this._filterCounts.departments > 0 || this._filterCounts.semesters > 0) && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('parentOrganizations')) {
 			params.parentOrganizations =  this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value;
@@ -518,6 +523,14 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
 			createActionUrl(tabAction.enrollmentsSearchAction, params)
 		);
+	}
+
+	_fetchEnrollments(url) {
+		entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
+			if (entity) {
+				this._handleNewEnrollmentsEntity(entity);
+			}
+		});
 	}
 
 	_handleNewEnrollmentsEntity(enrollmentsEntity) {
