@@ -35,7 +35,10 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			// Standard Semester OU Type name to be displayed in the filter dropdown
 			filterStandardSemesterName: String,
 			// Configuration value passed in to toggle Learning Paths code
-			orgUnitTypeIds: Array,
+			orgUnitTypeIds: {
+				type: Array,
+				observer: '_onOrgUnitTypeIdsChange'
+			},
 			// URL to fetch widget settings
 			presentationUrl: String,
 			// Set by the image selector when it experiences an error trying to set a new course image
@@ -53,8 +56,10 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
 			token: String,
 
+			// Action params to keep filtering/sorting/searching options between tab changes
+			_actionParams: Object,
 			_bustCacheToken: Number,
-			// search-my-enrollments Action
+			// Current tab's search-my-enrollments Action
 			_enrollmentsSearchAction: Object,
 			// Info about filter categories and options to pass down to the filter component
 			_filterCategories: {
@@ -276,6 +281,19 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			</d2l-simple-overlay>`;
 	}
 
+	ready() {
+		super.ready();
+		this._actionParams = {
+			autoPinCourses: false,
+			embedDepth: 0,
+			orgUnitTypeId: this.orgUnitTypeIds,
+			pageSize: 20,
+			promotePins: this._sortMap[0].promotePins,
+			search: '',
+			sort: this._sortMap[0].action
+		};
+	}
+
 	/*
 	* Public API methods
 	*/
@@ -337,26 +355,29 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 		}
 	}
 
+	_onOrgUnitTypeIdsChange(newValue) {
+		if (this._actionParams) {
+			this._actionParams.orgUnitTypeId = newValue;
+		}
+	}
+
 	_onSortOrderChanged(e) {
 		const sortData = this._mapSortOption(e.detail.value, 'name');
 
+		this._actionParams.sort = sortData.action;
+		this._actionParams.promotePins = sortData.promotePins;
+
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			createActionUrl(this._enrollmentsSearchAction, {
-				sort: sortData.action,
-				orgUnitTypeId: this.orgUnitTypeIds,
-				promotePins: sortData.promotePins
-			})
+			createActionUrl(this._enrollmentsSearchAction, this._actionParams)
 		);
 	}
 
 	_onSearchChange(e) {
 		this._isSearched = !!e.detail.value;
 
+		this._actionParams.search = encodeURIComponent(e.detail.value);
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			createActionUrl(this._enrollmentsSearchAction, {
-				orgUnitTypeId: this.orgUnitTypeIds,
-				search: encodeURIComponent(e.detail.value)
-			})
+			createActionUrl(this._enrollmentsSearchAction, this._actionParams)
 		);
 	}
 
@@ -377,11 +398,10 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			const selectedSemesters = semesterFilters ? semesterFilters.selectedOptions : [];
 			const selectedDepartments = departmentFilters ? departmentFilters.selectedOptions : [];
 			const semesterDepartmentFilters = selectedSemesters.concat(selectedDepartments);
+
+			this._actionParams.parentOrganizations = semesterDepartmentFilters.join(',');
 			this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-				createActionUrl(this._enrollmentsSearchAction, {
-					orgUnitTypeId: this.orgUnitTypeIds,
-					parentOrganizations: semesterDepartmentFilters.join(',')
-				})
+				createActionUrl(this._enrollmentsSearchAction, this._actionParams)
 			);
 		}
 	}
@@ -412,6 +432,7 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 		);
 
 		const actionUrl = createActionUrl(applyAction);
+		this._actionParams.roles = applyAction.getFieldByName('roles').value;
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(actionUrl);
 	}
 
@@ -422,18 +443,10 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			roles: 0
 		};
 
-		const params = {};
-		// Only clear if My Courses is not grouped by semesters/departments
-		if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment') {
-			params.parentOrganizations = '';
-		}
-		// Only clear if My Courses is not grouped by role
-		if (this.tabSearchType !== 'ByRoleAlias') {
-			params.roles = '';
-		}
+		this._clearParentOrganizationsAndRolesParams();
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			createActionUrl(this._enrollmentsSearchAction, params)
+			createActionUrl(this._enrollmentsSearchAction, this._actionParams)
 		);
 	}
 
@@ -448,31 +461,28 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 	}
 
 	_onSimpleOverlayClosed() {
-		if (this._enrollmentsSearchAction && this._enrollmentsSearchAction.hasFieldByName) {
-			if (this._enrollmentsSearchAction.hasFieldByName('search')) {
-				this._enrollmentsSearchAction.getFieldByName('search').value = '';
-			}
-			if (this._enrollmentsSearchAction.hasFieldByName('sort')) {
-				this._enrollmentsSearchAction.getFieldByName('sort').value = this._sortMap[0].action;
-			}
-			if (this._enrollmentsSearchAction.hasFieldByName('promotePins')) {
-				this._enrollmentsSearchAction.getFieldByName('promotePins').value = this._sortMap[0].promotePins;
-			}
-			// Only clear if My Courses is not grouped by semesters/departments
-			if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment' && this._enrollmentsSearchAction.hasFieldByName('parentOrganizations')) {
-				this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value = '';
-			}
-			// Only clear if My Courses is not grouped by role
-			if (this.tabSearchType !== 'ByRoleAlias' && this._enrollmentsSearchAction.hasFieldByName('roles')) {
-				this._enrollmentsSearchAction.getFieldByName('roles').value = '';
-			}
-		}
+		this._actionParams.search = '';
+		this._actionParams.sort = this._sortMap[0].action;
+		this._actionParams.promotePins = this._sortMap[0].promotePins;
+
+		this._clearParentOrganizationsAndRolesParams();
 
 		this.shadowRoot.querySelector('d2l-my-courses-search').clear();
 		this.shadowRoot.querySelector('d2l-my-courses-filter').clear();
 		this.shadowRoot.querySelector(`d2l-sort-by-dropdown-option[value=${this._sortMap[0].name}]`).click();
 
 		this.dispatchEvent(new CustomEvent('d2l-all-courses-close'));
+	}
+
+	_clearParentOrganizationsAndRolesParams() {
+		// Only clear if My Courses is not grouped by semesters/departments
+		if (this.tabSearchType !== 'BySemester' && this.tabSearchType !== 'ByDepartment' && this._actionParams.parentOrganizations) {
+			this._actionParams.parentOrganizations = '';
+		}
+		// Only clear if My Courses is not grouped by role
+		if (this.tabSearchType !== 'ByRoleAlias' && this._actionParams.roles) {
+			this._actionParams.roles = '';
+		}
 	}
 
 	// Triggered when the tabs are first rendered, which then fetches the enrollment data by setting _searchUrl
@@ -495,33 +505,10 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			return;
 		}
 
-		const search = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('search') ?
-			this._enrollmentsSearchAction.getFieldByName('search').value : '';
-
-		const sort = this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('sort') ?
-			this._enrollmentsSearchAction.getFieldByName('sort').value : this._sortMap[0].action;
-
-		const sortData = this._mapSortOption(sort, 'action');
-
 		this._showTabContent = false;
-		const params = {
-			search: search,
-			orgUnitTypeId: this.orgUnitTypeIds,
-			autoPinCourses: false,
-			sort: sortData.action,
-			embedDepth: 0,
-			promotePins: sortData.promotePins,
-			pageSize: 20
-		};
-		if ((this._filterCounts.departments > 0 || this._filterCounts.semesters > 0) && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('parentOrganizations')) {
-			params.parentOrganizations =  this._enrollmentsSearchAction.getFieldByName('parentOrganizations').value;
-		}
-		if (this._filterCounts.roles > 0 && this._enrollmentsSearchAction && this._enrollmentsSearchAction.getFieldByName('roles')) {
-			params.roles =  this._enrollmentsSearchAction.getFieldByName('roles').value;
-		}
 
 		this._searchUrl = this._appendOrUpdateBustCacheQueryString(
-			createActionUrl(tabAction.enrollmentsSearchAction, params)
+			createActionUrl(tabAction.enrollmentsSearchAction, this._actionParams)
 		);
 	}
 

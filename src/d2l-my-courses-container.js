@@ -53,6 +53,8 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 			_presentationUrl: String,
 			_currentTabId: String,
 			_enrollmentsSearchAction: Object,
+			// Array form of orgUnitTypeIds
+			_orgUnitTypeIds: Array,
 			_pinnedTabAction: Object,
 			_tabSearchActions: {
 				type: Array,
@@ -116,7 +118,7 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 							show-image-error="[[_showImageError]]"
 							token="[[token]]"
 							enrollments-search-action="[[item.enrollmentsSearchAction]]"
-							org-unit-type-ids="[[orgUnitTypeIds]]"
+							org-unit-type-ids="[[_orgUnitTypeIds]]"
 							tab-search-type="[[_tabSearchType]]"
 							update-user-settings-action="[[_updateUserSettingsAction]]">
 						</d2l-my-courses-content>
@@ -129,7 +131,7 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 				advanced-search-url="[[advancedSearchUrl]]"
 				filter-standard-department-name="[[standardDepartmentName]]"
 				filter-standard-semester-name="[[standardSemesterName]]"
-				org-unit-type-ids="[[orgUnitTypeIds]]"
+				org-unit-type-ids="[[_orgUnitTypeIds]]"
 				presentation-url="[[_presentationUrl]]"
 				show-image-error="[[_showImageError]]"
 				tab-search-type="[[_tabSearchType]]"
@@ -172,14 +174,14 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 		this.$['image-selector-threshold'].scrollTarget = this.$['basic-image-selector-overlay'].scrollRegion;
 
-		let ouTypeIds = []; //default value
+		let ouTypeIds = []; // default value
 		try {
 			ouTypeIds = JSON.parse(this.orgUnitTypeIds).value;
 		} catch (e) {
 			// default value used
 		}
 
-		this.orgUnitTypeIds = ouTypeIds;
+		this._orgUnitTypeIds = ouTypeIds;
 	}
 
 	disconnectedCallback() {
