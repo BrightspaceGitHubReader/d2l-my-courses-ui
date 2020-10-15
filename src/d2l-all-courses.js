@@ -525,7 +525,7 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 		);
 	}
 
-	async _fetchEnrollments(url) {
+	_fetchEnrollments(url) {
 		entityFactory(EnrollmentCollectionEntity, url, this.token, entity => {
 			if (entity) {
 				this._handleNewEnrollmentsEntity(entity);
