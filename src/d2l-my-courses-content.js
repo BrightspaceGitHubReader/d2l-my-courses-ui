@@ -207,23 +207,16 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 
 	ready() {
 		super.ready();
-		this._onTabSelected = this._onTabSelected.bind(this);
 	}
 
 	connectedCallback() {
 		super.connectedCallback();
 		performanceMark('d2l.my-courses.attached');
 
-		document.body.addEventListener('d2l-tab-panel-selected', this._onTabSelected);
-
 		this.addEventListener('course-tile-organization', this._onCourseTileOrganization);
 		this.addEventListener('course-image-loaded', this._onCourseImageLoaded);
 		this.addEventListener('d2l-enrollment-new', this._onD2lEnrollmentNew);
 		this.addEventListener('initially-visible-course-tile', this._onInitiallyVisibleCourseTile);
-	}
-	disconnectedCallback() {
-		super.disconnectedCallback();
-		document.body.removeEventListener('d2l-tab-panel-selected', this._onTabSelected);
 	}
 
 	/*
@@ -258,6 +251,31 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 		} else if (this._isAllTab || this._isPinnedTab || changedEnrollmentId) {
 			this._isRefetchNeeded = true;
 		}
+	}
+
+	// Called by d2l-my-courses-container when it receives a d2l-tab-panel-selected event
+	// Triggered when the tabs are first rendered, which then fetches the enrollment data
+	newTabSelected(actionName) {
+		// Only handle if tab selected corresponds to this panel
+		if (actionName !== this.enrollmentsSearchAction.name) {
+			this._thisTabSelected = false;
+			return;
+		}
+
+		this._thisTabSelected = true;
+
+		if (this._isRefetchNeeded) {
+			this._handleEnrollmentsRefetch();
+		} else if (this._numberOfEnrollments === 0 && !this._rootTabSelected) {
+			this._rootTabSelected = true;
+			this._fetchRoot();
+		} else {
+			setTimeout(() => {
+				// Force redraw of course cards
+				window.dispatchEvent(new Event('resize'));
+			}, 10);
+		}
+		this._setLastSearchName(this.enrollmentsSearchAction.name);
 	}
 
 	// After a user-uploaded image is set, this is called to try to update the image
@@ -409,38 +427,6 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 	}
 	_onInitiallyVisibleCourseTile() {
 		this._initiallyVisibleCourseTileCount++;
-	}
-	// Triggered when the tabs are first rendered, which then fetches the enrollment data
-	_onTabSelected(e) {
-		// Only handle if tab selected corresponds to this panel
-		if (!this.parentElement || e.composedPath()[0].id !== this.parentElement.id) {
-			this._thisTabSelected = false;
-			return;
-		}
-
-		this._thisTabSelected = true;
-
-		if (this._isRefetchNeeded) {
-			this._handleEnrollmentsRefetch();
-		} else if (this._numberOfEnrollments === 0 && !this._rootTabSelected) {
-			this._rootTabSelected = true;
-			this._fetchRoot();
-		} else {
-			setTimeout(() => {
-				// Force redraw of course cards
-				window.dispatchEvent(new Event('resize'));
-			}, 10);
-		}
-		this._setLastSearchName(this.enrollmentsSearchAction.name);
-
-		const tabChanged = new CustomEvent('d2l-tab-changed', {
-			bubbles: true,
-			composed: true,
-			detail: {
-				tabId: this.enrollmentsSearchAction.name
-			}
-		});
-		this.dispatchEvent(tabChanged);
 	}
 
 	_computeIsAllTab(actionName) {
