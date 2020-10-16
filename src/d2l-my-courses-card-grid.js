@@ -3,6 +3,7 @@
 Lit web component for the grid of enrollment cards.
 */
 
+import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-enrollments/components/d2l-enrollment-card/d2l-enrollment-card.js';
 import { css, html, LitElement } from 'lit-element';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
@@ -18,6 +19,8 @@ class MyCoursesCardGrid extends LitElement {
 			// If true, will hide courses that are "closed" (only needed if a closed course was just unpinned,
 			// since we remove closed courses from the filteredEnrollments array on load)
 			hidePastCourses: { attribute: 'hide-past-courses', reflect: true, type: Boolean },
+			// Whether to display the loading spinner instead of the card grid
+			loading: { type: Boolean },
 			// URL to fetch widget settings
 			presentationUrl: { type: String },
 			// Token JWT Token for brightspace | a function that returns a JWT token for brightspace
@@ -83,6 +86,12 @@ class MyCoursesCardGrid extends LitElement {
 			:host([hide-past-courses]) .course-card-grid d2l-enrollment-card[closed]:not([pinned]) {
 				display: none;
 			}
+
+			d2l-loading-spinner {
+				margin: auto;
+				padding-bottom: 20px;
+				width: 100%;
+			}
 		`];
 	}
 
@@ -92,6 +101,7 @@ class MyCoursesCardGrid extends LitElement {
 
 		this.filteredEnrollments = [];
 		this.hidePastCourses = false;
+		this.loading = false;
 		this.widgetView = false;
 		this._hideCourseStartDate = false;
 		this._hideCourseEndDate = false;
@@ -143,7 +153,10 @@ class MyCoursesCardGrid extends LitElement {
 			};
 		}
 
-		return html`
+		return this.loading ? html`
+			<d2l-loading-spinner size="100">
+			</d2l-loading-spinner>
+			` : html`
 			<slot></slot>
 			<div class="course-card-grid columns-${this._numColumns}">
 				${this.filteredEnrollments.map((item, index) => html`
