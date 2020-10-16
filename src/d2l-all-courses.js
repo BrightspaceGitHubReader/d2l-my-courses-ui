@@ -116,38 +116,32 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			_sortMap: {
 				type: Object,
 				value: function() {
-					return [
-						{
-							name: 'Default',
+					return {
+						Default: {
 							action: 'Current',
 							promotePins: true
 						},
-						{
-							name: 'OrgUnitName',
+						OrgUnitName: {
 							action: 'OrgUnitName,OrgUnitId',
 							promotePins: false
 						},
-						{
-							name: 'OrgUnitCode',
+						OrgUnitCode: {
 							action: 'OrgUnitCode,OrgUnitId',
 							promotePins: false
 						},
-						{
-							name: 'PinDate',
+						PinDate: {
 							action: '-PinDate,OrgUnitId',
 							promotePins: true
 						},
-						{
-							name: 'LastAccessed',
+						LastAccessed: {
 							action: 'LastAccessed',
 							promotePins: false
 						},
-						{
-							name: 'EnrollmentDate',
+						EnrollmentDate: {
 							action: '-LastModifiedDate,OrgUnitId',
 							promotePins: false
 						}
-					];
+					};
 				}
 			}
 		};
@@ -242,7 +236,7 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 								filter-categories="[[_filterCategories]]">
 							</d2l-my-courses-filter>
 
-							<d2l-sort-by-dropdown align="end" label="[[localize('sorting.sortBy')]]" value="[[_sortMap[0].name]]" on-d2l-sort-by-dropdown-change="_onSortOrderChanged">
+							<d2l-sort-by-dropdown align="end" label="[[localize('sorting.sortBy')]]" value="Default" on-d2l-sort-by-dropdown-change="_onSortOrderChanged">
 								<d2l-sort-by-dropdown-option value="Default" text="[[localize('sorting.sortDefault')]]"></d2l-sort-by-dropdown-option>
 								<d2l-sort-by-dropdown-option value="OrgUnitName" text="[[localize('sorting.sortCourseName')]]"></d2l-sort-by-dropdown-option>
 								<d2l-sort-by-dropdown-option value="OrgUnitCode" text="[[localize('sorting.sortCourseCode')]]"></d2l-sort-by-dropdown-option>
@@ -288,9 +282,9 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 			embedDepth: 0,
 			orgUnitTypeId: this.orgUnitTypeIds,
 			pageSize: 20,
-			promotePins: this._sortMap[0].promotePins,
+			promotePins: this._sortMap.Default.promotePins,
 			search: '',
-			sort: this._sortMap[0].action
+			sort: this._sortMap.Default.action
 		};
 	}
 
@@ -362,7 +356,7 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 	}
 
 	_onSortOrderChanged(e) {
-		const sortData = this._mapSortOption(e.detail.value, 'name');
+		const sortData = this._sortMap[e.detail.value] || this._sortMap.Default;
 
 		this._actionParams.sort = sortData.action;
 		this._actionParams.promotePins = sortData.promotePins;
@@ -462,14 +456,14 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	_onSimpleOverlayClosed() {
 		this._actionParams.search = '';
-		this._actionParams.sort = this._sortMap[0].action;
-		this._actionParams.promotePins = this._sortMap[0].promotePins;
+		this._actionParams.sort = this._sortMap.Default.action;
+		this._actionParams.promotePins = this._sortMap.Default.promotePins;
 
 		this._clearParentOrganizationsAndRolesParams();
 
 		this.shadowRoot.querySelector('d2l-my-courses-search').clear();
 		this.shadowRoot.querySelector('d2l-my-courses-filter').clear();
-		this.shadowRoot.querySelector(`d2l-sort-by-dropdown-option[value=${this._sortMap[0].name}]`).click();
+		this.shadowRoot.querySelector('d2l-sort-by-dropdown-option[value=Default]').click();
 
 		this.dispatchEvent(new CustomEvent('d2l-all-courses-close'));
 	}
@@ -632,17 +626,6 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	_computeShowAdvancedSearchLink(link) {
 		return !!link;
-	}
-
-	_mapSortOption(identifier, identifierName) {
-		let i = 0;
-		for (i = 0; i < this._sortMap.length; i += 1) {
-			if (this._sortMap[i][identifierName] === identifier) {
-				return this._sortMap[i];
-			}
-		}
-
-		return this._sortMap[0];
 	}
 
 	_updateFilteredEnrollments(enrollmentsEntity, append) {
