@@ -151,7 +151,7 @@ Polymer({
 
 	// Handle keyboard selection of listbox items, as IronMenuBehavior leaves it to the item to handle
 	_onKeydown: function(e) {
-		if (e.detail.event === 'keydown' && this.keyboardEventMatchesKeys(e, 'space')) {
+		if (e.detail.event === 'keydown' && (this.keyboardEventMatchesKeys(e, 'space') || this.keyboardEventMatchesKeys(e, 'enter'))) {
 			e.preventDefault();
 			if (this.focusedItem && !this.focusedItem.hasAttribute('disabled')) {
 				this.fire('iron-activate', {item: this.focusedItem});
@@ -174,6 +174,7 @@ Polymer({
 	},
 
 	keyBindings: {
+		'enter' : '_onKeydown',  // DE40947 - Adding enter because there is an issue with space in Firefox
 		'space' : '_onKeydown'
 	}
 
