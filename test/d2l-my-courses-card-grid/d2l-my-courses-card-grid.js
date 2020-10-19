@@ -11,6 +11,26 @@ describe('d2l-my-courses-card-grid', function() {
 		});
 	});
 
+	describe('Loading', function() {
+		it('should display loading spinner if loading is true', done => {
+			let loadingSpinner = widget.shadowRoot.querySelector('d2l-loading-spinner');
+			let cardGrid = widget.shadowRoot.querySelector('.course-card-grid');
+			expect(widget.loading).to.be.false;
+			expect(loadingSpinner).to.be.null;
+			expect(cardGrid).to.not.be.null;
+
+			widget.loading = true;
+			requestAnimationFrame(() => {
+				loadingSpinner = widget.shadowRoot.querySelector('d2l-loading-spinner');
+				cardGrid = widget.shadowRoot.querySelector('.course-card-grid');
+				expect(widget.loading).to.be.true;
+				expect(loadingSpinner).to.not.be.null;
+				expect(cardGrid).to.be.null;
+				done();
+			});
+		});
+	});
+
 	describe('Card Grid', function() {
 
 		it('should set --course-image-card-height as part of initial setup', done => {
