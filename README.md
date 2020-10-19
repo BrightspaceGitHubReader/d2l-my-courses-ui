@@ -4,44 +4,45 @@
 
 The UI for the My Courses homepage widget in the LE.
 
+![widget view](/images/widget.png?raw=true)
+
 ## Building
 
 Install dependencies via NPM:
-
 ```shell
 npm install
 ```
 
-## Components
+Install the Polymer client globally if you haven't already:
+```shell
+npm i -g polymer-cli
+```
 
-`d2l-my-courses` is made up of several web components all working together. The
-intent behind this design is that each component can be used more or less
-independently. If there is a need, these components could be broken out into
-their own repositories/release schedule, but for now they are all contained
-within this repo.
+## Local Development
 
-## Local Testing
+### Using the demo pages
 
-Testing from within LMS:
+For simple changes like layout adjustments, you may be able to use the demo pages.  They have fake data setup, but do not have functionality like pinning, filtering, sorting, etc.
 
-1. Checkout brightspace/d2l-my-courses-ui and brightspace/brightspace-integration
+To host the demo pages, run:
+```shell
+polymer serve
+```
+Then navigate to `http://localhost:<port>/components/d2l-my-courses/demo/`.
 
-2. In brightspace-integration project, ensure you're in the correct branch (master)
+### Testing from within the LMS
 
-3. In d2l-my-courses-ui directory, run
-	```shell
-	npm link
-	```
-to allow it to be linked from brightspace-integration
+To test your changes in the LMS, you'll need to host a local BSI (`brightspace-integration`):
+1. [Running a Local BSI](https://github.com/Brightspace/brightspace-integration#development-build)
+2. [Configuring the LMS](https://github.com/Brightspace/brightspace-integration#using-the-configuration-file)
 
-4. In brightspace-integration directory, run
-	```shell
-	npm link d2l-my-courses
-	```
-to link to the local d2l-my-courses-ui project
+After completing the steps above, you can modify the files in BSI's `node_modules/d2l-my-courses` folder directly, or setup npm linking.  Changes to the files are picked up immediately, so no need to restart BSI each time - just refresh the browser.
 
-5. Build and run brightspace-integration (will have to be rebuilt on any changes to d2l-my-courses-ui)
- * Note: If on Windows, you must remove the tmp directory manually prior to building, if it exists.
+### Testing with LMS data in the demo pages
+
+Another option is to use the demo page, but pull in real data from the LMS to allow for pinning, filtering, etc.
+
+You can do this by visiting a quad site with the user whose course setup you'd like to test with, and inspecting the My Courses widget.  You can copy over the attributes to the component in `demo/d2l-my-courses/d2l-my-courses.html`, and grab a token from a HM network call.  You'll need to remove the code that cancels the PUT call, and replace the token when it expires.
 
 ## Unit Tests
 
@@ -53,31 +54,22 @@ To lint and run unit tests, run:
 npm test
 ```
 
+You can also see the tests run in a browser by running:
+```shell
+polymer serve
+```
+Then navigate to `http://localhost:<port>/components/d2l-my-courses/test/index.all.html`.
+
 ## Performance Timings
 
 For details on the performance profile of my-courses and the various timings which are collected, see [Performance Timings](performance-timing.md).
 
 ## Publishing & Releasing
 
-To publish a numbered "release" version, use the "Draft a new release" tool on GitHub.
+To publish a numbered "release" version, include [increment major], [increment minor] or [increment patch] in your merge commit message.  It must be in the top, bolded part of the commit message in Github to work properly:
+![releasing on Github merge](/images/releasing.png?raw=true)
 
-## Contributing
-Contributions are welcome, please submit a pull request!
+This will automatically bump the version in `package.json` and create a Github release.  Minor and patch versions will be automatically picked up by the current release's BSI.
 
-In the description of your pull request, please include the following information:
-1. The associated user story number, if applicable
+For cert or hotfixes, you will want to create a branch for that release based on the last version that made it into BSI.  After merging the fixes into that branch, you can manually create a release in Github to point to in BSI's `package.json`.
 
-2. The acceptance criteria for this feature
-
-3. Areas of risk that should be addressed during testing
-
-Before your PR is merged, it should be tested thoroughly, and the person who does this testing should describe their test steps in detail in a comment. These steps should then be reviewed by the developer and assessed for gaps before the PR gets merged.
-
-> Note: To contribute, please create a branch in this repo instead of a fork.
-We are using [Sauce Labs](https://saucelabs.com/) in our CI builds which don't
-work in PRs from forks. Thanks!
-
-### Code Style
-
-This repository is configured with [EditorConfig](http://editorconfig.org) rules and
-contributions should make use of them.
