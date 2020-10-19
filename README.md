@@ -40,9 +40,9 @@ After completing the steps above, you can modify the files in BSI's `node_module
 
 ### Testing with LMS data in the demo pages
 
-Another option is to use the demo page, but pull in real data from the LMS to allow for pinning, filtering, etc.
+Another option is to use the demo pages, but pull in real data from the LMS to allow for pinning, filtering, etc.
 
-You can do this by visiting a quad site with the user whose course setup you'd like to test with, and inspecting the My Courses widget.  You can copy over the attributes to the component in `demo/d2l-my-courses/d2l-my-courses.html`, and grab a token from a HM network call.  You'll need to remove the code that cancels the PUT call, and replace the token when it expires.
+You can do this by visiting a quad site with the user whose course setup you'd like to test with, and inspecting the `d2l-my-courses` web component in the browser.  You can copy over the attributes to the component in `demo/d2l-my-courses/d2l-my-courses.html`, and grab a token from a HM network call.  You'll need to remove the code that cancels the PUT call, and replace the token when it expires.
 
 ## Unit Tests
 
