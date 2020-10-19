@@ -379,7 +379,15 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 	_tabSelectedChanged(e) {
 		e.stopPropagation();
 		this._currentTabId = e.composedPath()[0].id;
-		const actionName = this._currentTabId.substring(6); // remove "panel-"
+
+		let actionName;
+		const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
+		contents.forEach(content => {
+			const name = content.newTabSelected(e.composedPath()[0].id);
+			if (name) {
+				actionName = name;
+			}
+		});
 
 		// Whenever the selected tab changes, update tabSearchActions so
 		// All Courses will have the same tab selected when it opens
@@ -387,11 +395,6 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 			return Object.assign({}, action, {
 				selected: action.name === actionName
 			});
-		});
-
-		const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
-		contents.forEach(content => {
-			content.newTabSelected(actionName);
 		});
 	}
 	_tokenChanged(token, enrollmentsUrl, userSettingsUrl) {

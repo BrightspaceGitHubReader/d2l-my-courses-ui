@@ -255,9 +255,9 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 
 	// Called by d2l-my-courses-container when it receives a d2l-tab-panel-selected event
 	// Triggered when the tabs are first rendered, which then fetches the enrollment data
-	newTabSelected(actionName) {
+	newTabSelected(tabId) {
 		// Only handle if tab selected corresponds to this panel
-		if (actionName !== this.enrollmentsSearchAction.name) {
+		if (!this.parentElement || tabId !== this.parentElement.id) {
 			this._thisTabSelected = false;
 			return;
 		}
@@ -276,6 +276,8 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 			}, 10);
 		}
 		this._setLastSearchName(this.enrollmentsSearchAction.name);
+
+		return this.enrollmentsSearchAction.name;
 	}
 
 	// After a user-uploaded image is set, this is called to try to update the image

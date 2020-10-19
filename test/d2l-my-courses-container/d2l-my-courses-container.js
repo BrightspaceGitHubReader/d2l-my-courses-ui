@@ -677,7 +677,7 @@ describe('d2l-my-courses', () => {
 		});
 
 		describe('d2l-tab-panel-selected', () => {
-			it('should have updated _currentTabId and _tabSearchActions based on the event', () => {
+			it('should have updated _currentTabId and _tabSearchActions based on the event', (done) => {
 				const event = {
 					composedPath: () => {
 						return [{
@@ -690,26 +690,30 @@ describe('d2l-my-courses', () => {
 					name: '1254',
 					title: 'WillBeSelected',
 					selected: false,
-					enrollmentsSearchAction: 'Action1254'
+					enrollmentsSearchAction: { name: '1254' }
 				},
 				{
 					name: '8787',
 					title: 'WillBeUnSelected',
 					selected: true,
-					enrollmentsSearchAction: 'Action8787'
+					enrollmentsSearchAction: { name: '8787' }
 				}];
-				component._currentTabId = null;
+				component._currentTabId = 'panel-8787';
 				component._tabSearchActions = tabSearchActions.map(action => Object.assign({}, action));
 
-				component._tabSelectedChanged(event);
-				expect(component._currentTabId).to.equal('panel-1254');
-				for (let i = 0; i < tabSearchActions.length; i++) {
-					expect(component._tabSearchActions[i].name).to.equal(tabSearchActions[i].name);
-					expect(component._tabSearchActions[i].title).to.equal(tabSearchActions[i].title);
-					expect(component._tabSearchActions[i].enrollmentsSearchAction).to.equal(tabSearchActions[i].enrollmentsSearchAction);
-				}
-				expect(component._tabSearchActions[0].selected).to.be.true;
-				expect(component._tabSearchActions[1].selected).to.be.false;
+				requestAnimationFrame(() => {
+					component._tabSelectedChanged(event);
+
+					expect(component._currentTabId).to.equal('panel-1254');
+					for (let i = 0; i < tabSearchActions.length; i++) {
+						expect(component._tabSearchActions[i].name).to.equal(tabSearchActions[i].name);
+						expect(component._tabSearchActions[i].title).to.equal(tabSearchActions[i].title);
+						expect(component._tabSearchActions[i].enrollmentsSearchAction).to.equal(tabSearchActions[i].enrollmentsSearchAction);
+					}
+					expect(component._tabSearchActions[0].selected).to.be.true;
+					expect(component._tabSearchActions[1].selected).to.be.false;
+					done();
+				});
 			});
 
 			it('should tell each d2l-my-courses-content component a new tab was selected', (done) => {
