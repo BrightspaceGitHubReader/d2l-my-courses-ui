@@ -254,15 +254,11 @@ class AllCourses extends MyCoursesLocalizeBehavior(PolymerElement) {
 					<d2l-tabs on-d2l-tab-panel-selected="_onTabSelected">
 						<template items="[[tabSearchActions]]" is="dom-repeat">
 							<d2l-tab-panel id="all-courses-tab-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
-								<div hidden$="[[!_showTabContent]]">
-									<d2l-my-courses-card-grid token="[[token]]" presentation-url="[[presentationUrl]]">
-										<span id="infoMessage" hidden$="[[!_infoMessageText]]">
-											[[_infoMessageText]]
-										</span>
-									</d2l-my-courses-card-grid>
-								</div>
-								<d2l-loading-spinner hidden$="[[_showTabContent]]" size="100">
-								</d2l-loading-spinner>
+								<d2l-my-courses-card-grid loading="[[!_showTabContent]]" token="[[token]]" presentation-url="[[presentationUrl]]">
+									<span id="infoMessage" hidden$="[[!_infoMessageText]]">
+										[[_infoMessageText]]
+									</span>
+								</d2l-my-courses-card-grid>
 							</d2l-tab-panel>
 						</template>
 					</d2l-tabs>

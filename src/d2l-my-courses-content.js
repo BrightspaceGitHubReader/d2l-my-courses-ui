@@ -5,7 +5,6 @@ Polymer-based web component for the my-courses content.
 
 import '@brightspace-ui/core/components/alert/alert.js';
 import '@brightspace-ui/core/components/link/link.js';
-import '@brightspace-ui/core/components/loading-spinner/loading-spinner.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import './d2l-my-courses-card-grid.js';
 
@@ -149,11 +148,6 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 					user-select: none;
 				}
 			}
-			.spinner-container {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-			}
 			d2l-alert {
 				margin-bottom: 20px;
 				clear: both;
@@ -168,32 +162,28 @@ class MyCoursesContent extends StatusMixin(MyCoursesLocalizeBehavior(PolymerElem
 				margin: 0;
 			}
 		</style>
+		
+		<d2l-my-courses-card-grid
+			filtered-enrollments="[[_enrollments]]"
+			hide-past-courses="[[_hidePastCourses]]"
+			loading="[[!_showContent]]"
+			token="[[token]]"
+			presentation-url="[[presentationUrl]]"
+			widget-view>
 
-		<div class="spinner-container">
-			<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
-			</d2l-loading-spinner>
-		</div>
+			<d2l-alert id="imageErrorAlert" hidden$="[[!showImageError]]" type="warning">
+				[[localize('error.settingImage')]]
+			</d2l-alert>
+			<d2l-alert id="courseInfoAlert" hidden$="[[!_courseInfoAlertText]]" type="call-to-action">
+				[[_courseInfoAlertText]]
+			</d2l-alert>
+			<d2l-alert id="newEnrollmentAlert" hidden$="[[!_newEnrollmentAlertText]]" type="call-to-action">
+				[[_newEnrollmentAlertText]]
+			</d2l-alert>
 
-		<div hidden$="[[!_showContent]]" class="my-courses-content">
-			<d2l-my-courses-card-grid
-				filtered-enrollments="[[_enrollments]]"
-				hide-past-courses="[[_hidePastCourses]]"
-				token="[[token]]"
-				presentation-url="[[presentationUrl]]"
-				widget-view>
+		</d2l-my-courses-card-grid>
 
-				<d2l-alert id="imageErrorAlert" hidden$="[[!showImageError]]" type="warning">
-					[[localize('error.settingImage')]]
-				</d2l-alert>
-				<d2l-alert id="courseInfoAlert" hidden$="[[!_courseInfoAlertText]]" type="call-to-action">
-					[[_courseInfoAlertText]]
-				</d2l-alert>
-				<d2l-alert id="newEnrollmentAlert" hidden$="[[!_newEnrollmentAlertText]]" type="call-to-action">
-					[[_newEnrollmentAlertText]]
-				</d2l-alert>
-
-			</d2l-my-courses-card-grid>
-
+		<div hidden$="[[!_showContent]]">
 			<d2l-link id="viewAllCourses"
 				hidden$="[[!_numberOfEnrollments]]"
 				href="javascript:void(0);"
