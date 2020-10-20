@@ -383,7 +383,7 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 		let actionName;
 		const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
 		contents.forEach(content => {
-			const name = content.newTabSelected(e.composedPath()[0].id);
+			const name = content.newTabSelected(this._currentTabId);
 			if (name) {
 				actionName = name;
 			}
