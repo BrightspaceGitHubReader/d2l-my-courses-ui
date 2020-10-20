@@ -1,4 +1,5 @@
 {
+  "suites": ["test/index.high-priority.html"],
   "plugins": {
     "sauce": {
       "idleTimeout": 360,
