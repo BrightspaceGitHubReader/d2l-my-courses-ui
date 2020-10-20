@@ -312,6 +312,65 @@ describe('d2l-my-courses-content', () => {
 				expect(stub).to.have.been.called;
 			});
 		});
+
+		describe('newTabSelected', () => {
+			let parentComponent;
+
+			beforeEach((done) => {
+				parentComponent = fixture('tab-event-fixture');
+				component = parentComponent.querySelector('d2l-my-courses-content');
+				component.enrollmentsSearchAction = searchAction;
+				sandbox.stub(component, '_setLastSearchName');
+				setTimeout(() => {
+					done();
+				});
+			});
+
+			[true, false].forEach(hasEnrollments => {
+				it(`should ${hasEnrollments ? 'not ' : ''}fetch enrollments if it ${hasEnrollments ? 'already has' : 'does not have'} enrollments`, () => {
+					component._numberOfEnrollments = hasEnrollments ? 1 : 0;
+
+					const stub = sandbox.stub(component, '_fetchRoot').returns(Promise.resolve());
+
+					component.newTabSelected('panel-search-my-enrollments');
+
+					expect(stub.called).to.equal(!hasEnrollments);
+				});
+			});
+
+			it('should set itself to the selected tab and return the action name', () => {
+				expect(component._thisTabSelected).to.be.false;
+
+				const actionName = component.newTabSelected('panel-search-my-enrollments');
+
+				expect(component._thisTabSelected).to.be.true;
+				expect(actionName).to.equal('search-my-enrollments');
+			});
+
+			it('should set itself to NOT the selected tab if a different tab was selected and return nothing', () => {
+				expect(component._thisTabSelected).to.be.false;
+
+				const actionName = component.newTabSelected('panel-other');
+
+				expect(component._thisTabSelected).to.be.false;
+				expect(actionName).to.be.undefined;
+			});
+
+			[true, false].forEach(refetchNeeded => {
+				it(`should ${refetchNeeded ? '' : 'not '}refetch enrollments`, () => {
+					component._isRefetchNeeded = refetchNeeded;
+
+					const refetchStub = sandbox.stub(component, '_refetchEnrollments').returns(Promise.resolve());
+					const resetStub = sandbox.stub(component, '_resetEnrollments');
+
+					component.newTabSelected('panel-search-my-enrollments');
+
+					expect(refetchStub.called).to.equal(refetchNeeded);
+					expect(resetStub.called).to.equal(refetchNeeded);
+					expect(component._isRefetchNeeded).to.be.false;
+				});
+			});
+		});
 	});
 
 	describe('Alerts', function() {
@@ -386,64 +445,6 @@ describe('d2l-my-courses-content', () => {
 	});
 
 	describe('Events', () => {
-
-		describe('d2l-tab-panel-selected', () => {
-			let parentComponent;
-
-			beforeEach(done => {
-				parentComponent = fixture('tab-event-fixture');
-				component = parentComponent.querySelector('d2l-my-courses-content');
-				component.token = 'fake';
-				component.updateUserSettingsAction = updateUserSettingsAction;
-				component.enrollmentsSearchAction = searchAction;
-				component._numberOfEnrollments = 1;
-				sandbox.stub(component, '_setLastSearchName');
-				setTimeout(() => {
-					done();
-				});
-			});
-
-			[true, false].forEach(hasEnrollments => {
-				it(`should ${hasEnrollments ? '' : 'not '}fetch enrollments`, () => {
-					component._numberOfEnrollments = hasEnrollments ? 1 : 0;
-
-					const stub = sandbox.stub(component, '_fetchRoot').returns(Promise.resolve());
-
-					parentComponent.dispatchEvent(new CustomEvent(
-						'd2l-tab-panel-selected', { bubbles: true, composed: true }
-					));
-
-					expect(stub.called).to.equal(!hasEnrollments);
-				});
-			});
-
-			it('should set itself to the selected tab', () => {
-				expect(component._thisTabSelected).to.be.false;
-
-				parentComponent.dispatchEvent(new CustomEvent(
-					'd2l-tab-panel-selected', { bubbles: true, composed: true }
-				));
-
-				expect(component._thisTabSelected).to.be.true;
-			});
-
-			[true, false].forEach(refetchNeeded => {
-				it(`should ${refetchNeeded ? '' : 'not '}refetch enrollments`, () => {
-					component._isRefetchNeeded = refetchNeeded;
-
-					const refetchStub = sandbox.stub(component, '_refetchEnrollments').returns(Promise.resolve());
-					const resetStub = sandbox.stub(component, '_resetEnrollments');
-
-					parentComponent.dispatchEvent(new CustomEvent(
-						'd2l-tab-panel-selected', { bubbles: true, composed: true }
-					));
-
-					expect(refetchStub.called).to.equal(refetchNeeded);
-					expect(resetStub.called).to.equal(refetchNeeded);
-					expect(component._isRefetchNeeded).to.be.false;
-				});
-			});
-		});
 
 		describe('course-tile-organization', () => {
 
@@ -586,7 +587,7 @@ describe('d2l-my-courses-content', () => {
 		});
 
 		it('should fetch enrollments using the constructed enrollmentsSearchUrl', done => {
-			component._onTabSelected({ composedPath: () => [{ id: component.parentElement.id }] });
+			component.newTabSelected(component.parentElement.id);
 
 			requestAnimationFrame(() => {
 				expect(fetchStub).to.have.been.calledWith(sinon.match('autoPinCourses=false'));

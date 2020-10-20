@@ -344,13 +344,13 @@ describe('d2l-my-courses', () => {
 					enrollmentsSearchAction: searchAction
 				},
 				{
-					name: 'search-my-pinned-enrollments'
+					name: 'search-my-pinned-enrollments',
+					enrollmentsSearchAction: { name: 'search-my-pinned-enrollments' }
 				}];
 
 				setTimeout(() => {
 					const allCoursesSpliceStub = sandbox.stub(component._getAllCoursesComponent(), 'splice');
 					const contentRefreshStub = sandbox.stub(component._getContentComponent(), 'requestRefresh');
-					component._tabSearchActions = [{ name: 'search-my-enrollments'}, { name: 'search-my-pinned-enrollments'}];
 
 					component._removePinnedTab();
 
@@ -676,37 +676,70 @@ describe('d2l-my-courses', () => {
 			});
 		});
 
-		describe('d2l-tab-changed', () => {
-			it('should have updated _currentTabId property based on the event', () => {
+		describe('d2l-tab-panel-selected', () => {
+			it('should have updated _currentTabId and _tabSearchActions based on the event', (done) => {
 				const event = {
-					detail: {
-						tabId: '1254'
-					}
+					composedPath: () => {
+						return [{
+							id: 'panel-1254'
+						}];
+					},
+					stopPropagation: () => {}
 				};
 				const tabSearchActions = [{
 					name: '1254',
 					title: 'WillBeSelected',
 					selected: false,
-					enrollmentsSearchAction: 'Action1254'
+					enrollmentsSearchAction: { name: '1254' }
 				},
 				{
 					name: '8787',
 					title: 'WillBeUnSelected',
 					selected: true,
-					enrollmentsSearchAction: 'Action8787'
+					enrollmentsSearchAction: { name: '8787' }
 				}];
+				component._currentTabId = 'panel-8787';
+				component._tabSearchActions = tabSearchActions.map(action => Object.assign({}, action));
+
+				requestAnimationFrame(() => {
+					component._tabSelectedChanged(event);
+
+					expect(component._currentTabId).to.equal('panel-1254');
+					for (let i = 0; i < tabSearchActions.length; i++) {
+						expect(component._tabSearchActions[i].name).to.equal(tabSearchActions[i].name);
+						expect(component._tabSearchActions[i].title).to.equal(tabSearchActions[i].title);
+						expect(component._tabSearchActions[i].enrollmentsSearchAction).to.equal(tabSearchActions[i].enrollmentsSearchAction);
+					}
+					expect(component._tabSearchActions[0].selected).to.be.true;
+					expect(component._tabSearchActions[1].selected).to.be.false;
+					done();
+				});
+			});
+
+			it('should tell each d2l-my-courses-content component a new tab was selected', (done) => {
+				const event = {
+					composedPath: () => {
+						return [{
+							id: 'panel-1254'
+						}];
+					},
+					stopPropagation: () => {}
+				};
+				const tabSearchActions = [{ name: '1254' }, { name: '8787' }];
 				component._currentTabId = null;
 				component._tabSearchActions = tabSearchActions.map(action => Object.assign({}, action));
 
-				component._tabSelectedChanged(event);
-				expect(component._currentTabId).to.equal(`panel-${event.detail.tabId}`);
-				for (let i = 0; i < tabSearchActions.length; i++) {
-					expect(component._tabSearchActions[i].name).to.equal(tabSearchActions[i].name);
-					expect(component._tabSearchActions[i].title).to.equal(tabSearchActions[i].title);
-					expect(component._tabSearchActions[i].enrollmentsSearchAction).to.equal(tabSearchActions[i].enrollmentsSearchAction);
-				}
-				expect(component._tabSearchActions[0].selected).to.be.true;
-				expect(component._tabSearchActions[1].selected).to.be.false;
+				requestAnimationFrame(() => {
+					const contents = component.shadowRoot.querySelectorAll('d2l-my-courses-content');
+					const contentTabStub1 = sandbox.stub(contents[0], 'newTabSelected');
+					const contentTabStub2 = sandbox.stub(contents[1], 'newTabSelected');
+
+					component._tabSelectedChanged(event);
+					expect(component._currentTabId).to.equal('panel-1254');
+					expect(contentTabStub1).to.have.been.calledOnce;
+					expect(contentTabStub2).to.have.been.calledOnce;
+					done();
+				});
 			});
 		});
 

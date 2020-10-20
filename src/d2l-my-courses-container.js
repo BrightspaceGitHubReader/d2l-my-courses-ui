@@ -16,7 +16,6 @@ import './d2l-all-courses.js';
 import './d2l-my-courses-content.js';
 import { createActionUrl, getEntityIdentifier, getOrgUnitIdFromHref, parseEntity } from './d2l-utility-helpers.js';
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { EnrollmentCollectionEntity } from 'siren-sdk/src/enrollments/EnrollmentCollectionEntity.js';
 import { entityFactory } from 'siren-sdk/src/es6/EntityFactory.js';
 import { MyCoursesLocalizeBehavior } from './localize-behavior.js';
@@ -108,7 +107,7 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 				<d2l-loading-spinner hidden$="[[_showContent]]" size="100">
 				</d2l-loading-spinner>
 			</div>
-			<d2l-tabs hidden$="[[!_showContent]]">
+			<d2l-tabs hidden$="[[!_showContent]]" on-d2l-tab-panel-selected="_tabSelectedChanged">
 				<template items="[[_tabSearchActions]]" is="dom-repeat">
 					<!-- item.name is an OrgUnitId, and querySelector does not work with components with ids that start with a number -->
 					<d2l-tab-panel id="panel-[[item.name]]" text="[[item.title]]" selected="[[item.selected]]">
@@ -162,9 +161,6 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 
 	connectedCallback() {
 		super.connectedCallback();
-		afterNextRender(this, () => {
-			this.addEventListener('d2l-tab-changed', this._tabSelectedChanged);
-		});
 
 		this.addEventListener('open-change-image-view', this._onOpenChangeImageView);
 		this.addEventListener('set-course-image', this._onSetCourseImage);
@@ -381,15 +377,25 @@ class MyCoursesContainer extends MyCoursesLocalizeBehavior(PolymerElement) {
 		}
 	}
 	_tabSelectedChanged(e) {
-		this._currentTabId = `panel-${e.detail.tabId}`;
+		e.stopPropagation();
+		this._currentTabId = e.composedPath()[0].id;
+
+		let actionName;
+		const contents = this.shadowRoot.querySelectorAll('d2l-my-courses-content');
+		contents.forEach(content => {
+			const name = content.newTabSelected(this._currentTabId);
+			if (name) {
+				actionName = name;
+			}
+		});
+
 		// Whenever the selected tab changes, update tabSearchActions so
 		// All Courses will have the same tab selected when it opens
 		this._tabSearchActions = this._tabSearchActions.map((action) => {
 			return Object.assign({}, action, {
-				selected: action.name === e.detail.tabId
+				selected: action.name === actionName
 			});
 		});
-
 	}
 	_tokenChanged(token, enrollmentsUrl, userSettingsUrl) {
 		if (token && enrollmentsUrl && userSettingsUrl) {
