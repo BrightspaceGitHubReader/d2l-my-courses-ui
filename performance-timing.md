@@ -2,7 +2,7 @@
 
 As my-courses renders, various performance timings are tracked and are exposed through the [Navigation Timing API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_timing_API).
 
-![my courses request timeline](/request-timeline.png?raw=true)
+![my courses request timeline](/images/request-timeline.png?raw=true)
 
 To see the marks & measures, run this in your browser console:
 ```javascript
