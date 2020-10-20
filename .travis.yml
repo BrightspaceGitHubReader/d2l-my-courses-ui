@@ -5,21 +5,14 @@ addons:
   chrome: stable
 before_script:
 - npm run lint
-- cp test/index.all.html test/index.html
-# `cp` because of https://github.com/Polymer/tools/issues/416#issue-327241592
-- cp wct.conf.local.json wct.conf.json
-- polymer test
+- polymer test --config-file wct.conf.local.json
 script:
-- cp test/index.high-priority.html test/index.html
 - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    cp wct.conf.sauce-chrome.json wct.conf.json;
-    polymer test || travis_terminate 1;
+    polymer test --config-file wct.conf.sauce-chrome.json || travis_terminate 1;
 
-    cp wct.conf.sauce-firefox.json wct.conf.json;
-    polymer test || travis_terminate 1;
+    polymer test --config-file wct.conf.sauce-firefox.json || travis_terminate 1;
 
-    cp wct.conf.sauce-others.json wct.conf.json;
-    polymer test || travis_terminate 1;
+    polymer test --config-file wct.conf.sauce-others.json || travis_terminate 1;
   fi'
 after_success:
 - frauci-update-version -d=skip && export TRAVIS_TAG=$(frauci-get-version)

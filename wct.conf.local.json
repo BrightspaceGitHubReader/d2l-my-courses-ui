@@ -1,4 +1,5 @@
 {
+  "suites": ["test/index.all.html"],
   "plugins": {
     "local": {
       "browsers": [{
